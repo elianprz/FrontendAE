@@ -1,0 +1,209 @@
+<div class="bg-white py-12 min-h-screen">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto mb-10 max-w-2xl lg:mx-0">
+      <h2
+        class="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+      >
+        Reportes
+      </h2>
+      <p class="mt-6 text-base/7 text-gray-600">
+        Bienvenido al módulo de reportes. En este espacio encontrará los
+        registros correspondientes para su consulta y análisis.
+      </p>
+    </div>
+    <!-- Reportes Tablas -->
+    <h2
+      class="text-4xl text-center font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+    >
+      Usuarios
+    </h2>
+    <div class="px-4 sm:px-6 lg:px-8 mt-8">
+      <div
+        class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+      >
+        <table class="min-w-full divide-y divide-gray-300">
+          <thead>
+            <tr>
+              <th
+                scope="col"
+                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
+              >
+                Nombre completo
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
+                Usuario
+              </th>
+              <th
+                scope="col"
+                class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
+                Correo
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
+                Rol
+              </th>
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
+              >
+                Estado
+              </th>
+              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                <span class="sr-only">Acciones</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <tr *ngFor="let user of paginatedUsers">
+              <td
+                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 hidden sm:table-cell"
+              >
+                <div class="truncate">
+                  {{ user.primerNombre }} {{ user.segundoNombre }}
+                  {{ user.primerApellido }} {{ user.segundoApellido }}
+                </div>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <div class="flex gap-x-3">
+                  <div class="font-mono text-sm/6 text-gray-500">
+                    {{ user.nombreUsuario }}
+                  </div>
+                </div>
+              </td>
+              <td
+                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+              >
+                <div class="truncate w-32">{{ user.email }}</div>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <div class="flex items-center gap-x-2">
+                  <div
+                    class="flex-none rounded-full"
+                    [ngClass]="{
+                      'bg-blue-500/10 p-1 text-blue-500':
+                        user.rolNombre === 'Admin',
+                      'bg-purple-500/10 p-1 text-purple-500':
+                        user.rolNombre === 'Empleado',
+                      'bg-gray-500/10 p-1 text-gray-500':
+                        user.rolNombre !== 'Admin' &&
+                        user.rolNombre !== 'Empleado'
+                    }"
+                  >
+                    <div
+                      class="size-1.5 rounded-full"
+                      [ngClass]="{ 'bg-current': true }"
+                    ></div>
+                  </div>
+                  <div>{{ user.rolNombre }}</div>
+                </div>
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <span
+                  class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                  [ngClass]="{
+                    'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                      user.estado,
+                    'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                      !user.estado
+                  }"
+                >
+                  {{ user.estado ? "Activo" : "Inactivo" }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Paginación -->
+      <div
+        class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+      >
+        <div class="flex flex-1 justify-between sm:hidden">
+          <button
+            (click)="prevPage()"
+            [disabled]="currentPage === 1"
+            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Anterior
+          </button>
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Siguiente
+          </button>
+        </div>
+        <div
+          class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+        >
+          <div>
+            <p class="text-sm text-gray-700">
+              Mostrando
+              <span class="font-medium">{{
+                (currentPage - 1) * itemsPerPage + 1
+              }}</span>
+              a
+              <span class="font-medium">{{
+                Math.min(currentPage * itemsPerPage, totalUsers)
+              }}</span>
+              de
+              <span class="font-medium">{{ totalUsers }}</span>
+              usuarios
+            </p>
+          </div>
+          <div>
+            <nav
+              aria-label="Pagination"
+              class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+            >
+              <button
+                (click)="prevPage()"
+                [disabled]="currentPage === 1"
+                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              >
+                <span class="sr-only">Anterior</span>
+                <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+              </button>
+              <ng-container *ngFor="let page of pages">
+                <span
+                  *ngIf="page === '...'"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                  >...</span
+                >
+                <button
+                  *ngIf="page !== '...'"
+                  (click)="handlePageClick(page)"
+                  [ngClass]="{
+                    'bg-indigo-600 text-white': currentPage === page,
+                    'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                      currentPage !== page
+                  }"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                >
+                  {{ page }}
+                </button>
+              </ng-container>
+
+              <button
+                (click)="nextPage()"
+                [disabled]="currentPage === totalPages"
+                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              >
+                <span class="sr-only">Siguiente</span>
+                <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Reportes Tablas -->
+</div>

@@ -6,6 +6,6 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindplus/elements')], // Agrega esta línea],
 }
 

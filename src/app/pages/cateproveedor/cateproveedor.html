@@ -1,0 +1,679 @@
+<main class="bg-white min-w-0 flex-1 border-t border-gray-200 xl:flex">
+  <section
+    aria-labelledby="message-heading"
+    class="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden xl:order-last"
+  >
+    <div class="shrink-0 border-b border-gray-200 bg-white">
+      <div class="flex h-16 flex-col justify-center">
+        <div class="px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between py-3">
+            <div class="flex items-center gap-x-3">
+              <div
+                class="isolate inline-flex rounded-md shadow-xs sm:shadow-none"
+              >
+                <button
+                  type="button"
+                  (click)="openCreateModal()"
+                  class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
+                >
+                  <lucide-icon
+                    name="user-round-plus"
+                    class="text-green-50"
+                  ></lucide-icon>
+                  Crear
+                </button>
+              </div>
+            </div>
+            <div class="flex-grow flex justify-center hidden md:flex">
+              <div
+                class="relative flex items-center rounded-full border border-gray-300 overflow-hidden w-full max-w-xs md:max-w-sm lg:max-w-md"
+              >
+                <lucide-icon
+                  name="search"
+                  class="absolute left-2 size-5 text-gray-400"
+                ></lucide-icon>
+                <input
+                  name="search"
+                  placeholder="Buscar"
+                  aria-label="Search"
+                  class="block size-full bg-transparent pl-11 pr-3 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 border-none"
+                  [(ngModel)]="searchText"
+                  (input)="applySearchFilter()"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="min-h-0 flex-1 overflow-y-auto">
+      <div class="bg-white pt-5 pb-6 shadow-sm">
+        <div
+          class="px-4 sm:flex sm:items-baseline sm:justify-between sm:px-6 lg:px-8"
+        >
+          <div class="sm:w-0 sm:flex-1">
+            <h1 id="message-heading" class="text-lg font-medium text-gray-900">
+              Categoría proveedores
+            </h1>
+            <p class="mt-1 truncate text-sm text-gray-500">
+              En este apartado podrás crear, editar, ver y eliminar las
+              categorías de proveedores.
+            </p>
+          </div>
+
+          <div
+            class="mt-4 flex items-center justify-between sm:mt-0 sm:ml-6 sm:shrink-0 sm:justify-start"
+          ></div>
+        </div>
+      </div>
+      <!-- Tabla -->
+      <div class="px-4 sm:px-6 lg:px-8 mt-8">
+        <div
+          class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+        >
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Nombre de la categoría
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Descripción
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Estado
+                </th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <tr *ngFor="let categorias of paginatedCategorias">
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <div class="flex gap-x-3">
+                    <div class="font-mono text-sm/6 text-gray-900">
+                      {{ categorias.nombre }}
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                >
+                  <div class="truncate w-32">{{ categorias.descripcion }}</div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <span
+                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                        categorias.estado,
+                      'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                        !categorias.estado
+                    }"
+                  >
+                    {{ categorias.estado ? "Activo" : "Inactivo" }}
+                  </span>
+                </td>
+                <td
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                >
+                  <div class="flex gap-2 justify-end">
+                    <button
+                      (click)="openEditModal(categorias)"
+                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
+                    >
+                      <lucide-icon name="user-pen"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="openViewModal(categorias)"
+                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                    >
+                      <lucide-icon name="user-round-search"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="openDeleteModal(categorias)"
+                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                    >
+                      <lucide-icon name="user-round-x"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+        >
+          <div class="flex flex-1 justify-between sm:hidden">
+            <button
+              (click)="prevPage()"
+              [disabled]="currentPage === 1"
+              class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Anterior
+            </button>
+            <button
+              (click)="nextPage()"
+              [disabled]="currentPage === totalPages"
+              class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Siguiente
+            </button>
+          </div>
+          <div
+            class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="text-sm text-gray-700">
+                Mostrando
+                <span class="font-medium">{{
+                  (currentPage - 1) * itemsPerPage + 1
+                }}</span>
+                a
+                <span class="font-medium">{{
+                  Math.min(currentPage * itemsPerPage, totalCategorias)
+                }}</span>
+                de
+                <span class="font-medium">{{ totalCategorias }}</span>
+                categoría(s) proveedor(es)
+              </p>
+            </div>
+            <div>
+              <nav
+                aria-label="Pagination"
+                class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+              >
+                <button
+                  (click)="prevPage()"
+                  [disabled]="currentPage === 1"
+                  class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Anterior</span>
+                  <lucide-icon
+                    name="chevron-left"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+                <ng-container *ngFor="let page of pages">
+                  <span
+                    *ngIf="page === '...'"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                    >...</span
+                  >
+                  <button
+                    *ngIf="page !== '...'"
+                    (click)="handlePageClick(page)"
+                    [ngClass]="{
+                      'bg-indigo-600 text-white': currentPage === page,
+                      'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                        currentPage !== page
+                    }"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                  >
+                    {{ page }}
+                  </button>
+                </ng-container>
+
+                <button
+                  (click)="nextPage()"
+                  [disabled]="currentPage === totalPages"
+                  class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Siguiente</span>
+                  <lucide-icon
+                    name="chevron-right"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Dialogs -->
+  <dialog
+    id="create-modal"
+    class="relative z-10"
+    [open]="isCreateModalOpen"
+    (close)="closeCreateModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeCreateModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="user-round-plus"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Crear categoría proveedor
+              </h3>
+
+              <form (ngSubmit)="createCatproveedor()" class="mt-4">
+                <div *ngIf="validationErrors.length > 0" class="mb-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94l-1.72-1.72z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul role="list" class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of validationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      for="nombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Nombre de la categoría proveedor</label
+                    >
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      [(ngModel)]="newCatproveedor.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="descripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Descripción de la categoría</label
+                    >
+                    <input
+                      type="text"
+                      id="descripcion"
+                      name="descripcion"
+                      [(ngModel)]="newCatproveedor.descripcion"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="estado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Estado</label
+                    >
+                    <select
+                      id="estado"
+                      name="estado"
+                      [(ngModel)]="newCatproveedor.estado"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                  <button
+                    type="button"
+                    (click)="closeCreateModal()"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    type="submit"
+                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Crear categoría
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <!--Editar rol  -->
+  <dialog
+    id="edit-modal"
+    class="relative z-10"
+    [open]="isEditModalOpen"
+    (close)="closeEditModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeEditModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="user-pen"
+                class="h-6 w-6 text-yellow-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Editar categoría proveedor
+              </h3>
+              <form (ngSubmit)="$event.preventDefault()" class="mt-4">
+                <!-- Validación -->
+                <div *ngIf="editValidationErrors.length > 0" class="mt-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0"></div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul role="list" class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of editValidationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- End -->
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      for="nombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Nombre de la categoría proveedor</label
+                    >
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      [(ngModel)]="editedCatproveedor.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="descripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Descripción de la categoría</label
+                    >
+                    <input
+                      type="text"
+                      id="descripcion"
+                      name="descripcion"
+                      [(ngModel)]="editedCatproveedor.descripcion"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="estado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Estado</label
+                    >
+                    <select
+                      id="estado"
+                      name="estado"
+                      [(ngModel)]="editedCatproveedor.estado"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+
+                  <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                    <button
+                      type="button"
+                      (click)="closeEditModal()"
+                      class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      Cerrar
+                    </button>
+                    <button
+                      type="submit"
+                      (click)="updateCatproveedor()"
+                      class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      Actualizar categoría
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    id="view-modal"
+    class="relative z-10"
+    [open]="isViewModalOpen"
+    (close)="closeViewModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeViewModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="user-round-search"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Detalles de la categoría proveedor
+              </h3>
+              <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div>
+                  <h3 class="font-medium text-gray-700">
+                    Nombre de la categoría
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCatproveedor.nombre }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">
+                    Descripción de la categoría
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCatproveedor.descripcion }}
+                  </p>
+                </div>
+                <div class="sm:col-span-2">
+                  <h3 class="font-medium text-gray-700">
+                    Estado de la categoría
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCatproveedor.estado ? "Activo" : "Inactivo" }}
+                  </p>
+                </div>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  (click)="closeViewModal()"
+                  class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Eliminar rol -->
+  <dialog id="delete-modal" class="relative z-10" [open]="isDeleteModalOpen">
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+        >
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="user-round-x"
+                class="h-6 w-6 text-red-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Eliminar categoría proveedor
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  ¿Estás seguro de que deseas eliminar la siguiente categoría
+                  llamada
+                  <strong>{{ catproveedorToDelete.nombre }}</strong
+                  >? Esta acción no se puede deshacer.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              (click)="deleteCatproveedor()"
+              class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            >
+              Eliminar categoría
+            </button>
+            <button
+              type="button"
+              (click)="closeDeleteModal()"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</main>
