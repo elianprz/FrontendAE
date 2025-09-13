@@ -23,6 +23,14 @@
         <li>
           <ul role="list" class="-mx-2 space-y-1">
             <li>
+              <a
+                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                style="user-select: none"
+              >
+                Bienvenido {{ currentUserName }}
+              </a>
+            </li>
+            <li>
               <!-- Current: "bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white", Default: "text-gray-700 dark:text-gray-50 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5" -->
               <a
                 routerLink="/admin/dashboard/caja"
@@ -85,7 +93,15 @@
               </div>
               <ul role="list" class="-mx-2 mt-2 space-y-1">
                 <!--  Caja Sesión -->
-
+                <li>
+                  <a
+                    routerLink="/admin/dashboard/caja-sesion"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    <lucide-icon name="inbox"></lucide-icon>
+                    Sesiones de caja
+                  </a>
+                </li>
                 <!--  End caja sesión -->
                 <li>
                   <a
@@ -103,6 +119,15 @@
                   >
                     <lucide-icon name="package"></lucide-icon>
                     Categoría Proveedores
+                  </a>
+                </li>
+                <li>
+                  <a
+                    routerLink="/admin/dashboard/movimiento-caja"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    <lucide-icon name="hand-coins"></lucide-icon>
+                    Movimiento caja
                   </a>
                 </li>
                 <li>
@@ -218,6 +243,14 @@
               <li>
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
+                    <a
+                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                      style="user-select: none"
+                    >
+                      Bienvenido {{ currentUserName }}
+                    </a>
+                  </li>
+                  <li>
                     <!-- Current: "bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white", Default: "text-gray-700 dark:text-gray-50 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5" -->
                     <a
                       routerLink="/admin/dashboard/caja"
@@ -280,7 +313,15 @@
                     </div>
                     <ul role="list" class="-mx-2 mt-2 space-y-1">
                       <!--  Caja Sesión -->
-
+                      <li>
+                        <a
+                          routerLink="/admin/dashboard/caja-sesion"
+                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <lucide-icon name="inbox"></lucide-icon>
+                          Sesiones de caja
+                        </a>
+                      </li>
                       <!--  End caja sesión -->
                       <li>
                         <a
@@ -298,6 +339,15 @@
                         >
                           <lucide-icon name="package"></lucide-icon>
                           Categoría Proveedores
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          routerLink="/admin/dashboard/movimiento-caja"
+                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <lucide-icon name="hand-coins"></lucide-icon>
+                          Movimiento caja
                         </a>
                       </li>
                       <li>

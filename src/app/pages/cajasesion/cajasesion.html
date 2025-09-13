@@ -17,10 +17,10 @@
                   class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
                 >
                   <lucide-icon
-                    name="package-2"
+                    name="boxes"
                     class="text-green-50"
                   ></lucide-icon>
-                  Crear nueva caja
+                  Crear nueva sesión de caja
                 </button>
               </div>
             </div>
@@ -54,10 +54,11 @@
         >
           <div class="sm:w-0 sm:flex-1">
             <h1 id="message-heading" class="text-lg font-medium text-gray-900">
-              Caja
+              Sesiones de caja
             </h1>
             <p class="mt-1 truncate text-sm text-gray-500">
-              En este apartado podrás crear, editar, ver y eliminar las cajas que requieras para el control del sistema.
+              En este apartado podrás crear, editar, ver y eliminar las sesiones
+              de caja que se han utilizado en el sistema.
             </p>
           </div>
 
@@ -78,13 +79,13 @@
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Nombre de la caja
+                  Fecha de apertura
                 </th>
                 <th
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Descripción
+                  Fecha de cierre
                 </th>
                 <th
                   scope="col"
@@ -98,30 +99,34 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr *ngFor="let cajas of paginatedcajas">
+              <tr *ngFor="let cajaSesiones of paginatedCajasesiones">
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
-                    <div class="font-mono text-sm/6 text-gray-900">
-                      {{ cajas.nombre }}
+                    <div
+                      class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                    >
+                      {{ cajaSesiones.fechaApertura }}
                     </div>
                   </div>
                 </td>
                 <td
                   class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
                 >
-                  <div class="truncate w-32">{{ cajas.descripcion }}</div>
+                  <div class="truncate w-32">
+                    {{ cajaSesiones.fechaCierre }}
+                  </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <span
                     class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
                     [ngClass]="{
                       'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
-                        cajas.estado,
+                        cajaSesiones.estado,
                       'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
-                        !cajas.estado
+                        !cajaSesiones.estado
                     }"
                   >
-                    {{ cajas.estado ? "Activo" : "Inactivo" }}
+                    {{ cajaSesiones.estado ? "Activo" : "Inactivo" }}
                   </span>
                 </td>
                 <td
@@ -129,19 +134,19 @@
                 >
                   <div class="flex gap-2 justify-end">
                     <button
-                      (click)="openEditModal(cajas)"
+                      (click)="openEditModal(cajaSesiones)"
                       class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
                     >
                       <lucide-icon name="archive-restore"></lucide-icon>
                     </button>
                     <button
-                      (click)="openViewModal(cajas)"
+                      (click)="openViewModal(cajaSesiones)"
                       class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
                     >
                       <lucide-icon name="file-box"></lucide-icon>
                     </button>
                     <button
-                      (click)="openDeleteModal(cajas)"
+                      (click)="openDeleteModal(cajaSesiones)"
                       class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
                     >
                       <lucide-icon name="archive-x"></lucide-icon>
@@ -183,11 +188,11 @@
                 }}</span>
                 a
                 <span class="font-medium">{{
-                  Math.min(currentPage * itemsPerPage, totalcajas)
+                  Math.min(currentPage * itemsPerPage, totalCajasesiones)
                 }}</span>
                 de
-                <span class="font-medium">{{ totalcajas }}</span>
-                caja(s)
+                <span class="font-medium">{{ totalCajasesiones }}</span>
+                sesiones de caja
               </p>
             </div>
             <div>
@@ -276,7 +281,7 @@
               class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
             >
               <lucide-icon
-                name="package-2"
+                name="boxes"
                 class="h-6 w-6 text-green-500"
               ></lucide-icon>
             </div>
@@ -285,10 +290,10 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Crear nueva caja
+                Crear una nueva sesión de caja
               </h3>
 
-              <form (ngSubmit)="createCajas()" class="mt-4">
+              <form (ngSubmit)="createCajaSesion()" class="mt-4">
                 <div *ngIf="validationErrors.length > 0" class="mb-4">
                   <div class="rounded-md bg-red-50 p-4">
                     <div class="flex">
@@ -322,47 +327,128 @@
                   </div>
                 </div>
                 <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- Campos -->
                   <div>
                     <label
-                      for="nombre"
+                      for="cajaId"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Nombre de la caja</label
+                    >
+                      Nombre de la caja
+                    </label>
+                    <select
+                      id="cajaId"
+                      name="cajaId"
+                      [(ngModel)]="selectedCajaId"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione una caja
+                      </option>
+                      <option
+                        *ngFor="let caja of cajas"
+                        [ngValue]="caja.cajaId"
+                      >
+                        {{ caja.nombre }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="usuarioApertura"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nombre de usuario apertura
+                    </label>
+                    <select
+                      id="usuarioApertura"
+                      name="usuarioApertura"
+                      [(ngModel)]="selectedUsuarioAperturaId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [ngValue]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="usuarioCierre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nombre de usuario cierre
+                    </label>
+                    <select
+                      id="usuarioCierre"
+                      name="usuarioCierre"
+                      [(ngModel)]="selectedUsuarioCierreId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [ngValue]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="fechaApertura"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Fecha de apertura</label
                     >
                     <input
-                      type="text"
-                      id="nombre"
-                      name="nombre"
-                      [(ngModel)]="newCajas.nombre"
-                      autocomplete="given-name"
+                      type="date"
+                      id="fechaApertura"
+                      name="fechaApertura"
+                      [(ngModel)]="newCajaSesion.fechaApertura"
+                      placeholder="dd-mm-yyyy"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="montoApertura"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Monto apertura</label
+                    >
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="montoApertura"
+                      name="montoApertura"
+                      [(ngModel)]="newCajaSesion.montoApertura"
+                      placeholder="10.00"
                       required
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                   <div>
                     <label
-                      for="descripcion"
+                      for="montoCierre"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Descripción de la caja</label
+                      >Monto cierre</label
                     >
-                    <!-- <input
-                      type="text"
-                      id="descripcion"
-                      name="descripcion"
-                      [(ngModel)]="newCajas.descripcion"
-                      autocomplete="given-name"
-                      required
-                      class="block w-full h-24 rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6"
-                    />
-                     -->
-                    <textarea
-                      id="descripcion"
-                      name="descripcion"
-                      [(ngModel)]="newCajas.descripcion"
-                      autocomplete="off"
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="montoCierre"
+                      name="montoCierre"
+                      [(ngModel)]="newCajaSesion.montoCierre"
+                      placeholder="10.00"
                       required
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      rows="4"
-                    ></textarea>
+                    />
                   </div>
                   <div>
                     <label
@@ -373,14 +459,47 @@
                     <select
                       id="estado"
                       name="estado"
-                      [(ngModel)]="newCajas.estado"
+                      [(ngModel)]="newCajaSesion.estado"
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     >
                       <option [ngValue]="true">Activo</option>
                       <option [ngValue]="false">Inactivo</option>
                     </select>
                   </div>
+                  <div>
+                    <label
+                      for="observacion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Observaciones</label
+                    >
+                    <textarea
+                      id="observacion"
+                      name="observacion"
+                      [(ngModel)]="newCajaSesion.observacion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label
+                      for="fechaCierre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Fecha de cierre</label
+                    >
+                    <input
+                      type="date"
+                      id="fechaCierre"
+                      name="fechaCierre"
+                      [(ngModel)]="newCajaSesion.fechaCierre"
+                      placeholder="dd-mm-yyyy"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <!-- End campos -->
                 </div>
+                <!-- Botones normales -->
                 <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
                   <button
                     type="button"
@@ -393,7 +512,7 @@
                     type="submit"
                     class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
-                    Crear categoría
+                    Crear nueva sesión
                   </button>
                 </div>
               </form>
@@ -444,7 +563,7 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Editar caja
+                Editar caja sesión
               </h3>
               <form (ngSubmit)="$event.preventDefault()" class="mt-4">
                 <!-- Validación -->
@@ -469,46 +588,111 @@
                 </div>
                 <!-- End -->
                 <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- Campos -->
+                  <div>
+                    <label for="cajaId">Nombre de la caja</label>
+                    <select
+                      id="cajaId"
+                      name="cajaId"
+                      [(ngModel)]="selectedCajaId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione una caja
+                      </option>
+                      <option *ngFor="let caja of cajas" [value]="caja.cajaId">
+                        {{ caja.nombre }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="usuarioApertura">Usuario apertura</label>
+                    <select
+                      id="usuarioApertura"
+                      name="usuarioApertura"
+                      [(ngModel)]="selectedUsuarioAperturaId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [value]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="usuarioCierre">Usuario cierre</label>
+                    <select
+                      id="usuarioCierre"
+                      name="usuarioCierre"
+                      [(ngModel)]="selectedUsuarioCierreId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [value]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
                   <div>
                     <label
-                      for="nombre"
+                      for="editFechaApertura"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Nombre de la caja</label
+                      >Fecha de apertura</label
                     >
                     <input
-                      type="text"
-                      id="nombre"
-                      name="nombre"
-                      [(ngModel)]="editedCajas.nombre"
-                      autocomplete="given-name"
+                      type="date"
+                      id="editFechaApertura"
+                      name="fechaApertura"
+                      [(ngModel)]="editedCajaSesion.fechaApertura"
+                      placeholder="dd-mm-yyyy"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="montoApertura"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Monto apertura</label
+                    >
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="montoApertura"
+                      name="montoApertura"
+                      [(ngModel)]="editedCajaSesion.montoApertura"
+                      placeholder="10.00"
                       required
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
                   <div>
                     <label
-                      for="descripcion"
+                      for="montoCierre"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Descripción de la caja</label
+                      >Monto cierre</label
                     >
-                    <!-- <input
-                      type="text"
-                      id="descripcion"
-                      name="descripcion"
-                      [(ngModel)]="editedCajas.descripcion"
-                      autocomplete="given-name"
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="montoCierre"
+                      name="montoCierre"
+                      [(ngModel)]="editedCajaSesion.montoCierre"
+                      placeholder="10.00"
                       required
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    /> -->
-                    <textarea
-                      id="descripcion"
-                      name="descripcion"
-                      [(ngModel)]="editedCajas.descripcion"
-                      autocomplete="off"
-                      required
-                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      rows="4"
-                    ></textarea>
+                    />
                   </div>
                   <div>
                     <label
@@ -519,13 +703,46 @@
                     <select
                       id="estado"
                       name="estado"
-                      [(ngModel)]="editedCajas.estado"
+                      [(ngModel)]="editedCajaSesion.estado"
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     >
                       <option [ngValue]="true">Activo</option>
                       <option [ngValue]="false">Inactivo</option>
                     </select>
                   </div>
+                  <div>
+                    <label
+                      for="observacion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Observaciones</label
+                    >
+                    <textarea
+                      id="observacion"
+                      name="observacion"
+                      [(ngModel)]="editedCajaSesion.observacion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label
+                      for="editFechaCierre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Fecha de cierre</label
+                    >
+                    <input
+                      type="date"
+                      id="editFechaCierre"
+                      name="fechaCierre"
+                      [(ngModel)]="editedCajaSesion.fechaCierre"
+                      placeholder="dd-mm-yyyy"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <!-- End campos -->
+                  <!-- Botones normales -->
                   <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
                     <button
                       type="button"
@@ -536,7 +753,7 @@
                     </button>
                     <button
                       type="submit"
-                      (click)="updateCajas()"
+                      (click)="updateCajaSesion()"
                       class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                       Actualizar categoría
@@ -591,31 +808,74 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Detalles de la caja
+                Detalles de la sesión de caja
               </h3>
               <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
                 <div>
-                  <h3 class="font-medium text-gray-700">
-                    Nombre de la caja
-                  </h3>
+                  <h3 class="font-medium text-gray-700">Nombre de la caja</h3>
                   <p class="mt-1 text-sm text-gray-900">
-                    {{ viewedCajas.nombre }}
+                    <!-- {{ viewedCajaSesion.caja?.nombre }} -->
+                    {{ viewedCajaSesion.caja?.nombre || "Sin caja" }}
                   </p>
                 </div>
                 <div>
-                  <h3 class="font-medium text-gray-700">
-                    Descripción de la caja
-                  </h3>
+                  <h3 class="font-medium text-gray-700">Usuario apertura</h3>
                   <p class="mt-1 text-sm text-gray-900">
-                    {{ viewedCajas.descripcion }}
+                    {{
+                      viewedCajaSesion.usuarioApertura?.nombreUsuario ||
+                        "Sin usuario"
+                    }}
                   </p>
                 </div>
-                <div class="sm:col-span-2">
-                  <h3 class="font-medium text-gray-700">
-                    Estado de la caja
-                  </h3>
+                <div>
+                  <h3 class="font-medium text-gray-700">Usuario cierre</h3>
                   <p class="mt-1 text-sm text-gray-900">
-                    {{ viewedCajas.estado ? "Activo" : "Inactivo" }}
+                    {{
+                      viewedCajaSesion.usuarioCierre?.nombreUsuario ||
+                        "Sin usuario"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Fecha de apertura</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCajaSesion.fechaApertura }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Monto apertura</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{
+                      viewedCajaSesion.montoApertura
+                        | currency : "Q." : "symbol" : "1.2-2"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Monto cierre</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{
+                      viewedCajaSesion.montoCierre
+                        | currency : "Q." : "symbol" : "1.2-2"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Estado</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCajaSesion.estado ? "Activo" : "Inactivo" }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Observaciones</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCajaSesion.observacion || "Sin observaciones" }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Fecha de cierre</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCajaSesion.fechaCierre || "Sin fecha de cierre" }}
                   </p>
                 </div>
               </div>
@@ -661,13 +921,17 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Eliminar caja
+                Eliminar la sesión de caja
               </h3>
               <div class="mt-2">
                 <p class="text-sm text-gray-500">
-                  ¿Estás seguro de que deseas eliminar la siguiente caja
-                  llamada
-                  <strong>{{ CajasToDelete.nombre }}</strong
+                  ¿Estás seguro de que deseas eliminar la siguiente sesión de
+                  caja abierta con fecha de apertura:
+                  <strong>{{ cajasesionToDelete.fechaApertura }}</strong
+                  >, y con usuario de apertura:
+                  <strong>{{
+                    cajasesionToDelete.usuarioApertura?.nombreUsuario
+                  }}</strong
                   >? Esta acción no se puede deshacer.
                 </p>
               </div>
@@ -676,7 +940,7 @@
           <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              (click)="deleteCajas()"
+              (click)="deleteCajaSesion()"
               class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
             >
               Eliminar categoría

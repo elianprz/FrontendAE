@@ -16,11 +16,8 @@
                   (click)="openCreateModal()"
                   class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
                 >
-                  <lucide-icon
-                    name="user-round-plus"
-                    class="text-green-50"
-                  ></lucide-icon>
-                  Crear nuevo rol
+                  <lucide-icon name="boxes" class="text-green-50"></lucide-icon>
+                  Crear nuevo movimiento
                 </button>
               </div>
             </div>
@@ -54,10 +51,11 @@
         >
           <div class="sm:w-0 sm:flex-1">
             <h1 id="message-heading" class="text-lg font-medium text-gray-900">
-              Roles
+              Movimientos de caja
             </h1>
             <p class="mt-1 truncate text-sm text-gray-500">
-              En este apartado podrás crear, editar, ver y eliminar roles
+              En este apartado podrás crear, editar, ver y eliminar los
+              movimiento de caja que requiera el sistema.
             </p>
           </div>
 
@@ -78,13 +76,19 @@
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Id
+                  Fecha del movimiento
                 </th>
                 <th
                   scope="col"
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                 >
-                  Rol
+                  Tipo de movimiento
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Monto
                 </th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Acciones</span>
@@ -92,54 +96,50 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr *ngFor="let rol of paginatedRoles">
+              <tr *ngFor="let movimientoCajas of paginatedMovimientoCajas">
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
-                    <div class="font-mono text-sm/6 text-gray-500">
-                      {{ rol.rolId }}
+                    <div
+                      class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                    >
+                      {{ movimientoCajas.fecha }}
                     </div>
                   </div>
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  <div class="flex items-center gap-x-2">
-                    <div
-                      class="flex-none rounded-full"
-                      [ngClass]="{
-                        'bg-blue-500/10 p-1 text-blue-500':
-                          rol.rolNombre === 'Admin',
-                        'bg-purple-500/10 p-1 text-purple-500':
-                          rol.rolNombre === 'Empleado',
-                        'bg-gray-500/10 p-1 text-gray-500':
-                          rol.rolNombre !== 'Admin' &&
-                          rol.rolNombre !== 'Empleado'
-                      }"
-                    >
-                      <div
-                        class="size-1.5 rounded-full"
-                        [ngClass]="{ 'bg-current': true }"
-                      ></div>
-                    </div>
-                    <div>{{ rol.rolNombre }}</div>
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                >
+                  <div class="truncate w-32">
+                    {{ movimientoCajas.tipo }}
                   </div>
+                </td>
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                >
+                  <div class="truncate w-32">Q.{{ movimientoCajas.monto }}</div>
                 </td>
                 <td
                   class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
                 >
                   <div class="flex gap-2 justify-end">
-                    <ng-container *ngIf="rol.rolId !== 1 && rol.rolId !== 2">
-                      <button
-                        (click)="openEditModal(rol)"
-                        class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
-                      >
-                        <lucide-icon name="user-pen"></lucide-icon>
-                      </button>
-                      <button
-                        (click)="openDeleteModal(rol)"
-                        class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
-                      >
-                        <lucide-icon name="user-round-x"></lucide-icon>
-                      </button>
-                    </ng-container>
+                    <button
+                      (click)="openEditModal(movimientoCajas)"
+                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
+                    >
+                      <lucide-icon name="archive-restore"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="openViewModal(movimientoCajas)"
+                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                    >
+                      <lucide-icon name="file-box"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="openDeleteModal(movimientoCajas)"
+                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                    >
+                      <lucide-icon name="archive-x"></lucide-icon>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -177,11 +177,11 @@
                 }}</span>
                 a
                 <span class="font-medium">{{
-                  Math.min(currentPage * itemsPerPage, totalRoles)
+                  Math.min(currentPage * itemsPerPage, totalMovimientoCajas)
                 }}</span>
                 de
-                <span class="font-medium">{{ totalRoles }}</span>
-                roles
+                <span class="font-medium">{{ totalMovimientoCajas }}</span>
+                movimientos de caja
               </p>
             </div>
             <div>
@@ -267,11 +267,11 @@
           </div>
           <div class="sm:flex sm:items-start">
             <div
-              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
             >
               <lucide-icon
-                name="user-round-plus"
-                class="h-6 w-6 text-blue-600"
+                name="boxes"
+                class="h-6 w-6 text-green-500"
               ></lucide-icon>
             </div>
             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
@@ -279,10 +279,10 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Crear rol
+                Crear nuevo movimiento
               </h3>
 
-              <form (ngSubmit)="createRol()" class="mt-4">
+              <form (ngSubmit)="createMovimiento()" class="mt-4">
                 <div *ngIf="validationErrors.length > 0" class="mb-4">
                   <div class="rounded-md bg-red-50 p-4">
                     <div class="flex">
@@ -316,23 +316,117 @@
                   </div>
                 </div>
                 <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- Campos -->
                   <div>
                     <label
-                      for="RolNombre"
+                      for="cajaSesionId"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Rol nombre</label
+                    >
+                      Usuario de apertura
+                    </label>
+                    <select
+                      id="cajaSesionId"
+                      name="cajaSesionId"
+                      [(ngModel)]="selectedCajaSesionId"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione una sesión
+                      </option>
+                      <option
+                        *ngFor="let sesion of cajaSesiones"
+                        [value]="sesion.cajaSesionId"
+                      >
+                        {{ getUsuarioNombre(sesion.usuarioAperturaId) }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="usuarioId">Usuario de movimiento</label>
+                    <select
+                      id="usuarioId"
+                      name="usuarioId"
+                      [(ngModel)]="selectedUsuarioId"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [value]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="tipo"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Tipo de movimiento</label
                     >
                     <input
                       type="text"
-                      id="RolNombre"
-                      name="RolNombre"
-                      [(ngModel)]="newRol.rolNombre"
+                      id="tipo"
+                      name="tipo"
+                      [(ngModel)]="newMovimientoCaja.tipo"
                       autocomplete="given-name"
+                      placeholder="Ingreso o Egreso"
                       required
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
+                  <div>
+                    <label
+                      for="fecha"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Fecha de movimiento</label
+                    >
+                    <input
+                      type="date"
+                      id="fecha"
+                      name="fecha"
+                      [(ngModel)]="newMovimientoCaja.fecha"
+                      placeholder="dd-mm-yyyy"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="monto"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Monto del movimiento</label
+                    >
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="monto"
+                      name="monto"
+                      [(ngModel)]="newMovimientoCaja.monto"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="concepto"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Concepto</label
+                    >
+                    <textarea
+                      id="concepto"
+                      name="concepto"
+                      [(ngModel)]="newMovimientoCaja.concepto"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <!-- End campos -->
                 </div>
+                <!-- Botones normales -->
                 <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
                   <button
                     type="button"
@@ -345,7 +439,7 @@
                     type="submit"
                     class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
-                    Crear rol
+                    Crear nueva sesión
                   </button>
                 </div>
               </form>
@@ -387,7 +481,7 @@
               class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10"
             >
               <lucide-icon
-                name="user-pen"
+                name="archive-restore"
                 class="h-6 w-6 text-yellow-600"
               ></lucide-icon>
             </div>
@@ -396,7 +490,7 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Editar rol
+                Editar movimiento caja
               </h3>
               <form (ngSubmit)="$event.preventDefault()" class="mt-4">
                 <!-- Validación -->
@@ -421,22 +515,82 @@
                 </div>
                 <!-- End -->
                 <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- Campos -->
                   <div>
                     <label
-                      for="RolNombre"
+                      for="cajaSesionId"
                       class="block text-sm font-medium leading-6 text-gray-900"
-                      >Nombre del rol</label
+                    >
+                      Usuario de apertura
+                    </label>
+                    <select
+                      id="cajaSesionId"
+                      name="cajaSesionId"
+                      [(ngModel)]="selectedCajaSesionId"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione una sesión
+                      </option>
+                      <option
+                        *ngFor="let sesion of cajaSesiones"
+                        [value]="sesion.cajaSesionId"
+                      >
+                        {{ getUsuarioNombre(sesion.usuarioAperturaId) }}
+                      </option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="usuarioId">Usuario de movimiento</label>
+                    <select
+                      id="usuarioId"
+                      name="usuarioId"
+                      [(ngModel)]="selectedUsuarioId"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un usuario
+                      </option>
+                      <option
+                        *ngFor="let user of usuarios"
+                        [value]="user.usuarioId"
+                      >
+                        {{ user.nombreUsuario }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      for="fecha"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Fecha de movimiento</label
                     >
                     <input
-                      type="text"
-                      id="RolNombre"
-                      name="RolNombre"
-                      [(ngModel)]="editedRol.rolNombre"
-                      autocomplete="given-name"
-                      required
+                      type="date"
+                      id="fecha"
+                      name="fecha"
+                      [(ngModel)]="editedMovimientoCaja.fecha"
+                      placeholder="dd-mm-yyyy"
                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
+                  <div>
+                    <label
+                      for="concepto"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Concepto</label
+                    >
+                    <textarea
+                      id="concepto"
+                      name="concepto"
+                      [(ngModel)]="editedMovimientoCaja.concepto"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <!-- End campos -->
+                  <!-- Botones normales -->
                   <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
                     <button
                       type="button"
@@ -447,14 +601,123 @@
                     </button>
                     <button
                       type="submit"
-                      (click)="updateRol()"
+                      (click)="updateMovimiento()"
                       class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                      Actualizar rol
+                      Actualizar categoría
                     </button>
                   </div>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    id="view-modal"
+    class="relative z-10"
+    [open]="isViewModalOpen"
+    (close)="closeViewModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeViewModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="file-box"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Detalles de movimiento caja
+              </h3>
+              <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div>
+                  <h3>Sesión de Caja</h3>
+                  <p>
+                    {{
+                      viewedMovimientoCaja.usuarioAperturaSesion
+                        ?.nombreUsuario || "Desconocido"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3>Usuario de movimiento</h3>
+                  <p>
+                    {{
+                      viewedMovimientoCaja.usuario?.nombreUsuario ||
+                        "Desconocido"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Tipo de movimiento</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedMovimientoCaja.tipo }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">
+                    Monto del movimiento
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{
+                      viewedMovimientoCaja.monto
+                        | currency : "Q." : "symbol" : "1.2-2"
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Concepto</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedMovimientoCaja.concepto || "Sin conceptoes" }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">
+                    Fecha del movimiento
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedMovimientoCaja.fecha || "Sin fecha de cierre" }}
+                  </p>
+                </div>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  (click)="closeViewModal()"
+                  class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -479,7 +742,7 @@
               class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
             >
               <lucide-icon
-                name="user-round-x"
+                name="archive-x"
                 class="h-6 w-6 text-red-600"
               ></lucide-icon>
             </div>
@@ -488,13 +751,20 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Eliminar rol
+                Eliminar el movimiento de caja
               </h3>
               <div class="mt-2">
                 <p class="text-sm text-gray-500">
-                  ¿Estás seguro de que deseas eliminar el rol llamado
-                  <strong>{{ rolToDelete.rolNombre }}</strong
-                  >? Esta acción no se puede deshacer.
+                  ¿Estás seguro de que deseas eliminar el movimiento de
+                  <strong>{{ movimientoCajaToDelete.concepto }}</strong
+                  >, por un monto de
+                  <strong>Q.{{ movimientoCajaToDelete.monto }}</strong> y
+                  registrado por
+                  <strong>{{
+                    movimientoCajaToDelete.usuario?.nombreUsuario ||
+                      "Desconocido"
+                  }}</strong
+                  >?
                 </p>
               </div>
             </div>
@@ -502,10 +772,10 @@
           <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               type="button"
-              (click)="deleteRol()"
+              (click)="deleteMovimiento()"
               class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
             >
-              Eliminar rol
+              Eliminar categoría
             </button>
             <button
               type="button"

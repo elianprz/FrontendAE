@@ -18,6 +18,8 @@ import { Usuarios } from './pages/usuarios/usuarios';
 import { Roles } from './pages/roles/roles';
 import { Cateproducto } from './pages/cateproducto/cateproducto';
 import { Cateproveedor } from './pages/cateproveedor/cateproveedor';
+import { Cajasesion } from './pages/cajasesion/cajasesion';
+import { Movimientocaja } from './pages/movimientocaja/movimientocaja';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -39,9 +41,11 @@ export const routes: Routes = [
           { path: 'inventario', component: Inventario }, // Se renderiza el componente Inventario (productos create, update and delete) dentro del Dashboard
           { path: 'proveedores', component: Proveedores }, // Se renderiza el componente Proveedores dentro del Dashboard
           { path: 'ventas', component: Ventas }, // Se renderiza el componente Ventas dentro del Dashboard
-          // Otras opciones
+          // Ajustes del sistema
+          { path: 'caja-sesion', component: Cajasesion }, // Se renderiza el componente Categoria Productos dentro del Dashboard
           { path: 'categoria-producto', component: Cateproducto }, // Se renderiza el componente Categoria Productos dentro del Dashboard
           { path: 'categoria-proveedor', component: Cateproveedor }, // Se renderiza el componente Categoria Productos dentro del Dashboard
+          { path: 'movimiento-caja', component: Movimientocaja }, // Se renderiza el componente Movimiento Caja dentro del Dashboard
           { path: 'reportes', component: Reportes }, // Se renderiza el componente Reportes dentro del Dashboard
           { path: 'roles', component: Roles }, // Se renderiza el componente Reportes dentro del Dashboard
           { path: 'usuarios', component: Usuarios }, // Se renderiza el componente Roleandusers dentro del Dashboard

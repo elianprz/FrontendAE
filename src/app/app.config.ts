@@ -43,7 +43,17 @@ import {
   ListFilter,
   ChevronRight,
   ChevronLeft,
-  UserRoundSearch 
+  UserRoundSearch,
+  Inbox,
+  Package2,
+  ArchiveRestore,
+  FileBox,
+  ArchiveX,
+  Boxes,
+  BookPlus,
+  BookOpenText,
+  BookOpenCheck ,
+  BookMinus
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -78,7 +88,17 @@ const { providers = [] } = LucideAngularModule.pick({
   ListFilter,
   ChevronRight,
   ChevronLeft,
-  UserRoundSearch 
+  UserRoundSearch,
+  Inbox,
+  Package2,
+  ArchiveRestore,
+  FileBox,
+  ArchiveX,
+  Boxes,
+  BookPlus,
+  BookOpenText,
+  BookOpenCheck,
+  BookMinus  
 });
 
 export const appConfig: ApplicationConfig = {
