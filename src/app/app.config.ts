@@ -9,6 +9,8 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth-interceptor';
+// ✅ Importa el módulo completo
+import { JwtModule } from '@auth0/angular-jwt'; 
 
 // 1. Importa el módulo de Lucide y los íconos
 import {
@@ -53,7 +55,20 @@ import {
   BookPlus,
   BookOpenText,
   BookOpenCheck ,
-  BookMinus
+  BookMinus,
+  ShoppingBasket,
+  CreditCard,
+  DollarSign,
+  ArrowLeft,
+  DatabaseZap,
+  DatabaseBackup,
+  Trash,
+  FileSpreadsheet,
+  ImageUp ,
+  CircleQuestionMark,
+  NotebookTabs,
+  Handshake,
+  BookUser 
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -98,7 +113,20 @@ const { providers = [] } = LucideAngularModule.pick({
   BookPlus,
   BookOpenText,
   BookOpenCheck,
-  BookMinus  
+  BookMinus,
+  ShoppingBasket,
+  CreditCard,
+  DollarSign,
+  ArrowLeft ,
+  DatabaseZap,
+  DatabaseBackup,
+  Trash ,
+  FileSpreadsheet,
+  ImageUp ,
+  CircleQuestionMark,
+  NotebookTabs,
+  Handshake,
+  BookUser 
 });
 
 export const appConfig: ApplicationConfig = {
@@ -110,5 +138,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     // 3. Usa el spread operator con el array desestructurado
     ...providers,
+    // ✅ Configura el JwtModule para proporcionar el JwtHelperService
+    ...JwtModule.forRoot({
+      config: {
+        tokenGetter: () => localStorage.getItem('token'),
+        allowedDomains: ["localhost:7182"],
+        disallowedRoutes: [],
+      }
+    }).providers!
   ],
 };
