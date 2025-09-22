@@ -7,7 +7,6 @@ import { take } from 'rxjs';
 
 @Component({
   selector: 'app-caja',
-  standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './caja.html',
   styleUrl: './caja.css',
