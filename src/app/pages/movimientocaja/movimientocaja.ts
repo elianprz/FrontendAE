@@ -156,6 +156,16 @@ export class Movimientocaja implements OnInit {
     });
   }
 
+  get filteredCajaSesiones(): Array<any> {
+    // Se asume que `cajaSesion.estado` es booleano o 1/0
+    return this.cajaSesiones.filter((s) => s.estado === true || s.estado === 1);
+  }
+
+  get filteredUsuarios(): Array<any> {
+    // Se asume que `usuario.estado` es booleano o 1/0
+    return this.usuarios.filter((u) => u.estado === true || u.estado === 1);
+  }
+
   // En tu componente .ts
   getUsuarioNombre(usuarioId: number): string {
     const usuario = this.usuarios.find((u) => u.usuarioId === usuarioId);
@@ -426,97 +436,50 @@ export class Movimientocaja implements OnInit {
     this.selectedUsuarioId = null;
   }
 
-  // updateMovimiento(): void {
-  //   this.editedMovimientoCaja.cajaSesionId = this.selectedCajaSesionId;
-  //   this.editedMovimientoCaja.usuarioId = this.selectedUsuarioId;
-
-  //   this.editValidationErrors = this.validateMovimientoCaja(
-  //     this.editedMovimientoCaja
-  //   );
-  //   if (this.editValidationErrors.length > 0) {
-  //     return;
-  //   }
-
-  //   const movimientoToUpdate = { ...this.editedMovimientoCaja };
-  //   if (movimientoToUpdate.fecha) {
-  //     movimientoToUpdate.fecha = new Date(
-  //       movimientoToUpdate.fecha
-  //     ).toISOString();
-  //   }
-
-  //   this.movimientoCajaService
-  //     .updateMovimiento(movimientoToUpdate.movimientoCajaId, movimientoToUpdate)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (response) => {
-  //         console.log('Movimiento de caja actualizado exitosamente:', response);
-  //         this.closeEditModal();
-  //         this.fetchData();
-  //       },
-  //       error: (error) => {
-  //         console.error('Error al actualizar el movimiento de caja:', error);
-  //         if (error.status === 400 && error.error.errors) {
-  //           this.editValidationErrors = Object.values(
-  //             error.error.errors
-  //           ).flat() as string[];
-  //         } else {
-  //           this.editValidationErrors = [
-  //             'Error al actualizar el movimiento de caja. Intente de nuevo más tarde.',
-  //           ];
-  //         }
-  //       },
-  //     });
-  // }
-
   updateMovimiento(): void {
-  // Aseguramos que los IDs se asignen ANTES de la validación
-  this.editedMovimientoCaja.cajaSesionId = this.selectedCajaSesionId;
-  this.editedMovimientoCaja.usuarioId = this.selectedUsuarioId;
+    // Aseguramos que los IDs se asignen ANTES de la validación
+    this.editedMovimientoCaja.cajaSesionId = this.selectedCajaSesionId;
+    this.editedMovimientoCaja.usuarioId = this.selectedUsuarioId;
 
-  // Realizamos la validación inicial
-  this.editValidationErrors = this.validateMovimientoCaja(
-    this.editedMovimientoCaja
-  );
-  if (this.editValidationErrors.length > 0) {
-    return;
+    // Realizamos la validación inicial
+    this.editValidationErrors = this.validateMovimientoCaja(
+      this.editedMovimientoCaja
+    );
+    if (this.editValidationErrors.length > 0) {
+      return;
+    }
+
+    // 1. Preparamos el objeto para la actualización
+    // No necesitamos buscar el movimiento original ni la sesión de caja
+    // porque no se modificará el saldo.
+    const movimientoToUpdate = {
+      ...this.editedMovimientoCaja,
+      fecha: new Date(this.editedMovimientoCaja.fecha).toISOString(),
+      // Aseguramos que el tipo y el monto no se modifiquen
+      tipo: this.originalMovimientoCajas.find(
+        (m) => m.movimientoCajaId === this.editedMovimientoCaja.movimientoCajaId
+      )?.tipo,
+      monto: this.originalMovimientoCajas.find(
+        (m) => m.movimientoCajaId === this.editedMovimientoCaja.movimientoCajaId
+      )?.monto,
+    };
+
+    // 2. Llamamos al servicio para actualizar el movimiento de caja
+    this.movimientoCajaService
+      .updateMovimiento(movimientoToUpdate.movimientoCajaId, movimientoToUpdate)
+      .pipe(take(1))
+      .subscribe({
+        next: (response) => {
+          console.log('Movimiento de caja actualizado exitosamente:', response);
+          this.closeEditModal();
+          this.fetchData();
+        },
+        error: (error) => {
+          console.error('Error al actualizar el movimiento de caja:', error);
+          // Lógica de manejo de errores
+        },
+      });
   }
-
-  // 1. Preparamos el objeto para la actualización
-  // No necesitamos buscar el movimiento original ni la sesión de caja
-  // porque no se modificará el saldo.
-  const movimientoToUpdate = {
-    ...this.editedMovimientoCaja,
-    fecha: new Date(this.editedMovimientoCaja.fecha).toISOString(),
-    // Aseguramos que el tipo y el monto no se modifiquen
-    tipo: this.originalMovimientoCajas.find(m => m.movimientoCajaId === this.editedMovimientoCaja.movimientoCajaId)?.tipo,
-    monto: this.originalMovimientoCajas.find(m => m.movimientoCajaId === this.editedMovimientoCaja.movimientoCajaId)?.monto,
-  };
-
-  // 2. Llamamos al servicio para actualizar el movimiento de caja
-  this.movimientoCajaService
-    .updateMovimiento(
-      movimientoToUpdate.movimientoCajaId,
-      movimientoToUpdate
-    )
-    .pipe(take(1))
-    .subscribe({
-      next: (response) => {
-        console.log(
-          'Movimiento de caja actualizado exitosamente:',
-          response
-        );
-        this.closeEditModal();
-        this.fetchData();
-      },
-      error: (error) => {
-        console.error(
-          'Error al actualizar el movimiento de caja:',
-          error
-        );
-        // Lógica de manejo de errores
-      },
-    });
-}
   // Helper para calcular el nuevo monto de cierre
   private calculateNewMonto(
     currentMonto: number,

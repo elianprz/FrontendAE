@@ -332,8 +332,10 @@
                       <option [ngValue]="null" disabled>
                         Seleccione una sesión
                       </option>
+
+                      <!-- NUEVO: usamos la propiedad filtrada -->
                       <option
-                        *ngFor="let sesion of cajaSesiones"
+                        *ngFor="let sesion of filteredCajaSesiones"
                         [value]="sesion.cajaSesionId"
                       >
                         {{ getUsuarioNombre(sesion.usuarioAperturaId) }}
@@ -350,8 +352,10 @@
                       <option [ngValue]="null" disabled>
                         Seleccione un usuario
                       </option>
+
+                      <!-- NUEVO: usamos la propiedad filtrada -->
                       <option
-                        *ngFor="let user of usuarios"
+                        *ngFor="let user of filteredUsuarios"
                         [value]="user.usuarioId"
                       >
                         {{ user.nombreUsuario }}

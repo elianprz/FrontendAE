@@ -6,6 +6,7 @@ import { UserService } from '../../services/user.service';
 import { take } from 'rxjs/operators';
 import { RoleService } from '../../services/role.service';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -19,6 +20,8 @@ export class Usuarios implements OnInit {
   users: any[] = [];
   roles: any[] = [];
   rolesMap: { [key: number]: string } = {};
+
+  isAdmin = false;
 
   // Validaciones
   public validationErrors: string[] = [];
@@ -63,14 +66,27 @@ export class Usuarios implements OnInit {
   userToDelete: any = {};
 
   constructor(
+    private authService: AuthService,
     private userService: UserService,
     private roleService: RoleService
   ) {}
 
+  
   ngOnInit(): void {
-    this.getUsersWithRoles();
+    // Suscríbete al *completo* flujo de usuario.
+    this.authService.currentUser$.subscribe((user) => {
+      const role = user?.role ?? user?.Rol ?? null;
+      this.isAdmin = role === 'Admin'; // <-- actualiza cada vez que cambie
+    });
+
+    this.getUsersWithRoles(); // o getCajas()
   }
 
+  isAdminAccount(user: any): boolean {
+    return (
+      user.usuarioId === 1 || user.nombreUsuario?.toLowerCase() === 'admin'
+    );
+  }
   // Helper para convertir fecha de YYYY-MM-DD a DD-MM-YYYY
   formatDateForDisplay(dateString: string): string {
     if (!dateString) return '';
@@ -101,6 +117,7 @@ export class Usuarios implements OnInit {
     return dateString;
   }
 
+  
   getUsersWithRoles(): void {
     forkJoin({
       users: this.userService.getUsers(),
@@ -133,6 +150,18 @@ export class Usuarios implements OnInit {
           console.error('Error al cargar datos:', error);
         },
       });
+  }
+
+  toggleUserEstado(user: any): void {
+    this.userService.toggleEstado(user.usuarioId).subscribe({
+      next: (updated) => {
+        // Actualiza el estado local
+        user.estado = updated.estado;
+        // opcional: refrescar la paginación si quieres
+        this.applyFiltersAndSearch();
+      },
+      error: (err) => console.error('Error al cambiar estado', err),
+    });
   }
 
   applySearchFilter(): void {
@@ -298,24 +327,17 @@ export class Usuarios implements OnInit {
     this.validationErrors = [];
   }
 
-  // En tu clase Usuarios, busca el método createUser()
-  createUser(): void {
-    // if (
-    //   !this.newUser.primerNombre ||
-    //   !this.newUser.primerApellido ||
-    //   !this.newUser.email ||
-    //   !this.newUser.rolId
-    // ) {
-    //   console.error('Por favor, completa los campos requeridos.');
-    //   return;
-    // }
-    this.validationErrors = this.validateUser(this.newUser, true);
+  async createUser(): Promise<void> {
+    // 1. Espera el resultado de la validación asíncrona
+    this.validationErrors = await this.validateUser(this.newUser, true);
+
+    // 2. Si hay errores, detiene la ejecución.
+    // El mensaje de correo duplicado se mostrará en tu UI desde validationErrors.
     if (this.validationErrors.length > 0) {
-      // Si hay errores, detiene la ejecución.
       return;
     }
 
-    // Crea una copia del objeto para no modificar el original
+    // 3. Si no hay errores, procede con la creación del usuario
     const userToCreate = {
       ...this.newUser,
     };
@@ -343,6 +365,22 @@ export class Usuarios implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear usuario:', error);
+
+          // ✅ Accede al mensaje de error específico que viene del backend
+          if (error.status === 400 && error.error) {
+            // Si el backend devuelve un string (que es lo que hace en tu caso)
+            if (typeof error.error === 'string') {
+              this.validationErrors = [error.error];
+            } else {
+              // Maneja otros formatos de error si fuera necesario
+              this.validationErrors = ['Error de validación.'];
+            }
+          } else {
+            // Muestra un mensaje genérico para errores inesperados (ej. 500)
+            this.validationErrors = [
+              'Ocurrió un error inesperado al crear el usuario.',
+            ];
+          }
         },
       });
   }
@@ -352,9 +390,9 @@ export class Usuarios implements OnInit {
     this.editedUser = {
       ...user,
       // Formatea la fecha de ingreso para el input de tipo 'date'
-      fechaIngreso: this.formatDateForInput(user.fechaIngreso),
+      fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
       // Formatea la fecha de nacimiento de la misma manera
-      fechaNacimiento: this.formatDateForInput(user.fechaNacimiento),
+      fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
     };
     this.isEditModalOpen = true;
   }
@@ -365,28 +403,24 @@ export class Usuarios implements OnInit {
     this.validationErrors = [];
   }
 
-  // En la clase Usuarios, busca el método updateUser()
-  updateUser(): void {
-    // if (!this.editedUser.usuarioId) {
-    //   console.error('No se ha seleccionado ningún usuario para editar.');
-    //   return;
-    // }
-    this.validationErrors = this.validateUser(this.editedUser);
-
-    if (this.validationErrors.length > 0) {
-      console.warn('Errores de validación:', this.validationErrors);
-      return; // <- ya no envía nada
-    }
-
+  async updateUser(): Promise<void> {
     if (!this.editedUser.usuarioId) {
       console.error('No se ha seleccionado ningún usuario para editar.');
       return;
     }
 
+    // Espera el resultado de la validación asíncrona local
+    this.validationErrors = await this.validateUser(this.editedUser, false);
+
+    if (this.validationErrors.length > 0) {
+      console.warn('Errores de validación local:', this.validationErrors);
+      return; // Detiene la ejecución si hay errores locales
+    }
+
     // Crea una copia del objeto para no modificar el original
     const userToUpdate = { ...this.editedUser };
 
-    // Formatea las fechas al formato ISO 8601 antes de enviar al backend
+    // Formatea las fechas al formato ISO 8601
     if (userToUpdate.fechaIngreso) {
       userToUpdate.fechaIngreso = new Date(
         userToUpdate.fechaIngreso
@@ -398,61 +432,92 @@ export class Usuarios implements OnInit {
       ).toISOString();
     }
 
-    // Llama al servicio para actualizar el usuario con el objeto formateado
+    // Llama al servicio para actualizar el usuario
     this.userService
       .updateUser(userToUpdate.usuarioId, userToUpdate)
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Usuario actualizado exitosamente:', response);
+          //console.log('Usuario actualizado exitosamente:', response);
           this.closeEditModal();
           this.getUsersWithRoles(); // Recargar la lista de usuarios
         },
         error: (error) => {
           console.error('Error al actualizar usuario:', error);
+
+          // ✅ Lógica para manejar el error del backend
+          if (error.status === 400 && error.error) {
+            // Si el backend devuelve un string con el mensaje de error
+            if (typeof error.error === 'string') {
+              // Asigna el mensaje de error a la variable de validación
+              this.validationErrors = [error.error];
+            } else {
+              // Maneja otros formatos de error si fuera necesario
+              this.validationErrors = ['Error de validación.'];
+            }
+          } else {
+            // Muestra un mensaje genérico para errores inesperados (ej. 500)
+            this.validationErrors = [
+              'Ocurrió un error inesperado al actualizar el usuario.',
+            ];
+          }
         },
       });
   }
 
   // Validación de campos
   // Añade esta función a tu clase en usuarios.ts
-  public validateUser(user: any, isNewUser: boolean = false): string[] {
+  public async validateUser(
+    user: any,
+    isNewUser: boolean = false
+  ): Promise<string[]> {
     const errors: string[] = [];
 
-    // Validación de campos obligatorios
+    // Lógica de validación síncrona existente
     if (!user.primerNombre || user.primerNombre.trim() === '') {
       errors.push('El campo Primer Nombre es obligatorio.');
     }
     if (!user.primerApellido || user.primerApellido.trim() === '') {
       errors.push('El campo Primer Apellido es obligatorio.');
     }
+
     if (!user.email || user.email.trim() === '') {
       errors.push('El campo Correo Electrónico es obligatorio.');
+    } else {
+      // ✅ Validación de formato de correo electrónico
+      if (!user.email.includes('@')) {
+        errors.push('El campo Correo Electrónico debe contener el símbolo @.');
+      } else if (isNewUser) {
+        // ✅ Validación asíncrona para verificar si el correo ya existe
+        const emailExists = await this.checkEmailExists(user.email);
+        if (emailExists) {
+          errors.push(
+            'El correo electrónico ingresado ya está registrado. Por favor, intente con uno diferente.'
+          );
+        }
+      }
     }
+
     if (!user.rolId) {
       errors.push('El campo Rol es obligatorio.');
     }
 
-    // ✅ Haz obligatorios estos si aplica
+    // El resto de tus validaciones...
     if (!user.nit || user.nit.trim() === '') {
       errors.push('El campo NIT es obligatorio.');
+    }
+    if (user.nit && user.nit.length !== 13) {
+      errors.push('El campo NIT debe tener 13 caracteres.');
     }
     if (!user.cui || user.cui.trim() === '') {
       errors.push('El campo CUI es obligatorio.');
     }
-    if (!user.telefono || user.telefono.trim() === '') {
-      errors.push('El campo Teléfono es obligatorio.');
-    }
-
-    // Validación de longitud para NIT y CUI (deben ser de 13 caracteres)
-    if (user.nit && user.nit.length !== 13) {
-      errors.push('El campo NIT debe tener 13 caracteres.');
-    }
     if (user.cui && user.cui.length !== 13) {
       errors.push('El campo CUI debe tener 13 caracteres.');
     }
-
-    // Validación para teléfono (8 dígitos numéricos)
+    if (!user.telefono || user.telefono.trim() === '') {
+      errors.push('El campo Teléfono es obligatorio.');
+    }
     if (user.telefono) {
       const telefonoRegex = /^\d{8}$/;
       if (!telefonoRegex.test(user.telefono)) {
@@ -463,11 +528,31 @@ export class Usuarios implements OnInit {
     return errors;
   }
 
+  private async checkEmailExists(email: string): Promise<boolean> {
+    try {
+      // Aquí es donde realizarías la llamada a tu API o base de datos.
+      // Por ejemplo, usando HttpClient de Angular.
+      // await this.userService.checkIfEmailIsUsed(email).toPromise();
+
+      // Ejemplo de cómo podría ser la lógica, simulando una llamada a una API
+      const response = await fetch(
+        `https://localhost:7182/api/Usuarios/check-email?email=${email}`
+      );
+      const data = await response.json();
+      return data.exists; // Asume que la API devuelve { exists: true/false }
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+      // En caso de error, puedes decidir cómo manejarlo.
+      // Por seguridad, podrías devolver `true` para prevenir que se cree un usuario si hay un problema.
+      return true;
+    }
+  }
+
   openViewModal(user: any): void {
     this.viewedUser = {
       ...user,
-      fechaIngreso: this.formatDateForDisplay(user.fechaIngreso),
-      fechaNacimiento: this.formatDateForDisplay(user.fechaNacimiento),
+      fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
+      fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
     };
     this.isViewModalOpen = true;
   }

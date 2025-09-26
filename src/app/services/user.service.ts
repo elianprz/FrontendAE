@@ -37,4 +37,12 @@ export class UserService {
   deleteUser(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  toggleEstado(id: number): Observable<{ usuarioId: number; estado: boolean }> {
+    // No enviamos cuerpo, el endpoint simplemente flips
+    return this.http.patch<{ usuarioId: number; estado: boolean }>(
+      `${this.apiUrl}/${id}/estado`,
+      {}
+    );
+  }
 }

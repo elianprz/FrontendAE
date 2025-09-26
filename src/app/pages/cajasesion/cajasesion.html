@@ -16,10 +16,7 @@
                   (click)="openCreateModal()"
                   class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
                 >
-                  <lucide-icon
-                    name="boxes"
-                    class="text-green-50"
-                  ></lucide-icon>
+                  <lucide-icon name="boxes" class="text-green-50"></lucide-icon>
                   Crear nueva sesión de caja
                 </button>
               </div>
@@ -339,18 +336,21 @@
                       id="cajaId"
                       name="cajaId"
                       [(ngModel)]="selectedCajaId"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
                       <option [ngValue]="null" disabled>
                         Seleccione una caja
                       </option>
+                      <!--  Sólo cajas activas  -->
                       <option
-                        *ngFor="let caja of cajas"
+                        *ngFor="let caja of activeCajas"
                         [ngValue]="caja.cajaId"
                       >
                         {{ caja.nombre }}
                       </option>
                     </select>
                   </div>
+                  <!-- ----------  Usuario Apertura  ---------->
                   <div>
                     <label
                       for="usuarioApertura"
@@ -358,23 +358,40 @@
                     >
                       Nombre de usuario apertura
                     </label>
+
                     <select
                       id="usuarioApertura"
                       name="usuarioApertura"
                       [(ngModel)]="selectedUsuarioAperturaId"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
+                      <!-- Placeholder → siempre bloqueado -->
                       <option [ngValue]="null" disabled>
                         Seleccione un usuario
                       </option>
-                      <option
-                        *ngFor="let user of usuarios"
-                        [ngValue]="user.usuarioId"
+
+                      <!-- 1️⃣  Si hay usuarios activos → muestra la lista -->
+                      <ng-container
+                        *ngIf="activeUsers.length > 0; else noActiveOpen"
                       >
-                        {{ user.nombreUsuario }}
-                      </option>
+                        <option
+                          *ngFor="let user of activeUsers"
+                          [value]="user.usuarioId"
+                        >
+                          {{ user.nombreUsuario }}
+                        </option>
+                      </ng-container>
+
+                      <!-- 2️⃣  Si NO hay usuarios activos → mensaje -->
+                      <ng-template #noActiveOpen>
+                        <option value="" disabled>
+                          Cree o active un usuario
+                        </option>
+                      </ng-template>
                     </select>
                   </div>
+
+                  <!-- ----------  Usuario Cierre  ---------->
                   <div>
                     <label
                       for="usuarioCierre"
@@ -382,23 +399,38 @@
                     >
                       Nombre de usuario cierre
                     </label>
+
                     <select
                       id="usuarioCierre"
                       name="usuarioCierre"
                       [(ngModel)]="selectedUsuarioCierreId"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
+                      <!-- Placeholder -->
                       <option [ngValue]="null" disabled>
                         Seleccione un usuario
                       </option>
-                      <option
-                        *ngFor="let user of usuarios"
-                        [ngValue]="user.usuarioId"
+
+                      <!-- Mismo patrón con el filtro -->
+                      <ng-container
+                        *ngIf="activeUsers.length > 0; else noActiveClose"
                       >
-                        {{ user.nombreUsuario }}
-                      </option>
+                        <option
+                          *ngFor="let user of activeUsers"
+                          [value]="user.usuarioId"
+                        >
+                          {{ user.nombreUsuario }}
+                        </option>
+                      </ng-container>
+
+                      <ng-template #noActiveClose>
+                        <option value="" disabled>
+                          Cree o active un usuario
+                        </option>
+                      </ng-template>
                     </select>
                   </div>
+
                   <div>
                     <label
                       for="fechaApertura"
@@ -475,6 +507,7 @@
                     <textarea
                       id="observacion"
                       name="observacion"
+                      placeholder="Fondos para caja central..."
                       [(ngModel)]="newCajaSesion.observacion"
                       autocomplete="off"
                       required
@@ -597,11 +630,29 @@
                       [(ngModel)]="selectedCajaId"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                     >
+                      <!-- 1️⃣ placeholder normal -->
                       <option [ngValue]="null" disabled>
                         Seleccione una caja
                       </option>
-                      <option *ngFor="let caja of cajas" [value]="caja.cajaId">
+
+                      <!-- 2️⃣ cajas activas -->
+                      <option
+                        *ngFor="let caja of activeCajas"
+                        [ngValue]="caja.cajaId"
+                      >
                         {{ caja.nombre }}
+                      </option>
+
+                      <!-- 3️⃣ caso “Sesión sin relación” (solo en el modal de editar) -->
+                      <option
+                        *ngIf="
+                          selectedCajaId !== null &&
+                          !isCajaActiva(selectedCajaId)
+                        "
+                        [ngValue]="selectedCajaId"
+                        disabled
+                      >
+                        Sesión sin relación
                       </option>
                     </select>
                   </div>
@@ -815,7 +866,7 @@
                   <h3 class="font-medium text-gray-700">Nombre de la caja</h3>
                   <p class="mt-1 text-sm text-gray-900">
                     <!-- {{ viewedCajaSesion.caja?.nombre }} -->
-                    {{ viewedCajaSesion.caja?.nombre || "Sin caja" }}
+                    {{ viewedCajaSesion.nombre || "Sin caja" }}
                   </p>
                 </div>
                 <div>
@@ -869,7 +920,7 @@
                 <div>
                   <h3 class="font-medium text-gray-700">Observaciones</h3>
                   <p class="mt-1 text-sm text-gray-900">
-                    {{ viewedCajaSesion.observacion || "Sin observaciones" }}
+                    {{ viewedCajaSesion.observacion || "Sin Observaciones" }}
                   </p>
                 </div>
                 <div>

@@ -1,368 +1,1134 @@
 <main class="bg-white min-w-0 flex-1 border-t border-gray-200 xl:flex">
-      <section aria-labelledby="message-heading" class="flex h-full min-w-0 flex-1 flex-col overflow-hidden xl:order-last">
-        <!-- Top section -->
-        <div class="shrink-0 border-b border-gray-200 bg-white">
-          <!-- Toolbar-->
-          <div class="flex h-16 flex-col justify-center">
-            <div class="px-4 sm:px-6 lg:px-8">
-              <div class="flex justify-between py-3">
-                <!-- Left buttons -->
-                <div>
-                  <div class="isolate inline-flex rounded-md shadow-xs sm:space-x-3 sm:shadow-none">
-                    <span class="inline-flex sm:shadow-xs">
-                      <button type="button" class="relative inline-flex items-center gap-x-1.5 rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10">
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-ml-0.5 size-5 text-gray-400">
-                          <path d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clip-rule="evenodd" fill-rule="evenodd" />
-                        </svg>
-                        Reply
-                      </button>
-                      <button type="button" class="relative -ml-px hidden items-center gap-x-1.5 bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10 sm:inline-flex">
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-ml-0.5 size-5 text-gray-400">
-                          <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z" />
-                        </svg>
-                        Note
-                      </button>
-                      <button type="button" class="relative -ml-px hidden items-center gap-x-1.5 rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10 sm:inline-flex">
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-ml-0.5 size-5 text-gray-400">
-                          <path d="M10 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM16.25 5.75a.75.75 0 0 0-1.5 0v2h-2a.75.75 0 0 0 0 1.5h2v2a.75.75 0 0 0 1.5 0v-2h2a.75.75 0 0 0 0-1.5h-2v-2Z" />
-                        </svg>
-                        Assign
-                      </button>
-                    </span>
+  <section
+    aria-labelledby="message-heading"
+    class="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden xl:order-last"
+  >
+    <div class="shrink-0 border-b border-gray-200 bg-white">
+      <div class="flex h-16 flex-col justify-center">
+        <div class="px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between py-3">
+            <div class="flex items-center gap-x-3">
+              <div
+                class="isolate inline-flex rounded-md shadow-xs sm:shadow-none"
+              >
+                <button
+                  type="button"
+                  (click)="openCreateModal()"
+                  class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
+                >
+                  <lucide-icon
+                    name="database-zap"
+                    class="text-green-50"
+                  ></lucide-icon>
+                  Crear producto
+                </button>
+              </div>
+            </div>
+            <div class="flex-grow flex justify-center hidden md:flex">
+              <div
+                class="relative flex items-center rounded-full border border-gray-300 overflow-hidden w-full max-w-xs md:max-w-sm lg:max-w-md"
+              >
+                <lucide-icon
+                  name="search"
+                  class="absolute left-2 size-5 text-gray-400"
+                ></lucide-icon>
+                <input
+                  name="search"
+                  placeholder="Buscar"
+                  aria-label="Search"
+                  class="block size-full bg-transparent pl-11 pr-3 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 border-none"
+                  [(ngModel)]="searchText"
+                  (input)="applySearchFilter()"
+                />
+              </div>
+            </div>
+            <div class="flex items-center gap-x-3">
+              <span class="space-x-3 lg:flex">
+                <el-dropdown
+                  trigger="click"
+                  placement="bottom-start"
+                  [hide-on-click]="false"
+                  class="inline-block"
+                >
+                  <button
+                    type="button"
+                    class="relative -ml-px items-center gap-x-1.5 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-blue-400 focus:z-10 sm:inline-flex"
+                  >
+                    <lucide-icon
+                      name="list-filter"
+                      class="size-5 text-blue-50"
+                    ></lucide-icon>
+                  </button>
 
-                    <span class="hidden space-x-3 lg:flex">
-                      <button type="button" class="relative -ml-px hidden items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10 sm:inline-flex">
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-ml-0.5 size-5 text-gray-400">
-                          <path d="M2 3a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H2Z" />
-                          <path d="M2 7.5h16l-.811 7.71a2 2 0 0 1-1.99 1.79H4.802a2 2 0 0 1-1.99-1.79L2 7.5ZM7 11a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H8a1 1 0 0 1-1-1Z" clip-rule="evenodd" fill-rule="evenodd" />
-                        </svg>
-                        Archive
-                      </button>
-                      <button type="button" class="relative -ml-px hidden items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10 sm:inline-flex">
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-ml-0.5 size-5 text-gray-400">
-                          <path d="M2 4.75C2 3.784 2.784 3 3.75 3h4.836c.464 0 .909.184 1.237.513l1.414 1.414a.25.25 0 0 0 .177.073h4.836c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 16.25 17H3.75A1.75 1.75 0 0 1 2 15.25V4.75Zm8.75 4a.75.75 0 0 0-1.5 0v2.546l-.943-1.048a.75.75 0 1 0-1.114 1.004l2.25 2.5a.75.75 0 0 0 1.114 0l2.25-2.5a.75.75 0 1 0-1.114-1.004l-.943 1.048V8.75Z" clip-rule="evenodd" fill-rule="evenodd" />
-                        </svg>
-                        Move
-                      </button>
-                    </span>
+                  <el-menu
+                    anchor="bottom end"
+                    popover
+                    class="m-0 w-56 origin-top-right rounded-md bg-white p-0 shadow-lg outline outline-1 outline-black/5 transition [--anchor-gap:theme(spacing.2)] [transition-behavior:allow-discrete] data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  >
+                    <div class="py-1 px-4">
+                      <div
+                        class="flex items-center gap-3"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <div class="flex h-6 shrink-0 items-center">
+                          <div class="group grid size-4 grid-cols-1">
+                            <input
+                              id="estado-activo"
+                              type="checkbox"
+                              (change)="
+                                applyFilter(
+                                  'estado',
+                                  true,
+                                  $event.target.checked
+                                )
+                              "
+                              [checked]="isFilterActive('estado', true)"
+                              class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                            />
+                          </div>
+                        </div>
+                        <label
+                          for="estado-activo"
+                          class="font-medium text-sm text-gray-900"
+                          >Estado: Activo</label
+                        >
+                      </div>
 
-                    <div class="relative -ml-px block sm:shadow-xs lg:hidden">
-                      <button id="menu-2-button" type="button" aria-expanded="false" aria-haspopup="true" class="relative inline-flex items-center gap-x-1.5 rounded-r-md bg-white px-2 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-10 sm:rounded-md sm:px-3">
-                        <span class="sr-only sm:hidden">More</span>
-                        <span class="hidden sm:inline">More</span>
-                        <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5 text-gray-400 sm:-mr-1">
-                          <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-                        </svg>
+                      <div
+                        class="flex items-center gap-3 mt-1"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <div class="flex h-6 shrink-0 items-center">
+                          <div class="group grid size-4 grid-cols-1">
+                            <input
+                              id="estado-inactivo"
+                              type="checkbox"
+                              (change)="
+                                applyFilter(
+                                  'estado',
+                                  false,
+                                  $event.target.checked
+                                )
+                              "
+                              [checked]="isFilterActive('estado', false)"
+                              class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                            />
+                          </div>
+                        </div>
+                        <label
+                          for="estado-inactivo"
+                          class="font-medium text-sm text-gray-900"
+                          >Estado: Inactivo</label
+                        >
+                      </div>
+                      <div class="border-t border-gray-100 my-1"></div>
+
+                      <ng-container *ngFor="let categoria of categorias">
+                        <div
+                          class="flex items-center gap-3 mt-1"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <div class="flex h-6 shrink-0 items-center">
+                            <div class="group grid size-4 grid-cols-1">
+                              <input
+                                id="categoria-{{ categoria.categoriaId }}"
+                                type="checkbox"
+                                (change)="
+                                  applyFilter(
+                                    'categoriaId',
+                                    categoria.categoriaId,
+                                    $event.target.checked
+                                  )
+                                "
+                                [checked]="
+                                  isFilterActive(
+                                    'categoriaId',
+                                    categoria.categoriaId
+                                  )
+                                "
+                                class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                              />
+                            </div>
+                          </div>
+                          <label
+                            for="categoria-{{ categoria.categoriaId }}"
+                            class="font-medium text-sm text-gray-900"
+                            >categoria: {{ categoria.nombre }}</label
+                          >
+                        </div>
+                      </ng-container>
+                      <div class="border-t border-gray-100 my-1"></div>
+
+                      <button
+                        (click)="clearFilters(); $event.stopPropagation()"
+                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Borrar filtros
                       </button>
+                    </div>
+                  </el-menu>
+                </el-dropdown>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                      <!--
-                        Dropdown menu, show/hide based on menu state.
+    <div class="min-h-0 flex-1 overflow-y-auto">
+      <div class="bg-white pt-5 pb-6 shadow-sm">
+        <div
+          class="px-4 sm:flex sm:items-baseline sm:justify-between sm:px-6 lg:px-8"
+        >
+          <div class="sm:w-0 sm:flex-1">
+            <h1 id="message-heading" class="text-lg font-medium text-gray-900">
+              Inventario
+            </h1>
+            <p class="mt-1 truncate text-sm text-gray-500">
+              En este apartado podrás crear, editar, ver y eliminar el
+              inventario
+            </p>
+          </div>
 
-                        Entering: "transition ease-out duration-100"
-                          From: "transform opacity-0 scale-95"
-                          To: "transform scale-100"
-                        Leaving: "transition ease-in duration-75"
-                          From: "transform scale-100"
-                          To: "transform opacity-0 scale-95"
-                      -->
-                      <div role="menu" tabindex="-1" aria-labelledby="menu-2-button" aria-orientation="vertical" class="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden">
-                        <div role="none" class="py-1">
-                          <!-- Active: "bg-gray-100 text-gray-900 outline-hidden", Not Active: "text-gray-700" -->
-                          <a id="menu-2-item-0" role="menuitem" href="#" tabindex="-1" class="block px-4 py-2 text-sm text-gray-700 sm:hidden">Note</a>
-                          <a id="menu-2-item-1" role="menuitem" href="#" tabindex="-1" class="block px-4 py-2 text-sm text-gray-700 sm:hidden">Assign</a>
-                          <a id="menu-2-item-2" role="menuitem" href="#" tabindex="-1" class="block px-4 py-2 text-sm text-gray-700">Archive</a>
-                          <a id="menu-2-item-3" role="menuitem" href="#" tabindex="-1" class="block px-4 py-2 text-sm text-gray-700">Move</a>
+          <div
+            class="mt-4 flex items-center justify-between sm:mt-0 sm:ml-6 sm:shrink-0 sm:justify-start"
+          ></div>
+        </div>
+      </div>
+      <!-- Tabla -->
+      <div class="px-4 sm:px-6 lg:px-8 mt-8">
+        <div
+          class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+        >
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
+                >
+                  Imagen
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Nombre
+                </th>
+                <th
+                  scope="col"
+                  class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Descripción
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Estado
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
+                >
+                  Stock
+                </th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <tr *ngFor="let productos of paginatedProducts">
+                <td
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                >
+                  <img
+                    [src]="productos.imagenUrl"
+                    alt="Imagen del producto {{ productos.nombre }}"
+                    class="h-16 w-16 object-cover rounded-md"
+                  />
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <div class="flex gap-x-3">
+                    <div class="font-mono text-sm/6 text-gray-500">
+                      {{ productos.nombre }}
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                >
+                  <div class="truncate w-32">{{ productos.descripcion }}</div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <span
+                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                        productos.estado,
+                      'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                        !productos.estado
+                    }"
+                  >
+                    {{ productos.estado ? "Activo" : "Inactivo" }}
+                  </span>
+                </td>
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                >
+                  <div class="truncate w-32">{{ productos.stock }}</div>
+                </td>
+                <td
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                >
+                  <div class="flex gap-2 justify-end">
+                    <button
+                      (click)="openEditModal(productos)"
+                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
+                    >
+                      <lucide-icon name="database-backup"></lucide-icon>
+                    </button>
+                    <button
+                      (click)="openViewModal(productos)"
+                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                    >
+                      <lucide-icon name="file-spreadsheet"></lucide-icon>
+                    </button>
+                    <button
+                      *ngIf="productos.usuarioId !== 1"
+                      (click)="openDeleteModal(productos)"
+                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                    >
+                      <lucide-icon name="trash"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+        >
+          <div class="flex flex-1 justify-between sm:hidden">
+            <button
+              (click)="prevPage()"
+              [disabled]="currentPage === 1"
+              class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Anterior
+            </button>
+            <button
+              (click)="nextPage()"
+              [disabled]="currentPage === totalPages"
+              class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Siguiente
+            </button>
+          </div>
+          <div
+            class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="text-sm text-gray-700">
+                Mostrando
+                <span class="font-medium">{{
+                  (currentPage - 1) * itemsPerPage + 1
+                }}</span>
+                a
+                <span class="font-medium">{{
+                  Math.min(currentPage * itemsPerPage, totalProducts)
+                }}</span>
+                de
+                <span class="font-medium">{{ totalProducts }}</span>
+                productos
+              </p>
+            </div>
+            <div>
+              <nav
+                aria-label="Pagination"
+                class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+              >
+                <button
+                  (click)="prevPage()"
+                  [disabled]="currentPage === 1"
+                  class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Anterior</span>
+                  <lucide-icon
+                    name="chevron-left"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+                <ng-container *ngFor="let page of pages">
+                  <span
+                    *ngIf="page === '...'"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                    >...</span
+                  >
+                  <button
+                    *ngIf="page !== '...'"
+                    (click)="handlePageClick(page)"
+                    [ngClass]="{
+                      'bg-indigo-600 text-white': currentPage === page,
+                      'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                        currentPage !== page
+                    }"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                  >
+                    {{ page }}
+                  </button>
+                </ng-container>
+
+                <button
+                  (click)="nextPage()"
+                  [disabled]="currentPage === totalPages"
+                  class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Siguiente</span>
+                  <lucide-icon
+                    name="chevron-right"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Tabla -->
+  </section>
+  <!-- Dialogs -->
+  <dialog
+    id="create-modal"
+    class="relative z-10"
+    [open]="isCreateModalOpen"
+    (close)="closeCreateModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeCreateModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="database-zap"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Crear producto
+              </h3>
+              <form (ngSubmit)="createProduct()" class="mt-4">
+                <!-- Validación -->
+                <div *ngIf="validationErrors.length > 0" class="mt-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94l-1.72-1.72z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul categoria="list" class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of validationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                <!-- End -->
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      for="nombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Nombre del producto</label
+                    >
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      [(ngModel)]="newProduct.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="descripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Descripción del producto</label
+                    >
+                    <textarea
+                      id="descripcion"
+                      name="descripcion"
+                      [(ngModel)]="newProduct.descripcion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label
+                      for="stock"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Stock</label
+                    >
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      id="stock"
+                      name="stock"
+                      [(ngModel)]="newProduct.stock"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="precioAdquisicion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Precio de compra</label
+                    >
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="precioAdquisicion"
+                      name="precioAdquisicion"
+                      [(ngModel)]="newProduct.precioAdquisicion"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="precioVenta"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Precio de venta</label
+                    >
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="precioVenta"
+                      name="precioVenta"
+                      [(ngModel)]="newProduct.precioVenta"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <!-- <div>
+                    <label for="imagenUrl">Imagen del producto</label>
+                    <input
+                      type="file"
+                      id="imagenUrl"
+                      (change)="onFileSelected($event)"
+                    />
+                  </div> -->
+                  <div class="flex items-center justify-center w-full">
+                    <label
+                      for="dropzone-file"
+                      class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-white dark:bg-white hover:bg-gray-100 dark:border-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    >
+                      <div
+                        class="flex flex-col items-center justify-center pt-5 pb-6"
+                      >
+                        <ng-container *ngIf="!selectedFilePreview">
+                          <lucide-icon name="image-up"></lucide-icon>
+                          <p class="mb-2 text-sm text-black dark:text-black">
+                            <span class="font-semibold">Click to upload</span>
+                            or drag and drop
+                          </p>
+                          <p class="text-xs text-gray-600 dark:text-gray-700">
+                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                          </p>
+                        </ng-container>
 
-                <!-- Right buttons -->
-                <nav aria-label="Pagination">
-                  <span class="isolate inline-flex rounded-md shadow-xs">
-                    <a href="#" class="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10">
-                      <span class="sr-only">Next</span>
-                      <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                        <path d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd" fill-rule="evenodd" />
-                      </svg>
-                    </a>
-                    <a href="#" class="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-gray-50 focus:z-10">
-                      <span class="sr-only">Previous</span>
-                      <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                        <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
-                      </svg>
-                    </a>
-                  </span>
-                </nav>
-              </div>
+                        <img
+                          *ngIf="selectedFilePreview"
+                          [src]="selectedFilePreview"
+                          alt="Previsualización de la imagen"
+                          class="max-h-56 object-contain"
+                        />
+                      </div>
+
+                      <input
+                        (change)="onFileSelected($event)"
+                        id="dropzone-file"
+                        type="file"
+                        class="hidden"
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <label
+                      for="estado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Estado</label
+                    >
+                    <select
+                      id="estado"
+                      name="estado"
+                      [(ngModel)]="newProduct.estado"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="categoriaId"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Categoría
+                    </label>
+                    <select
+                      id="categoriaId"
+                      name="categoriaId"
+                      [(ngModel)]="newProduct.categoriaId"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      required
+                    >
+                      <!-- 1️⃣  Opción placeholder (siempre visible) -->
+                      <option [ngValue]="null" disabled>
+                        Seleccione una categoría
+                      </option>
+
+                      <!-- 2️⃣  Muestra la lista de categorías activas -->
+                      <ng-container
+                        *ngIf="filteredCategorias.length > 0; else noActive"
+                      >
+                        <option
+                          *ngFor="let categoria of filteredCategorias"
+                          [value]="categoria.categoriaId"
+                        >
+                          {{ categoria.nombre }}
+                        </option>
+                      </ng-container>
+
+                      <!-- 3️⃣  Mensaje cuando no hay categorías activas -->
+                      <ng-template #noActive>
+                        <option value="" disabled>
+                          Cree o active una categoría
+                        </option>
+                      </ng-template>
+                    </select>
+                  </div>
+                </div>
+                <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                  <button
+                    type="button"
+                    (click)="closeCreateModal()"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    type="submit"
+                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Crear producto
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-          <!-- Message header -->
         </div>
+      </div>
+    </div>
+  </dialog>
 
-        <div class="min-h-0 flex-1 overflow-y-auto">
-          <div class="bg-white pt-5 pb-6 shadow-sm">
-            <div class="px-4 sm:flex sm:items-baseline sm:justify-between sm:px-6 lg:px-8">
-              <div class="sm:w-0 sm:flex-1">
-                <h1 id="message-heading" class="text-lg font-medium text-gray-900">Re: New pricing for existing customers</h1>
-                <p class="mt-1 truncate text-sm text-gray-500">joearmstrong@example.com</p>
-              </div>
-
-              <div class="mt-4 flex items-center justify-between sm:mt-0 sm:ml-6 sm:shrink-0 sm:justify-start">
-                <span class="inline-flex items-center rounded-full bg-cyan-100 px-3 py-0.5 text-sm font-medium text-cyan-800">Open</span>
-                <div class="relative ml-3 inline-block text-left">
-                  <button id="menu-3-button" type="button" aria-expanded="false" aria-haspopup="true" class="-my-2 flex items-center rounded-full bg-white p-2 text-gray-400 hover:text-gray-600 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-600">
-                    <span class="sr-only">Open options</span>
-                    <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
-                      <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
-                    </svg>
-                  </button>
-
-                  <!--
-                    Dropdown menu, show/hide based on menu state.
-
-                    Entering: "transition ease-out duration-100"
-                      From: "transform opacity-0 scale-95"
-                      To: "transform scale-100"
-                    Leaving: "transition ease-in duration-75"
-                      From: "transform scale-100"
-                      To: "transform opacity-0 scale-95"
-                  -->
-                  <div role="menu" tabindex="-1" aria-labelledby="menu-3-button" aria-orientation="vertical" class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden">
-                    <div role="none" class="py-1">
-                      <!-- Active: "bg-gray-100 text-gray-900 outline-hidden", Not Active: "text-gray-700" -->
-                      <button id="menu-3-item-0" type="button" role="menuitem" tabindex="-1" class="flex w-full justify-between px-4 py-2 text-sm text-gray-700">
-                        <span>Copy email address</span>
-                      </button>
-                      <a id="menu-3-item-1" role="menuitem" href="#" tabindex="-1" class="flex justify-between px-4 py-2 text-sm text-gray-700">
-                        <span>Previous conversations</span>
-                      </a>
-                      <a id="menu-3-item-2" role="menuitem" href="#" tabindex="-1" class="flex justify-between px-4 py-2 text-sm text-gray-700">
-                        <span>View original</span>
-                      </a>
+  <dialog
+    id="edit-modal"
+    class="relative z-10"
+    [open]="isEditModalOpen"
+    (close)="closeEditModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeEditModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="database-backup"
+                class="h-6 w-6 text-yellow-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Editar producto
+              </h3>
+              <form
+                (ngSubmit)="updateProduct(); $event.preventDefault()"
+                class="mt-4"
+              >
+                <!-- Validación -->
+                <div *ngIf="validationErrors.length > 0" class="mt-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94l-1.72-1.72z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul role="list" class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of validationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <!-- Thread section-->
-          <ul role="list" class="space-y-2 py-4 sm:space-y-4 sm:px-6 lg:px-8">
-            <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:px-6">
-              <div class="sm:flex sm:items-baseline sm:justify-between">
-                <h3 class="text-base font-medium">
-                  <span class="text-gray-900">Joe Armstrong</span>
-                  <span class="text-gray-600">wrote</span>
-                </h3>
-                <p class="mt-1 text-sm whitespace-nowrap text-gray-600 sm:mt-0 sm:ml-3">
-                  <time datetime="2021-01-28T19:24">Yesterday at 7:24am</time>
-                </p>
-              </div>
-              <div class="mt-4 space-y-6 text-sm text-gray-800"><p>Thanks so much! Can't wait to try it out.</p></div>
-            </li>
-            <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:px-6">
-              <div class="sm:flex sm:items-baseline sm:justify-between">
-                <h3 class="text-base font-medium">
-                  <span class="text-gray-900">Monica White</span>
-                  <span class="text-gray-600">wrote</span>
-                </h3>
-                <p class="mt-1 text-sm whitespace-nowrap text-gray-600 sm:mt-0 sm:ml-3">
-                  <time datetime="2021-01-27T16:35">Wednesday at 4:35pm</time>
-                </p>
-              </div>
-              <div class="mt-4 space-y-6 text-sm text-gray-800">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Malesuada at ultricies tincidunt elit et, enim. Habitant nunc, adipiscing non fermentum, sed est a, aliquet. Lorem in vel libero vel augue aliquet dui commodo.</p>
-                <p>Nec malesuada sed sit ut aliquet. Cras ac pharetra, sapien purus vitae vestibulum auctor faucibus ullamcorper. Leo quam tincidunt porttitor neque, velit sed. Tortor mauris ornare ut tellus sed aliquet amet venenatis condimentum. Convallis accumsan et nunc eleifend.</p>
-                <p><strong style="font-weight: 600">Monica White</strong><br />Customer Service</p>
-              </div>
-            </li>
-            <li class="bg-white px-4 py-6 shadow-sm sm:rounded-lg sm:px-6">
-              <div class="sm:flex sm:items-baseline sm:justify-between">
-                <h3 class="text-base font-medium">
-                  <span class="text-gray-900">Joe Armstrong</span>
-                  <span class="text-gray-600">wrote</span>
-                </h3>
-                <p class="mt-1 text-sm whitespace-nowrap text-gray-600 sm:mt-0 sm:ml-3">
-                  <time datetime="2021-01-27T16:09">Wednesday at 4:09pm</time>
-                </p>
-              </div>
-              <div class="mt-4 space-y-6 text-sm text-gray-800">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Malesuada at ultricies tincidunt elit et, enim. Habitant nunc, adipiscing non fermentum, sed est a, aliquet. Lorem in vel libero vel augue aliquet dui commodo.</p>
-                <p>Nec malesuada sed sit ut aliquet. Cras ac pharetra, sapien purus vitae vestibulum auctor faucibus ullamcorper. Leo quam tincidunt porttitor neque, velit sed. Tortor mauris ornare ut tellus sed aliquet amet venenatis condimentum. Convallis accumsan et nunc eleifend.</p>
-                <p>– Joe</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
+                <!-- End -->
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      for="editnombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Nombre del producto</label
+                    >
+                    <input
+                      type="text"
+                      id="editnombre"
+                      name="nombre"
+                      [(ngModel)]="editedProduct.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="editDescripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Descripción</label
+                    >
+                    <textarea
+                      id="editDescripcion"
+                      name="descripcion"
+                      [(ngModel)]="editedProduct.descripcion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label
+                      for="editStock"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Stock</label
+                    >
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      id="editStock"
+                      name="stock"
+                      [(ngModel)]="editedProduct.stock"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="editedPrecioAdquisicion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Precio de compra</label
+                    >
+                    <input
+                      type="text"
+                      id="editedPrecioAdquisicion"
+                      name="precioAd"
+                      [(ngModel)]="editedProduct.precioAdquisicion"
+                      autocomplete="family-name"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="editedPrecioVenta"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Precio de venta</label
+                    >
+                    <input
+                      type="text"
+                      id="editedPrecioVenta"
+                      name="precioVenta"
+                      [(ngModel)]="editedProduct.precioVenta"
+                      autocomplete="family-name"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                  <!-- <div>
+                    <label for="imagenUrl">Imagen del producto</label>
+                    <input
+                      type="file"
+                      id="imagenUrl"
+                      (change)="onFileSelected($event)"
+                    />
+                  </div> -->
+                  <div class="flex items-center justify-center w-full">
+                    <label
+                      for="dropzone-file"
+                      class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-white dark:bg-white hover:bg-gray-100 dark:border-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    >
+                      <div
+                        class="flex flex-col items-center justify-center pt-5 pb-6"
+                      >
+                        <ng-container *ngIf="!selectedFilePreview">
+                          <lucide-icon name="image-up"></lucide-icon>
+                          <p class="mb-2 text-sm text-black dark:text-black">
+                            <span class="font-semibold">Click to upload</span>
+                            or drag and drop
+                          </p>
+                          <p class="text-xs text-gray-600 dark:text-gray-700">
+                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                          </p>
+                        </ng-container>
 
-      <!-- Message list
-      <aside class="hidden xl:order-first xl:block xl:shrink-0">
-        <div class="relative flex h-full w-96 flex-col border-r border-gray-200 bg-gray-100">
-          <div class="shrink-0">
-            <div class="flex h-16 flex-col justify-center bg-white px-6">
-              <div class="flex items-baseline space-x-3">
-                <h2 class="text-lg font-medium text-gray-900">Inbox</h2>
-                <p class="text-sm font-medium text-gray-500">10 messages</p>
+                        <img
+                          *ngIf="selectedFilePreview"
+                          [src]="selectedFilePreview"
+                          alt="Previsualización de la imagen"
+                          class="max-h-56 object-contain"
+                        />
+                      </div>
+
+                      <input
+                        (change)="onFileSelected($event)"
+                        id="dropzone-file"
+                        type="file"
+                        class="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  <div>
+                    <label
+                      for="editcategoriaId"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Categoría</label
+                    >
+                    <select
+                      id="editcategoriaId"
+                      name="categoriaId"
+                      [(ngModel)]="editedProduct.categoriaId"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      required
+                    >
+                      <option [ngValue]="null" disabled>
+                        Selecciona un categoría
+                      </option>
+                      <option
+                        *ngFor="let categoria of categorias"
+                        [ngValue]="categoria.categoriaId"
+                      >
+                        {{ categoria.nombre }}
+                      </option>
+
+                      <ng-template #noActive>
+                        <option value="" disabled>
+                          Cree o active una categoría
+                        </option>
+                      </ng-template>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      for="editEstado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Estado</label
+                    >
+                    <select
+                      id="editEstado"
+                      name="estado"
+                      [(ngModel)]="editedProduct.estado"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      required
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                  <button
+                    type="button"
+                    (click)="closeEditModal()"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    type="submit"
+                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Actualizar usuario
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    id="view-modal"
+    class="relative z-10"
+    [open]="isViewModalOpen"
+    (close)="closeViewModal()"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeViewModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="file-spreadsheet"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Detalles del Producto
+              </h3>
+              <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <div>
+                  <h3 class="font-medium text-gray-700">SKU</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.sku }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Nombre del producto</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.nombre }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Precio de compra</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.precioAdquisicion }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Precio de venta</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.precioVenta }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Stock</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.stock }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Imagen del producto</h3>
+                  <img
+                    [src]="viewedProduct.imagenUrl"
+                    alt="Imagen del producto {{ viewedProduct.nombre }}"
+                    class="h-16 w-16 object-cover rounded-md"
+                  />
+                </div>
+
+                <div>
+                  <h3 class="font-medium text-gray-700">Estado</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.estado ? "Activo" : "Inactivo" }}
+                  </p>
+                </div>
+                <div>
+                  <h3 class="font-medium text-gray-700">Categoria</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedProduct.categoriasNombre }}
+                  </p>
+                </div>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  (click)="closeViewModal()"
+                  class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Cerrar
+                </button>
               </div>
             </div>
-            <div class="border-t border-b border-gray-200 bg-gray-50 px-6 py-2 text-sm font-medium text-gray-500">Sorted by date</div>
           </div>
-          <nav aria-label="Message list" class="min-h-0 flex-1 overflow-y-auto">
-            <ul role="list" class="divide-y divide-gray-200 border-b border-gray-200">
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Gloria Roberston</p>
-                      <p class="truncate text-sm text-gray-500">Velit placeat sit ducimus non sed</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Virginia Abshire</p>
-                      <p class="truncate text-sm text-gray-500">Nemo mollitia repudiandae adipisci explicabo optio consequatur tempora ut nihil</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Kyle Gulgowski</p>
-                      <p class="truncate text-sm text-gray-500">Doloremque reprehenderit et harum quas explicabo nulla architecto dicta voluptatibus</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Hattie Haag</p>
-                      <p class="truncate text-sm text-gray-500">Eos sequi et aut ex impedit</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Wilma Glover</p>
-                      <p class="truncate text-sm text-gray-500">Quisquam veniam explicabo</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Dolores Morissette</p>
-                      <p class="truncate text-sm text-gray-500">Est ratione molestiae modi maiores consequatur eligendi et excepturi magni</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Guadalupe Walsh</p>
-                      <p class="truncate text-sm text-gray-500">Commodi deserunt aut veniam rem ipsam</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Jasmine Hansen</p>
-                      <p class="truncate text-sm text-gray-500">Illo illum aut debitis earum</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Ian Volkman</p>
-                      <p class="truncate text-sm text-gray-500">Qui dolore iste ut est cumque sed</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-              <li class="relative bg-white px-6 py-5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-inset hover:bg-gray-50">
-                <div class="flex justify-between space-x-3">
-                  <div class="min-w-0 flex-1">
-                    <a href="#" class="block focus:outline-hidden">
-                      <span aria-hidden="true" class="absolute inset-0"></span>
-                      <p class="truncate text-sm font-medium text-gray-900">Rafael Klocko</p>
-                      <p class="truncate text-sm text-gray-500">Aut sed aut illum delectus maiores laboriosam ex</p>
-                    </a>
-                  </div>
-                  <time datetime="2021-01-27T16:35" class="shrink-0 text-sm whitespace-nowrap text-gray-500">1d ago</time>
-                </div>
-                <div class="mt-1">
-                  <p class="line-clamp-2 text-sm text-gray-600">Doloremque dolorem maiores assumenda dolorem facilis. Velit vel in a rerum natus facere. Enim rerum eaque qui facilis. Numquam laudantium sed id dolores omnis in. Eos reiciendis deserunt maiores et accusamus quod dolor.</p>
-                </div>
-              </li>
-            </ul>
-          </nav>
         </div>
-      </aside> -->
-    </main>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="delete-modal" class="relative z-10" [open]="isDeleteModalOpen">
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+        >
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="trash"
+                class="h-6 w-6 text-red-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Eliminar usuario
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  ¿Estás seguro de que deseas eliminar el producto llamado
+                  <strong>{{ productToDelete.nombre }}</strong
+                  >? Esta acción no se puede deshacer.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              (click)="deleteProduct()"
+              class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            >
+              Eliminar
+            </button>
+            <button
+              type="button"
+              (click)="closeDeleteModal()"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</main>

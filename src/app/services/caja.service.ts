@@ -45,6 +45,10 @@ export class CajaService {
     return this.http.put<any>(`${this.apiUrl}/${id}`, caja);
   }
 
+   toggleEstado(id: number): Observable<{cajaId: number; estado: boolean}> {
+    return this.http.patch<{cajaId: number; estado: boolean}>(`${this.apiUrl}/${id}/estado`, {});
+  }
+
   /**
    * Elimina una caja por su ID.
    * @param id El ID de la caja a eliminar.

@@ -11,530 +11,985 @@
         registros correspondientes para su consulta y análisis.
       </p>
     </div>
-    <!-- Reportes Tablas -->
-    <!-- Usuarios -->
-    <h2
-      class="text-4xl text-center font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
-    >
-      Usuarios
-    </h2>
-    <div class="px-4 sm:px-6 lg:px-8 mt-8">
+
+    <div *ngIf="currentReport === 'menu'">
       <div
-        class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+        class="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:gap-x-8 md:gap-y-16 lg:grid-cols-3"
       >
-        <table class="min-w-full divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
-              >
-                Nombre completo
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Usuario
-              </th>
-              <th
-                scope="col"
-                class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Correo
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Rol
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
-              >
-                Estado
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
-            <tr *ngFor="let user of paginatedUsers">
-              <td
-                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 hidden sm:table-cell"
-              >
-                <div class="truncate">
-                  {{ user.primerNombre }} {{ user.segundoNombre }}
-                  {{ user.primerApellido }} {{ user.segundoApellido }}
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div class="font-mono text-sm/6 text-gray-500">
-                    {{ user.nombreUsuario }}
-                  </div>
-                </div>
-              </td>
-              <td
-                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
-              >
-                <div class="truncate w-32">{{ user.email }}</div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex items-center gap-x-2">
-                  <div
-                    class="flex-none rounded-full"
-                    [ngClass]="{
-                      'bg-blue-500/10 p-1 text-blue-500':
-                        user.rolNombre === 'Admin',
-                      'bg-purple-500/10 p-1 text-purple-500':
-                        user.rolNombre === 'Empleado',
-                      'bg-gray-500/10 p-1 text-gray-500':
-                        user.rolNombre !== 'Admin' &&
-                        user.rolNombre !== 'Empleado'
-                    }"
-                  >
-                    <div
-                      class="size-1.5 rounded-full"
-                      [ngClass]="{ 'bg-current': true }"
-                    ></div>
-                  </div>
-                  <div>{{ user.rolNombre }}</div>
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <span
-                  class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
-                  [ngClass]="{
-                    'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
-                      user.estado,
-                    'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
-                      !user.estado
-                  }"
-                >
-                  {{ user.estado ? "Activo" : "Inactivo" }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div
+          class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
+          (click)="showReport('usuarios')"
+        >
+          <lucide-icon
+            name="users"
+            class="h-16 w-16 text-blue-500"
+          ></lucide-icon>
+          <h3 class="mt-4 text-center font-medium text-lg">Usuarios</h3>
+        </div>
+
+        <div
+          class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
+          (click)="showReport('sesionesCaja')"
+        >
+          <lucide-icon
+            name="credit-card"
+            class="h-16 w-16 text-blue-500"
+          ></lucide-icon>
+          <h3 class="mt-4 text-center font-medium text-lg">Sesiones de caja</h3>
+        </div>
+
+        <div
+          class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
+          (click)="showReport('movimientosCaja')"
+        >
+          <lucide-icon
+            name="dollar-sign"
+            class="h-16 w-16 text-blue-500"
+          ></lucide-icon>
+          <h3 class="mt-4 text-center font-medium text-lg">
+            Movimientos de caja
+          </h3>
+        </div>
       </div>
-      <!-- Paginación -->
+      <!-- Segunda divición -->
       <div
-        class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+        class="mt-14 grid grid-cols-2 gap-x-6 gap-y-10 place-content-center sm:grid-cols-3 md:gap-x-8 md:gap-y-16 lg:grid-cols-2"
       >
-        <div class="flex flex-1 justify-between sm:hidden">
-          <button
-            (click)="prevPage()"
-            [disabled]="currentPage === 1"
-            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Anterior
-          </button>
-          <button
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
-            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Siguiente
-          </button>
+        <div
+          class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
+          (click)="showReport('detalleVentas')"
+        >
+          <lucide-icon
+            name="handshake"
+            class="h-16 w-16 text-blue-500"
+          ></lucide-icon>
+          <h3 class="mt-4 text-center font-medium text-lg">
+            Detalle de ventas
+          </h3>
         </div>
         <div
-          class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+          class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
+          (click)="showReport('detalleCompras')"
         >
-          <div>
-            <p class="text-sm text-gray-700">
-              Mostrando
-              <span class="font-medium">{{
-                (currentPage - 1) * itemsPerPage + 1
-              }}</span>
-              a
-              <span class="font-medium">{{
-                Math.min(currentPage * itemsPerPage, totalUsers)
-              }}</span>
-              de
-              <span class="font-medium">{{ totalUsers }}</span>
-              usuarios
-            </p>
+          <lucide-icon
+            name="store"
+            class="h-16 w-16 text-blue-500"
+          ></lucide-icon>
+          <h3 class="mt-4 text-center font-medium text-lg">
+            Detalle de compras
+          </h3>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="currentReport !== 'menu'">
+      <div *ngIf="currentReport === 'usuarios'">
+        <h2
+          class="text-4xl text-center font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+        >
+          Usuarios
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
+                  >
+                    Nombre completo
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Usuario
+                  </th>
+                  <th
+                    scope="col"
+                    class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Correo
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Rol
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
+                  >
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let user of paginatedUsers">
+                  <td
+                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 hidden sm:table-cell"
+                  >
+                    <div class="truncate">
+                      {{ user.primerNombre }} {{ user.segundoNombre }}
+                      {{ user.primerApellido }} {{ user.segundoApellido }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-500">
+                        {{ user.nombreUsuario }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">{{ user.email }}</div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex items-center gap-x-2">
+                      <div
+                        class="flex-none rounded-full"
+                        [ngClass]="{
+                          'bg-blue-500/10 p-1 text-blue-500':
+                            user.rolNombre === 'Admin',
+                          'bg-purple-500/10 p-1 text-purple-500':
+                            user.rolNombre === 'Empleado',
+                          'bg-gray-500/10 p-1 text-gray-500':
+                            user.rolNombre !== 'Admin' &&
+                            user.rolNombre !== 'Empleado'
+                        }"
+                      >
+                        <div
+                          class="size-1.5 rounded-full"
+                          [ngClass]="{ 'bg-current': true }"
+                        ></div>
+                      </div>
+                      <div>{{ user.rolNombre }}</div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <span
+                      class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                      [ngClass]="{
+                        'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                          user.estado,
+                        'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                          !user.estado
+                      }"
+                    >
+                      {{ user.estado ? "Activo" : "Inactivo" }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div>
-            <nav
-              aria-label="Pagination"
-              class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-            >
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
               <button
                 (click)="prevPage()"
                 [disabled]="currentPage === 1"
-                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Anterior</span>
-                <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                Anterior
               </button>
-              <ng-container *ngFor="let page of pages">
-                <span
-                  *ngIf="page === '...'"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                  >...</span
-                >
-                <button
-                  *ngIf="page !== '...'"
-                  (click)="handlePageClick(page)"
-                  [ngClass]="{
-                    'bg-indigo-600 text-white': currentPage === page,
-                    'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
-                      currentPage !== page
-                  }"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
-                >
-                  {{ page }}
-                </button>
-              </ng-container>
-
               <button
                 (click)="nextPage()"
                 [disabled]="currentPage === totalPages"
-                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Siguiente</span>
-                <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                Siguiente
               </button>
-            </nav>
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage - 1) * itemsPerPage + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math.min(currentPage * itemsPerPage, totalUsers)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalUsers }}</span>
+                  usuarios
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage()"
+                    [disabled]="currentPage === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page of pages">
+                    <span
+                      *ngIf="page === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page !== '...'"
+                      (click)="handlePageClick(page)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage === page,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage !== page
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage()"
+                    [disabled]="currentPage === totalPages"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- Caja Sesión -->
-    <h2
-      class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
-    >
-      Sesiones de caja
-    </h2>
-    <div class="px-4 sm:px-6 lg:px-8 mt-8">
-      <div
-        class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
-      >
-        <table class="min-w-full divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
-              >
-                Fecha de apertura
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Monto apertura
-              </th>
-              <th
-                scope="col"
-                class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Fecha de cierre
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Monto cierre
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
-              >
-                Estado
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
-            <tr *ngFor="let cajaSesiones of paginatedCajasesiones">
-              <td
-                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 hidden sm:table-cell"
-              >
-                <div class="truncate">
-                  {{ cajaSesiones.fechaApertura }}
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div class="font-mono text-sm/6 text-gray-500">
-                    Q.{{ cajaSesiones.montoApertura }}
-                  </div>
-                </div>
-              </td>
-              <td
-                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
-              >
-                <div class="truncate w-32">{{ cajaSesiones.fechaCierre }}</div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div
-                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:table-cell"
-                  >
-                    Q.{{ cajaSesiones.montoCierre }}
-                  </div>
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <span
-                  class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
-                  [ngClass]="{
-                    'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
-                      cajaSesiones.estado,
-                    'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
-                      !cajaSesiones.estado
-                  }"
-                >
-                  {{ cajaSesiones.estado ? "Activo" : "Inactivo" }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
-      <div
-        class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
-      >
-        <div class="flex flex-1 justify-between sm:hidden">
-          <button
-            (click)="prevPage2()"
-            [disabled]="currentPage2 === 1"
-            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Anterior
-          </button>
-          <button
-            (click)="nextPage2()"
-            [disabled]="currentPage2 === totalPages2"
-            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Siguiente
-          </button>
-        </div>
-        <div
-          class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+      <div *ngIf="currentReport === 'sesionesCaja'">
+        <h2
+          class="text-4xl text-center font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
         >
-          <div>
-            <p class="text-sm text-gray-700">
-              Mostrando
-              <span class="font-medium">{{
-                (currentPage2 - 1) * itemsPerPage2 + 1
-              }}</span>
-              a
-              <span class="font-medium">{{
-                Math.min(currentPage2 * itemsPerPage2, totalCajasesiones)
-              }}</span>
-              de
-              <span class="font-medium">{{ totalCajasesiones }}</span>
-              sesiones de caja
-            </p>
+          Sesiones de caja
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 hidden sm:table-cell"
+                  >
+                    Fecha de apertura
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Monto apertura
+                  </th>
+                  <th
+                    scope="col"
+                    class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Fecha de cierre
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Monto cierre
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
+                  >
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let cajaSesiones of paginatedCajasesiones">
+                  <td
+                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 hidden sm:table-cell"
+                  >
+                    <div class="truncate">
+                      {{ cajaSesiones.fechaApertura }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-500">
+                        Q.{{ cajaSesiones.montoApertura }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ cajaSesiones.fechaCierre }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div
+                        class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:table-cell"
+                      >
+                        Q.{{ cajaSesiones.montoCierre }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <span
+                      class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                      [ngClass]="{
+                        'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                          cajaSesiones.estado,
+                        'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                          !cajaSesiones.estado
+                      }"
+                    >
+                      {{ cajaSesiones.estado ? "Activo" : "Inactivo" }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div>
-            <nav
-              aria-label="Pagination"
-              class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-            >
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
               <button
                 (click)="prevPage2()"
                 [disabled]="currentPage2 === 1"
-                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Anterior</span>
-                <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                Anterior
               </button>
-              <ng-container *ngFor="let page2 of pages2">
-                <span
-                  *ngIf="page2 === '...'"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                  >...</span
-                >
-                <button
-                  *ngIf="page2 !== '...'"
-                  (click)="handlePageClick2(page2)"
-                  [ngClass]="{
-                    'bg-indigo-600 text-white': currentPage2 === page2,
-                    'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
-                      currentPage2 !== page2
-                  }"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
-                >
-                  {{ page2 }}
-                </button>
-              </ng-container>
-
               <button
-                (click)="nextPage()"
+                (click)="nextPage2()"
                 [disabled]="currentPage2 === totalPages2"
-                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Siguiente</span>
-                <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                Siguiente
               </button>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Movimiento Cajas -->
-    <h2
-      class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
-    >
-      Movimientos de caja
-    </h2>
-    <div class="px-4 sm:px-6 lg:px-8 mt-8">
-      <div
-        class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
-      >
-        <table class="min-w-full divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Fecha del movimiento
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Tipo de movimiento
-              </th>
-              <th
-                scope="col"
-                class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Concepto
-              </th>
-              <th
-                scope="col"
-                class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
-              >
-                Monto
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
-            <tr *ngFor="let movimientoCajas of paginatedMovimientoCajas">
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div class="font-mono text-sm/6 text-gray-500">
-                    {{ movimientoCajas.fecha }}
-                  </div>
-                </div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div class="font-mono text-sm/6 text-gray-500">
-                    {{ movimientoCajas.tipo }}
-                  </div>
-                </div>
-              </td>
-
-              <td
-                class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
-              >
-                <div class="truncate w-32">{{ movimientoCajas.concepto }}</div>
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                <div class="flex gap-x-3">
-                  <div class="font-mono text-sm/6 text-gray-500">
-                    Q.{{ movimientoCajas.monto }}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div
-        class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
-      >
-        <div class="flex flex-1 justify-between sm:hidden">
-          <button
-            (click)="prevPage3()"
-            [disabled]="currentPage3 === 1"
-            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Anterior
-          </button>
-          <button
-            (click)="nextPage3()"
-            [disabled]="currentPage3 === totalPages3"
-            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Siguiente
-          </button>
-        </div>
-        <div
-          class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
-        >
-          <div>
-            <p class="text-sm text-gray-700">
-              Mostrando
-              <span class="font-medium">{{
-                (currentPage3 - 1) * itemsPerPage3 + 1
-              }}</span>
-              a
-              <span class="font-medium">{{
-                Math.min(currentPage3 * itemsPerPage3, totalMovimientoCajas)
-              }}</span>
-              de
-              <span class="font-medium">{{ totalMovimientoCajas }}</span>
-              movimiento de cajas
-            </p>
-          </div>
-          <div>
-            <nav
-              aria-label="Pagination"
-              class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
             >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage2 - 1) * itemsPerPage2 + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math.min(currentPage2 * itemsPerPage2, totalCajasesiones)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalCajasesiones }}</span>
+                  sesiones de caja
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage2()"
+                    [disabled]="currentPage2 === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page2 of pages2">
+                    <span
+                      *ngIf="page2 === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page2 !== '...'"
+                      (click)="handlePageClick2(page2)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage2 === page2,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage2 !== page2
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page2 }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage2()"
+                    [disabled]="currentPage2 === totalPages2"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentReport === 'movimientosCaja'">
+        <h2
+          class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+        >
+          Movimientos de caja
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Fecha del movimiento
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Tipo de movimiento
+                  </th>
+                  <th
+                    scope="col"
+                    class="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Concepto
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pr-6 lg:pr-8"
+                  >
+                    Monto
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let movimientoCajas of paginatedMovimientoCajas">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-500">
+                        {{ movimientoCajas.fecha }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-500">
+                        {{ movimientoCajas.tipo }}
+                      </div>
+                    </div>
+                  </td>
+
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ movimientoCajas.concepto }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-500">
+                        Q.{{ movimientoCajas.monto }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
               <button
                 (click)="prevPage3()"
                 [disabled]="currentPage3 === 1"
-                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Anterior</span>
-                <lucide-icon name="chevron-left" class="h-5 w-5"></lucide-icon>
+                Anterior
               </button>
-              <ng-container *ngFor="let page3 of pages3">
-                <span
-                  *ngIf="page3 === '...'"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                  >...</span
-                >
-                <button
-                  *ngIf="page3 !== '...'"
-                  (click)="handlePageClick3(page3)"
-                  [ngClass]="{
-                    'bg-indigo-600 text-white': currentPage3 === page3,
-                    'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
-                      currentPage3 !== page3
-                  }"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
-                >
-                  {{ page3 }}
-                </button>
-              </ng-container>
-
               <button
                 (click)="nextPage3()"
                 [disabled]="currentPage3 === totalPages3"
-                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                <span class="sr-only">Siguiente</span>
-                <lucide-icon name="chevron-right" class="h-5 w-5"></lucide-icon>
+                Siguiente
               </button>
-            </nav>
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage3 - 1) * itemsPerPage3 + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math.min(currentPage3 * itemsPerPage3, totalMovimientoCajas)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalMovimientoCajas }}</span>
+                  movimiento de cajas
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage3()"
+                    [disabled]="currentPage3 === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page3 of pages3">
+                    <span
+                      *ngIf="page3 === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page3 !== '...'"
+                      (click)="handlePageClick3(page3)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage3 === page3,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage3 !== page3
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page3 }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage3()"
+                    [disabled]="currentPage3 === totalPages3"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <div *ngIf="currentReport === 'detalleVentas'">
+        <h2
+          class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+        >
+          Detalle de ventas
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Fecha Venta
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Producto
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Cantidad
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Precio unitario
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let detalleV of paginatedDetalleVentas">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleV.fechaVenta }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleV.productoNombre }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleV.cantidad }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleV.precioUnitario }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="font-mono text-sm/6 text-gray-900">
+                      {{ detalleV.subtotal }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
+              <button
+                (click)="prevPage4()"
+                [disabled]="currentPage4 === 1"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <button
+                (click)="nextPage4()"
+                [disabled]="currentPage4 === totalPages4"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage4 - 1) * itemsPerPage4 + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math4.min(currentPage4 * itemsPerPage4, totalDetalleVentas)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalDetalleVentas }}</span>
+                  detalles de venta
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage4()"
+                    [disabled]="currentPage4 === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page of pages4">
+                    <span
+                      *ngIf="page === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page !== '...'"
+                      (click)="handlePageClick4(page)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage4 === page,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage4 !== page
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage4()"
+                    [disabled]="currentPage4 === totalPages4"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentReport === 'detalleCompras'">
+        <h2
+          class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
+        >
+          Detalle de compras
+        </h2>
+        <div class="px-4 sm:px-6 lg:px-8 mt-8">
+          <div
+            class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+          >
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Fecha compra
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Producto
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Cantidad
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Precio unitario
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                  >
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr *ngFor="let detalleC of paginatedDetalleCompras">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleC.fechaCompra }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleC.productoNombre }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="flex gap-x-3">
+                      <div class="font-mono text-sm/6 text-gray-900">
+                        {{ detalleC.cantidad }}
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
+                  >
+                    <div class="truncate w-32">
+                      {{ detalleC.precioUnitario }}
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <div class="font-mono text-sm/6 text-gray-900">
+                      {{ detalleC.subtotal }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+          >
+            <div class="flex flex-1 justify-between sm:hidden">
+              <button
+                (click)="prevPage5()"
+                [disabled]="currentPage5 === 1"
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <button
+                (click)="nextPage5()"
+                [disabled]="currentPage5 === totalPages5"
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+            <div
+              class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+            >
+              <div>
+                <p class="text-sm text-gray-700">
+                  Mostrando
+                  <span class="font-medium">{{
+                    (currentPage5 - 1) * itemsPerPage5 + 1
+                  }}</span>
+                  a
+                  <span class="font-medium">{{
+                    Math5.min(currentPage5 * itemsPerPage5, totalDetalleCompras)
+                  }}</span>
+                  de
+                  <span class="font-medium">{{ totalDetalleCompras }}</span>
+                  detalles de venta
+                </p>
+              </div>
+              <div>
+                <nav
+                  aria-label="Pagination"
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                >
+                  <button
+                    (click)="prevPage5()"
+                    [disabled]="currentPage5 === 1"
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Anterior</span>
+                    <lucide-icon
+                      name="chevron-left"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                  <ng-container *ngFor="let page of pages5">
+                    <span
+                      *ngIf="page === '...'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                      >...</span
+                    >
+                    <button
+                      *ngIf="page !== '...'"
+                      (click)="handlePageClick5(page)"
+                      [ngClass]="{
+                        'bg-indigo-600 text-white': currentPage5 === page,
+                        'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                          currentPage5 !== page
+                      }"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page }}
+                    </button>
+                  </ng-container>
+
+                  <button
+                    (click)="nextPage5()"
+                    [disabled]="currentPage5 === totalPages5"
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span class="sr-only">Siguiente</span>
+                    <lucide-icon
+                      name="chevron-right"
+                      class="h-5 w-5"
+                    ></lucide-icon>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Regresar al menú -->
+      <button
+        (click)="showMenu()"
+        class="mt-10 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        <lucide-icon name="arrow-left" class="h-5 w-5 mr-2"></lucide-icon>
+        Volver al Menú
+      </button>
     </div>
-    <!-- End movimienot -->
   </div>
-  <!-- End Reportes Tablas -->
 </div>

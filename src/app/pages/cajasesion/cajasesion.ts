@@ -7,7 +7,6 @@ import { CajaService } from '../../services/caja.service'; // Importa el servici
 import { UserService } from '../../services/user.service'; // Importa el servicio de Usuario
 import { take } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
-
 @Component({
   selector: 'app-cajasesion',
   imports: [CommonModule, FormsModule, LucideAngularModule],
@@ -18,11 +17,14 @@ import { forkJoin } from 'rxjs';
 })
 export class Cajasesion implements OnInit {
   // Renombrando las variables para ser más claras
+  allCajas: any[] = []; // lista completa (activa + inactiva)
+  activeCajas: any[] = []; // solo las activas – para el <select>
   cajaSesiones: any[] = [];
   paginatedCajasesiones: any[] = [];
   filteredCajasesiones: any[] = [];
   cajas: any[] = []; // Para almacenar las cajas
   usuarios: any[] = []; // Para almacenar los usuarios
+  originalCajaId: number | null = null;
 
   // Paginación y Filtro
   searchText: string = '';
@@ -117,66 +119,57 @@ export class Cajasesion implements OnInit {
       cajaSesiones: this.cajaSesionService.getCajasesiones(),
     }).subscribe({
       next: (results) => {
-        this.cajas = results.cajas;
+        // 1️⃣  guardamos ambas colecciones
+        this.allCajas = results.cajas;
+        this.activeCajas = results.cajas.filter((c) => c.estado === true);
+
         this.usuarios = results.usuarios;
 
-        // **Cambio clave aquí:**
-        // 1. Almacena la data cruda del servidor en una variable separada.
+        // 2️⃣  datos de sesiones
         this.originalCajaSesiones = results.cajaSesiones;
-
-        // 2. Mapea la data para la tabla, usando la lista cruda.
         this.cajaSesiones = this.mapCajaSesiones(this.originalCajaSesiones);
-
         this.applySearchFilter();
       },
-      error: (error) => {
-        console.error('Error al cargar los datos:', error);
-      },
+      error: (err) => console.error('Error al cargar los datos:', err),
     });
   }
 
   // --- Nueva Lógica ---
-  // Función para mapear los IDs a nombres
   mapCajaSesiones(data: any[]): any[] {
     return data.map((sesion) => {
-      const caja = this.cajas.find((c) => c.cajaId === sesion.cajaId);
-      const usuarioApertura = this.usuarios.find(
+      const caja = this.allCajas.find((c) => c.cajaId === sesion.cajaId);
+      const ua = this.usuarios.find(
         (u) => u.usuarioId === sesion.usuarioAperturaId
       );
-      const usuarioCierre = this.usuarios.find(
+      const uc = this.usuarios.find(
         (u) => u.usuarioId === sesion.usuarioCierreId
       );
 
       return {
         ...sesion,
-        // Aquí es donde se formatea solo para mostrar en la tabla.
         fechaApertura: this.formatDateForDisplay(sesion.fechaApertura),
         fechaCierre: this.formatDateForDisplay(sesion.fechaCierre),
         nombreCaja: caja ? caja.nombre : 'Desconocida',
-        nombreUsuarioApertura: usuarioApertura
-          ? usuarioApertura.nombreUsuario
-          : 'Desconocido',
-        nombreUsuarioCierre: usuarioCierre
-          ? usuarioCierre.nombreUsuario
-          : 'No Cerrada',
+        nombreUsuarioApertura: ua ? ua.nombreUsuario : 'Desconocido',
+        nombreUsuarioCierre: uc ? uc.nombreUsuario : 'No Cerrada',
       };
     });
   }
 
+  public isCajaActiva(id: number | null): boolean {
+    if (id === null) return false;
+    return this.activeCajas.some((c) => c.cajaId === id);
+  }
+
   // Fin de la nueva Lógica
 
-  // Lógica de Paginación y Filtrado
   applySearchFilter(): void {
     if (this.searchText) {
-      const lowerCaseSearchText = this.searchText.toLowerCase();
-      this.filteredCajasesiones = this.cajaSesiones.filter((sesion) => {
+      const lt = this.searchText.toLowerCase();
+      this.filteredCajasesiones = this.cajaSesiones.filter((s) => {
         return (
-          (sesion.nombreCaja || '')
-            .toLowerCase()
-            .includes(lowerCaseSearchText) ||
-          (sesion.nombreUsuarioApertura || '')
-            .toLowerCase()
-            .includes(lowerCaseSearchText)
+          (s.nombreCaja || '').toLowerCase().includes(lt) ||
+          (s.nombreUsuarioApertura || '').toLowerCase().includes(lt)
         );
       });
     } else {
@@ -188,12 +181,9 @@ export class Cajasesion implements OnInit {
   }
 
   paginateCajaSesiones(): void {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedCajasesiones = this.filteredCajasesiones.slice(
-      startIndex,
-      endIndex
-    );
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.paginatedCajasesiones = this.filteredCajasesiones.slice(start, end);
   }
 
   // Métodos de paginación... (el resto de tu lógica de paginación es correcta)
@@ -269,9 +259,11 @@ export class Cajasesion implements OnInit {
   }
 
   // Lógica de validación
-  validateCajaSesion(cajaSesion: any): string[] {
+
+  validateCajaSesion(cajaSesion: any, originalId?: number | null): string[] {
     const errors: string[] = [];
 
+    /* ---------- 1️⃣  Validaciones básicas ------------ */
     const cajaId = Number(cajaSesion.cajaId);
     const usuarioAperturaId = Number(cajaSesion.usuarioAperturaId);
     const usuarioCierreId =
@@ -281,12 +273,10 @@ export class Cajasesion implements OnInit {
         ? Number(cajaSesion.usuarioCierreId)
         : null;
 
-    // Caja obligatoria
     if (!cajaId || isNaN(cajaId) || cajaId <= 0) {
       errors.push('La caja es obligatoria.');
     }
 
-    // Monto apertura
     if (
       cajaSesion.montoApertura === null ||
       cajaSesion.montoApertura === '' ||
@@ -298,7 +288,6 @@ export class Cajasesion implements OnInit {
       );
     }
 
-    // Fecha apertura
     if (
       !cajaSesion.fechaApertura ||
       isNaN(Date.parse(cajaSesion.fechaApertura))
@@ -308,7 +297,6 @@ export class Cajasesion implements OnInit {
       );
     }
 
-    // Usuario apertura obligatorio
     if (
       !usuarioAperturaId ||
       isNaN(usuarioAperturaId) ||
@@ -317,7 +305,6 @@ export class Cajasesion implements OnInit {
       errors.push('El usuario que abre la caja es obligatorio.');
     }
 
-    // Fecha cierre (si existe)
     if (cajaSesion.fechaCierre) {
       const fechaCierre = Date.parse(cajaSesion.fechaCierre);
       const fechaApertura = Date.parse(cajaSesion.fechaApertura);
@@ -331,7 +318,6 @@ export class Cajasesion implements OnInit {
       }
     }
 
-    // Monto cierre (si existe)
     if (
       cajaSesion.montoCierre !== null &&
       cajaSesion.montoCierre !== undefined &&
@@ -345,16 +331,29 @@ export class Cajasesion implements OnInit {
       }
     }
 
-    // Usuario cierre (opcional)
     if (usuarioCierreId !== null) {
       if (isNaN(usuarioCierreId) || usuarioCierreId <= 0) {
         errors.push('El usuario que cierra la caja debe ser válido.');
       }
     }
 
-    // Observación (máx 250 chars)
     if (cajaSesion.observacion && cajaSesion.observacion.length > 250) {
       errors.push('La observación no puede superar los 250 caracteres.');
+    }
+
+    /* ---------- 2️⃣  Regla extra para el modo *editar* ------------ */
+    if (
+      typeof originalId === 'number' &&
+      (cajaId !== originalId || !this.isCajaActiva(cajaId))
+    ) {
+      // 2a.  La caja elegida está inactiva
+      if (!this.isCajaActiva(cajaId)) {
+        errors.push('Debe seleccionar una caja activa.');
+      }
+      // 2b.  La caja elegida es la misma que la original (inactiva)
+      if (cajaId === originalId) {
+        errors.push('Debe elegir otra caja que esté activa.');
+      }
     }
 
     return errors;
@@ -418,6 +417,11 @@ export class Cajasesion implements OnInit {
       });
   }
 
+  get activeUsers(): Array<any> {
+  // Si tu flag es string ('1' / '0'), cambia a '1'
+  return this.usuarios.filter(u => u.estado === true || u.estado === 1);
+}
+
   // --- Lógica del Modal de Edición ---
 
   openEditModal(cajasesion: any): void {
@@ -440,6 +444,11 @@ export class Cajasesion implements OnInit {
 
     // Asigna los IDs a las variables de los selects para que se muestren
     this.selectedCajaId = this.editedCajaSesion.cajaId;
+    this.originalCajaId = this.editedCajaSesion.cajaId || null;
+    this.selectedUsuarioAperturaId =
+      this.editedCajaSesion.usuarioAperturaId || null;
+    this.selectedUsuarioCierreId =
+      this.editedCajaSesion.usuarioCierreId || null;
     this.selectedUsuarioAperturaId = this.editedCajaSesion.usuarioAperturaId;
     this.selectedUsuarioCierreId = this.editedCajaSesion.usuarioCierreId;
     this.editValidationErrors = [];
@@ -508,10 +517,11 @@ export class Cajasesion implements OnInit {
       });
   }
 
-  // --- Lógica del Modal de Visualización de Detalles ---
   openViewModal(cajasesion: any): void {
-    // Encuentra los objetos completos usando los IDs
-    const caja = this.cajas.find((c) => c.cajaId === cajasesion.cajaId);
+    // Busca la caja en la lista *completa* (active + inactiva)
+    const caja = this.allCajas.find((c) => c.cajaId === cajasesion.cajaId);
+
+    // Usuarios (no cambian)
     const usuarioApertura = this.usuarios.find(
       (u) => u.usuarioId === cajasesion.usuarioAperturaId
     );
@@ -519,10 +529,15 @@ export class Cajasesion implements OnInit {
       (u) => u.usuarioId === cajasesion.usuarioCierreId
     );
 
-    // Crea el objeto para la vista, añadiendo los objetos completos
+    // Nombre que se mostrará en el modal
+    const nombreCaja =
+      caja && caja.estado === true ? caja.nombre : 'Sin relación';
+
+    // El objeto que ves en el modal
     this.viewedCajaSesion = {
       ...cajasesion,
-      caja: caja,
+      nombre: nombreCaja, // <‑‑ esta es la que el template usa
+      cajaCompleta: caja, // (opcional, si necesitas más datos de la caja)
       usuarioApertura: usuarioApertura,
       usuarioCierre: usuarioCierre,
     };

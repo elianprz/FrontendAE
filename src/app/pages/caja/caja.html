@@ -57,7 +57,8 @@
               Caja
             </h1>
             <p class="mt-1 truncate text-sm text-gray-500">
-              En este apartado podrás crear, editar, ver y eliminar las cajas que requieras para el control del sistema.
+              En este apartado podrás crear, editar, ver y eliminar las cajas
+              que requieras para el control del sistema.
             </p>
           </div>
 
@@ -98,51 +99,91 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr *ngFor="let cajas of paginatedcajas">
+              <tr *ngFor="let caja of paginatedcajas">
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
                     <div class="font-mono text-sm/6 text-gray-900">
-                      {{ cajas.nombre }}
+                      {{ caja.nombre }}
                     </div>
                   </div>
                 </td>
                 <td
                   class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
                 >
-                  <div class="truncate w-32">{{ cajas.descripcion }}</div>
+                  <div class="truncate w-32">{{ caja.descripcion }}</div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <span
                     class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
                     [ngClass]="{
                       'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
-                        cajas.estado,
+                        caja.estado,
                       'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
-                        !cajas.estado
+                        !caja.estado
                     }"
                   >
-                    {{ cajas.estado ? "Activo" : "Inactivo" }}
+                    {{ caja.estado ? "Activo" : "Inactivo" }}
                   </span>
                 </td>
                 <td
                   class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
                 >
                   <div class="flex gap-2 justify-end">
+                    <!--  EDITAR –  solo Admin, solo si la caja está activa -->
                     <button
-                      (click)="openEditModal(cajas)"
-                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
+                      *ngIf="isAdmin && caja.estado"
+                      (click)="openEditModal(caja)"
+                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white hover:bg-yellow-500"
                     >
                       <lucide-icon name="archive-restore"></lucide-icon>
                     </button>
+
+                    <!--  VER –  cualquier usuario activo -->
                     <button
-                      (click)="openViewModal(cajas)"
-                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                      *ngIf="caja.estado"
+                      (click)="openViewModal(caja)"
+                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-600"
                     >
                       <lucide-icon name="file-box"></lucide-icon>
                     </button>
+
+                    <!--  ACTIVAR / DESACTIVAR –  solo Admin -->
+                    <!-- <button
+                      *ngIf="isAdmin"
+                      class="inline-flex items-center rounded-md bg-rose-400 px-3 py-2 text-sm font-semibold text-white hover:bg-rose-500"
+                      [ngClass]="caja.Estado ? 'btn-warning' : 'btn-success'"
+                      (click)="toggleCajaEstado(caja)"
+                      [title]="caja.Estado ? 'Desactivar' : 'Activar'"
+                    >
+                      <lucide-icon
+                        [name]="caja.Estado ? 'x' : 'check'"
+                        width="20"
+                        height="20"
+                      ></lucide-icon>
+                    </button> -->
                     <button
-                      (click)="openDeleteModal(cajas)"
-                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                      *ngIf="isAdmin"
+                      [ngClass]="
+                        caja.estado
+                          ? 'bg-red-500 hover:bg-red-600'
+                          : 'bg-green-500 hover:bg-green-600'
+                      "
+                      class="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white"
+                      (click)="toggleCajaEstado(caja)"
+                      [title]="caja.estado ? 'Desactivar' : 'Activar'"
+                    >
+                      <lucide-icon
+                        [name]="caja.estado ? 'x' : 'check'"
+                        width="20"
+                        height="20"
+                      ></lucide-icon>
+                    </button>
+
+                    <!--  ELIMINAR –  solo Admin -->
+                    <button
+                      *ngIf="isAdmin"
+                      (click)="openDeleteModal(caja)"
+                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-600"
                     >
                       <lucide-icon name="archive-x"></lucide-icon>
                     </button>
@@ -364,7 +405,7 @@
                       rows="4"
                     ></textarea>
                   </div>
-                  <div>
+                  <!-- <div>
                     <label
                       for="estado"
                       class="block text-sm font-medium leading-6 text-gray-900"
@@ -379,7 +420,7 @@
                       <option [ngValue]="true">Activo</option>
                       <option [ngValue]="false">Inactivo</option>
                     </select>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
                   <button
@@ -595,9 +636,7 @@
               </h3>
               <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
                 <div>
-                  <h3 class="font-medium text-gray-700">
-                    Nombre de la caja
-                  </h3>
+                  <h3 class="font-medium text-gray-700">Nombre de la caja</h3>
                   <p class="mt-1 text-sm text-gray-900">
                     {{ viewedCajas.nombre }}
                   </p>
@@ -611,9 +650,7 @@
                   </p>
                 </div>
                 <div class="sm:col-span-2">
-                  <h3 class="font-medium text-gray-700">
-                    Estado de la caja
-                  </h3>
+                  <h3 class="font-medium text-gray-700">Estado de la caja</h3>
                   <p class="mt-1 text-sm text-gray-900">
                     {{ viewedCajas.estado ? "Activo" : "Inactivo" }}
                   </p>
@@ -665,8 +702,7 @@
               </h3>
               <div class="mt-2">
                 <p class="text-sm text-gray-500">
-                  ¿Estás seguro de que deseas eliminar la siguiente caja
-                  llamada
+                  ¿Estás seguro de que deseas eliminar la siguiente caja llamada
                   <strong>{{ CajasToDelete.nombre }}</strong
                   >? Esta acción no se puede deshacer.
                 </p>
