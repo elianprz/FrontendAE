@@ -7,6 +7,8 @@ import { CateproductoService } from '../../services/cateproducto.service';
 import { take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+
 @Component({
   selector: 'app-inventario',
   standalone: true,
@@ -353,15 +355,77 @@ export class Inventario implements OnInit {
   }
 
   // Nuevo método para crear un producto
+  // async createProduct(): Promise<void> {
+  //   this.validationErrors = [];
+
+  //   // Validaciones básicas antes de subir la imagen
+  //   if (
+  //     !this.newProduct.nombre ||
+  //     this.newProduct.stock === undefined ||
+  //     this.newProduct.precioVenta === undefined ||
+  //     this.newProduct.precioAdquisicion === undefined || // ✅ Añade esta validación
+  //     this.newProduct.categoriaId === null
+
+  //   ) {
+  //     this.validationErrors.push(
+  //       'Todos los campos obligatorios deben ser llenados.'
+  //     );
+  //     return;
+  //   }
+
+  //   let imageUrl = this.newProduct.imagenUrl;
+  //   if (this.selectedFile) {
+  //     // Sube la imagen y obtiene la URL
+  //     imageUrl = await this.uploadImageAndGetUrl();
+  //     if (!imageUrl) {
+  //       return; // Detiene la ejecución si falla la subida de imagen
+  //     }
+  //   }
+
+  //   const productToCreate = {
+  //     ...this.newProduct,
+  //     imagenUrl: imageUrl,
+  //     // Asegúrate de que los valores numéricos sean del tipo correcto
+  //     stock: Number(this.newProduct.stock),
+  //     precioAdquisicion: Number(this.newProduct.precioAdquisicion),
+  //     precioVenta: Number(this.newProduct.precioVenta),
+  //     categoriasId: Number(this.newProduct.categoriasId),
+  //   };
+
+  //   this.inventarioService
+  //     .createProduct(productToCreate)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: (response) => {
+  //         console.log('Producto creado exitosamente:', response);
+  //         this.closeCreateModal();
+  //         this.getInventarioWithcategoriass();
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al crear producto:', error);
+  //         if (error.status === 400 && error.error) {
+  //           if (typeof error.error === 'string') {
+  //             this.validationErrors = [error.error];
+  //           } else {
+  //             this.validationErrors = ['Error de validación.'];
+  //           }
+  //         } else {
+  //           this.validationErrors = [
+  //             'Ocurrió un error inesperado al crear el producto.',
+  //           ];
+  //         }
+  //       },
+  //     });
+  // }
   async createProduct(): Promise<void> {
     this.validationErrors = [];
 
-    // Validaciones básicas antes de subir la imagen
+    /* ─── 1️⃣  Validaciones de campos obligatorios ──────────────────────────── */
     if (
       !this.newProduct.nombre ||
       this.newProduct.stock === undefined ||
       this.newProduct.precioVenta === undefined ||
-      this.newProduct.precioAdquisicion === undefined || // ✅ Añade esta validación
+      this.newProduct.precioAdquisicion === undefined ||
       this.newProduct.categoriaId === null
     ) {
       this.validationErrors.push(
@@ -370,23 +434,29 @@ export class Inventario implements OnInit {
       return;
     }
 
+    /* ─── 2️⃣  Validación de la imagen ────────────────────────────────────── */
+    if (!this.selectedFile && !this.newProduct.imagenUrl) {
+      this.validationErrors.push('La imagen del producto es obligatoria.');
+      return;
+    }
+
+    /* ─── 3️⃣  Sube la imagen (si se seleccionó) ──────────────────────────── */
     let imageUrl = this.newProduct.imagenUrl;
     if (this.selectedFile) {
-      // Sube la imagen y obtiene la URL
       imageUrl = await this.uploadImageAndGetUrl();
       if (!imageUrl) {
-        return; // Detiene la ejecución si falla la subida de imagen
+        // La subida de la imagen falló → ya está en la UI
+        return;
       }
     }
 
+    /* ─── 4️⃣  Construir el objeto y enviarlo al backend ────────────────────── */
     const productToCreate = {
       ...this.newProduct,
       imagenUrl: imageUrl,
-      // Asegúrate de que los valores numéricos sean del tipo correcto
       stock: Number(this.newProduct.stock),
       precioAdquisicion: Number(this.newProduct.precioAdquisicion),
       precioVenta: Number(this.newProduct.precioVenta),
-      categoriasId: Number(this.newProduct.categoriasId),
     };
 
     this.inventarioService
@@ -400,34 +470,57 @@ export class Inventario implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear producto:', error);
-          if (error.status === 400 && error.error) {
-            if (typeof error.error === 'string') {
-              this.validationErrors = [error.error];
-            } else {
-              this.validationErrors = ['Error de validación.'];
-            }
-          } else {
-            this.validationErrors = [
-              'Ocurrió un error inesperado al crear el producto.',
-            ];
-          }
         },
       });
   }
 
   get filteredCategorias(): Array<any> {
-  return this.categorias.filter((c) => c.estado === true);
+    return this.categorias.filter((c) => c.estado === true);
   }
 
+  // async updateImage(): Promise<void> {
+  //   if (!this.editedProduct.productoId || !this.selectedFile) {
+  //     return; // No hay producto o imagen seleccionada
+  //   }
+
+  //   try {
+  //     await this.inventarioService
+  //       .updateProductImage(this.editedProduct.productoId, this.selectedFile)
+  //       .toPromise();
+
+  //     console.log('Imagen actualizada exitosamente.');
+  //   } catch (error) {
+  //     console.error('Error al actualizar la imagen:', error);
+  //     this.validationErrors.push(
+  //       'Error al actualizar la imagen. Inténtelo de nuevo.'
+  //     );
+  //     throw error; // Propaga el error para detener el proceso principal
+  //   }
+  // }
   async updateImage(): Promise<void> {
-    if (!this.editedProduct.productoId || !this.selectedFile) {
-      return; // No hay producto o imagen seleccionada
+    if (!this.editedProduct.productoId) {
+      this.validationErrors.push(
+        'Falta el identificador del producto a actualizar.'
+      );
+      return;
+    }
+
+    if (!this.selectedFile) {
+      // No se seleccionó ninguna nueva foto
+      this.validationErrors.push(
+        'Debe seleccionar una nueva imagen antes de actualizar.'
+      );
+      return;
     }
 
     try {
-      await this.inventarioService
-        .updateProductImage(this.editedProduct.productoId, this.selectedFile)
-        .toPromise();
+      // `lastValueFrom` reemplaza el viejo `toPromise()`
+      await lastValueFrom(
+        this.inventarioService.updateProductImage(
+          this.editedProduct.productoId,
+          this.selectedFile
+        )
+      );
 
       console.log('Imagen actualizada exitosamente.');
     } catch (error) {
@@ -435,7 +528,7 @@ export class Inventario implements OnInit {
       this.validationErrors.push(
         'Error al actualizar la imagen. Inténtelo de nuevo.'
       );
-      throw error; // Propaga el error para detener el proceso principal
+      throw error;
     }
   }
 

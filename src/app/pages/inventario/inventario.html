@@ -182,11 +182,11 @@
         >
           <div class="sm:w-0 sm:flex-1">
             <h1 id="message-heading" class="text-lg font-medium text-gray-900">
-              Inventario
+              Productos
             </h1>
             <p class="mt-1 truncate text-sm text-gray-500">
-              En este apartado podrás crear, editar, ver y eliminar el
-              inventario
+              En este apartado podrás crear, editar, ver y eliminar los
+              productos
             </p>
           </div>
 
@@ -296,13 +296,17 @@
                       <lucide-icon name="file-spreadsheet"></lucide-icon>
                     </button>
                     <button
-                      *ngIf="productos.usuarioId !== 1"
                       (click)="openDeleteModal(productos)"
                       class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
                     >
                       <lucide-icon name="trash"></lucide-icon>
                     </button>
                   </div>
+                </td>
+              </tr>
+              <tr *ngIf="paginatedProducts && paginatedProducts.length === 0">
+                <td colspan="6" class="text-center py-4 text-sm text-gray-500">
+                  Aún no hay datos existentes
                 </td>
               </tr>
             </tbody>
@@ -585,11 +589,11 @@
                         <ng-container *ngIf="!selectedFilePreview">
                           <lucide-icon name="image-up"></lucide-icon>
                           <p class="mb-2 text-sm text-black dark:text-black">
-                            <span class="font-semibold">Click to upload</span>
-                            or drag and drop
+                            <span class="font-semibold">Pesiona aquí</span>
+                            Arrastra o selecciona la imagen
                           </p>
                           <p class="text-xs text-gray-600 dark:text-gray-700">
-                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                            PNG, JPG or GIF (MAX. 1000x1000px)
                           </p>
                         </ng-container>
 
@@ -606,9 +610,11 @@
                         id="dropzone-file"
                         type="file"
                         class="hidden"
+                        required
                       />
                     </label>
                   </div>
+
                   <div>
                     <label
                       for="estado"
@@ -868,11 +874,11 @@
                         <ng-container *ngIf="!selectedFilePreview">
                           <lucide-icon name="image-up"></lucide-icon>
                           <p class="mb-2 text-sm text-black dark:text-black">
-                            <span class="font-semibold">Click to upload</span>
-                            or drag and drop
+                            <span class="font-semibold">Pesiona aquí</span>
+                            Arrastra o selecciona la imagen
                           </p>
                           <p class="text-xs text-gray-600 dark:text-gray-700">
-                            SVG, PNG, JPG or GIF (MAX. 800x400px)
+                            PNG, JPG or GIF (MAX. 1000x1000px)
                           </p>
                         </ng-container>
 
@@ -889,6 +895,7 @@
                         id="dropzone-file"
                         type="file"
                         class="hidden"
+                        required
                       />
                     </label>
                   </div>
@@ -953,7 +960,7 @@
                     type="submit"
                     class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
-                    Actualizar usuario
+                    Actualizar producto
                   </button>
                 </div>
               </form>
@@ -1100,7 +1107,7 @@
                 class="text-base font-semibold leading-6 text-gray-900"
                 id="modal-title"
               >
-                Eliminar usuario
+                Eliminar producto
               </h3>
               <div class="mt-2">
                 <p class="text-sm text-gray-500">

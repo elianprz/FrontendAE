@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly apiUrl = 'https://localhost:7182/api/Auth';
@@ -36,18 +36,18 @@ export class AuthService {
 
   // Carga el usuario al inicializar el servicio
   private loadCurrentUser(): void {
-  if (isPlatformBrowser(this.platformId)) {
-    // <‑‑  Cambiado `token` → `auth_token`
-    const token = localStorage.getItem('auth_token');
+    if (isPlatformBrowser(this.platformId)) {
+      // <‑‑  Cambiado `token` → `auth_token`
+      const token = localStorage.getItem('auth_token');
 
-    if (token && !this.jwtHelper.isTokenExpired(token)) {
-      const decodedToken = this.jwtHelper.decodeToken(token);
-      this.userSubject.next(decodedToken);
-    } else {
-      this.userSubject.next(null);
+      if (token && !this.jwtHelper.isTokenExpired(token)) {
+        const decodedToken = this.jwtHelper.decodeToken(token);
+        this.userSubject.next(decodedToken);
+      } else {
+        this.userSubject.next(null);
+      }
     }
   }
-}
 
   // ✅ Método para obtener el usuario actual
   public getCurrentUser(): any | null {
@@ -55,18 +55,34 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<any> {
-  const credentials = { username, password };
-  return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-    tap((response: any) => {
-      const token = response.token;
-      if (token && isPlatformBrowser(this.platformId)) {
-        localStorage.setItem('auth_token', token);
-        this.decodeAndSetRole(token);
-        this.loadCurrentUser();          // <‑‑  añadido
-      }
-    })
-  );
-}
+    const credentials = { username, password };
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response: any) => {
+        const token = response.token;
+        if (token && isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('auth_token', token);
+          this.decodeAndSetRole(token);
+          this.loadCurrentUser(); // <‑‑  añadido
+        }
+      })
+    );
+  }
+
+  private logDecodedToken(): void {
+    const token = this.getToken();
+    if (!token) {
+      console.warn('🔴 No hay token en localStorage');
+      return;
+    }
+    try {
+      const decoded: any = jwtDecode(token);
+      console.groupCollapsed('🔎 Payload del JWT');
+      console.log(decoded);
+      console.groupEnd();
+    } catch (e) {
+      console.error('❌ Error decoding JWT', e);
+    }
+  }
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -90,10 +106,9 @@ export class AuthService {
   }
 
   // AuthService
-public get currentUser(): any | null {
-  return this.userSubject.value;   // getValue() is equivalent
-}
-
+  public get currentUser(): any | null {
+    return this.userSubject.value; // getValue() is equivalent
+  }
 
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -120,6 +135,82 @@ public get currentUser(): any | null {
       console.error('Invalid token', error);
       this.userRoleSubject.next(null);
     }
+  }
+
+  getCurrentUserId(): number {
+    const token = this.getToken();
+
+    if (!token) {
+      throw new Error('No se encontró el token en localStorage.');
+    }
+
+    let decoded: any;
+    try {
+      decoded = jwtDecode(token);
+    } catch (e) {
+      console.error('Error decoding JWT (getCurrentUserId)', e);
+      throw new Error('El token no pudo ser decodificado.');
+    }
+
+    /* ------------------------------------------------------------
+     * 1️⃣  Nombres de claim donde puede estar el id.
+     *    - Añadimos "nameid" (el que lleva tu backend).
+     *    - Mantenemos los demás por si cambias de versión.
+     * ------------------------------------------------------------ */
+    const candidateKeys = [
+      'nameid', // <-- el que tiene tu token
+      'usuarioId', // posibles nombres en otros proyectos
+      'id',
+      'sub',
+      'userId',
+      'uid',
+      'UserId',
+      'userid',
+      'user_id',
+      // <-- si en el futuro ves otro nombre, añádelo aquí
+    ];
+
+    /* ------------------------------------------------------------
+     * 2️⃣  Búsqueda recursiva (por si el id está dentro de un objeto
+     *     anidado). La búsqueda termina en la primera coincidencia.
+     * ------------------------------------------------------------ */
+    const findId = (obj: any): any => {
+      if (!obj || typeof obj !== 'object') return undefined;
+
+      // ① Busca en las claves directas del objeto
+      for (const key of candidateKeys) {
+        if (
+          Object.prototype.hasOwnProperty.call(obj, key) &&
+          obj[key] != null
+        ) {
+          return obj[key];
+        }
+      }
+
+      // ② Si no lo encontró, recorre los valores (profundidad 2‑3)
+      for (const value of Object.values(obj)) {
+        const nested = findId(value);
+        if (nested !== undefined) return nested;
+      }
+
+      return undefined;
+    };
+
+    const rawId = findId(decoded);
+    const numericId = Number(rawId);
+
+    /* ------------------------------------------------------------
+     * 3️⃣  Validación final
+     * ------------------------------------------------------------ */
+    if (!rawId || isNaN(numericId) || numericId <= 0) {
+      const keysFound = Object.keys(decoded).join(', ');
+      throw new Error(
+        `El token no contiene un identificador válido (se obtuvo "${rawId}"). ` +
+          `Claves disponibles en el payload: ${keysFound}`
+      );
+    }
+
+    return numericId; // <-- número entero que puedes usar en tus rutas
   }
 
   hasRole(role: string): boolean {

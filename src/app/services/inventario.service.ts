@@ -58,5 +58,4 @@ export class InventarioService {
     // ✅ Llama al endpoint de tu backend que actualiza la imagen
     return this.http.put(`${this.apiUrl}/ActualizarImagen/${id}`, formData);
   }
-
 }

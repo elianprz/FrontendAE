@@ -3,8 +3,12 @@ import {
   OnInit,
   OnDestroy,
   CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  ViewChild,
+  PLATFORM_ID,
+  Inject,
 } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VentasService } from '../../services/ventas.service';
 // ✅ Importa el servicio para obtener productos
@@ -12,6 +16,8 @@ import { CatalogoService } from '../../services/catalogo.service';
 import { Subscription, Observable, of } from 'rxjs'; // ✅ Importa 'of' para el manejo de errores
 import { take, tap, catchError } from 'rxjs/operators'; // ✅ Importa 'tap' y 'catchError'
 import { LucideAngularModule } from 'lucide-angular';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-ventas',
@@ -60,7 +66,8 @@ export class Ventas implements OnInit, OnDestroy {
   constructor(
     private ventasService: VentasService,
     // ✅ CLAVE: Asegúrate de que CatalogoService está inyectado en el constructor
-    private catalogoService: CatalogoService
+    private catalogoService: CatalogoService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +81,9 @@ export class Ventas implements OnInit, OnDestroy {
       this.ventasSubscription.unsubscribe();
     }
   }
+
+  //@ViewChild('pdfContent', {static: false}) pdfContent!: ElementRef<HTMLDivElement>;
+  @ViewChild('pdfContent') pdfContent!: ElementRef;
 
   private showToast(message: string, type: 'success' | 'error'): void {
     this.toastMessage = message;
@@ -136,45 +146,55 @@ export class Ventas implements OnInit, OnDestroy {
   agruparVentasPorCodigo(): void {
     const grupos: { [key: string]: any } = {};
 
-    this.ventas.forEach((venta) => {
-      const codigoVenta = venta.codigoVenta;
+    // Iteramos sobre el array plano de registros de Venta (cada registro es un producto)
+    this.ventas.forEach((registroVenta) => {
+      const codigoVenta = registroVenta.codigoVenta;
 
-      // Combina los detalles de la venta con la información del producto
-      const detallesConProductos = venta.detalleVentas.map((detalle: any) => {
-        const producto = this.productosMap[detalle.productoId];
-        return {
-          ...detalle,
+      if (codigoVenta) {
+        // 1. Crear el grupo si no existe
+        if (!grupos[codigoVenta]) {
+          // Almacenamos la información del encabezado de la venta (que se repite)
+          // Usamos el primer registro de la venta para obtener los datos generales
+          grupos[codigoVenta] = {
+            ventaId: registroVenta.ventaId, // NOTA: Esto tomará el VentaId del primer registro.
+            codigoVenta: codigoVenta,
+            fecha: registroVenta.fechaVenta,
+            total: registroVenta.total,
+            efectivoRecibido: registroVenta.efectivoRecibido,
+            cambio: registroVenta.cambio,
+            estado: registroVenta.estadoVenta,
+            detalles: [], // Inicializamos el array de detalles
+          };
+        }
+
+        // 2. Crear el objeto de detalle y añadirlo al grupo
+        const producto = this.productosMap[registroVenta.productoId];
+
+        // Creamos un objeto que simula la antigua estructura de DetalleVentas
+        const detalle = {
+          // Campos de detalle extraídos del registro de venta unificado
+          productoId: registroVenta.productoId,
+          cantidad: registroVenta.cantidadVendida, // ✅ Usamos cantidadVendida
+          precioUnitario: registroVenta.precioUnitario,
+          subTotal: registroVenta.subTotal,
+
+          // Información adicional para la vista (producto)
           producto: producto
             ? {
                 nombre: producto.nombre,
                 descripcion: producto.descripcion,
                 imagenUrl: producto.imagenUrl,
+                precioVenta: producto.precioVenta,
               }
             : null,
         };
-      });
 
-      if (codigoVenta) {
-        if (!grupos[codigoVenta]) {
-          grupos[codigoVenta] = {
-            ventaId: venta.ventaId,
-            codigoVenta: codigoVenta,
-            fecha: venta.fechaVenta,
-            total: venta.total,
-            efectivoRecibido: venta.efectivoRecibido,
-            cambio: venta.cambio,
-            estado: venta.estadoVenta, // Usa la propiedad estadoVenta del backend
-            detalles: detallesConProductos,
-          };
-        } else {
-          // Si ya existe la venta agrupada, simplemente agrega los detalles
-          grupos[codigoVenta].detalles.push(...detallesConProductos);
-        }
+        grupos[codigoVenta].detalles.push(detalle);
       }
     });
 
     this.ventasAgrupadas = Object.values(grupos);
-    this.getEstadosDesdeBackend(); // ✅ Carga los estados después de agrupar
+    this.getEstadosDesdeBackend();
     this.applyFiltersAndSearch();
   }
 
@@ -276,31 +296,6 @@ export class Ventas implements OnInit, OnDestroy {
     }
   }
 
-  eliminarVenta(ventaId: number): void {
-    if (
-      confirm(
-        '¿Estás seguro de que deseas eliminar esta venta? Esta acción no se puede deshacer.'
-      )
-    ) {
-      this.ventasService
-        .deleteVenta(ventaId)
-        .pipe(take(1))
-        .subscribe({
-          next: () => {
-            this.showToast('Venta eliminada con éxito.', 'success');
-            this.fetchVentas();
-          },
-          error: (error) => {
-            console.error('Error al eliminar la venta:', error);
-            this.showToast(
-              'Error al eliminar la venta. Inténtalo de nuevo.',
-              'error'
-            );
-          },
-        });
-    }
-  }
-
   // Métodos para el diálogo de Ver
   openViewModal(venta: any): void {
     this.viewedVenta = { ...venta };
@@ -312,6 +307,89 @@ export class Ventas implements OnInit, OnDestroy {
     this.viewedVenta = null;
   }
 
+  downloadPdf(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const element = this.pdfContent.nativeElement;
+
+      // 1. Clonar el elemento original
+      const clonedElement = element.cloneNode(true) as HTMLElement;
+
+      // 2. Ocultar (eliminar) los elementos con la clase 'no-print' del CLON
+      const elementsToHide = clonedElement.querySelectorAll('.no-print');
+      elementsToHide.forEach((el) => el.remove());
+
+      // 💥 CLAVE 1: Mover y AÑADIR el clon al DOM
+      clonedElement.style.position = 'fixed';
+      clonedElement.style.top = '-9999px';
+      clonedElement.style.left = '-9999px';
+
+      // 🚀 CLAVE 2: FORZAR UN ANCHO RAZONABLE.
+      // 750px es un buen ancho para que el contenido se vea bien en una página 'Letter'.
+      clonedElement.style.width = '750px';
+      clonedElement.style.padding = '3rem'; // Puedes ajustar el padding si es necesario
+
+      document.body.appendChild(clonedElement); // Añádelo al DOM
+
+      const canvasOptions = {
+        scale: 2, // Mantenemos la escala en 2 para alta resolución
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        dpi: 300,
+      };
+
+      html2canvas(clonedElement, canvasOptions) // Pasa el CLON al html2canvas
+        .then((canvas) => {
+          // ⚠️ QUITAR el clon del DOM inmediatamente después
+          clonedElement.remove();
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
+          const doc = new jsPDF('portrait', 'in', 'letter');
+
+          // CÁLCULOS DE DIMENSIONES (Estos son correctos y deben mantenerse)
+          const margin = 0.4;
+          const imgWidth = 8.5 - 2 * margin; // Ancho de 7.7 pulgadas
+          const pageHeight = 11 - 2 * margin; // Alto de 10.2 pulgadas
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = margin;
+
+          // Lógica de adición de imagen y paginación
+          doc.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+          // ... (el resto de tu lógica de paginación)
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight + margin;
+            doc.addPage();
+            doc.addImage(
+              imgData,
+              'JPEG',
+              margin,
+              position,
+              imgWidth,
+              imgHeight
+            );
+            heightLeft -= pageHeight;
+          }
+
+          doc.save(`Factura_${this.viewedVenta.codigoVenta}.pdf`);
+        })
+        .catch((err: any) => {
+          clonedElement.remove();
+          console.error('[PDF] Error al generar', err);
+          this.showToast('Error al generar el PDF.', 'error');
+        });
+    } else {
+      console.warn(
+        'La generación de PDF no se puede realizar en el servidor (SSR).'
+      );
+    }
+  }
+  onFacturaClick(venta: Ventas): void {
+    this.viewedVenta = venta;
+    this.downloadPdf(); // genera PDF sin mostrar el modal
+    // Si también quieres abrir el modal, llama a openViewModal(venta) antes
+  }
+
   // Métodos para el diálogo de Editar
   openEditModal(venta: any): void {
     this.editedVenta = { ...venta };
@@ -320,7 +398,7 @@ export class Ventas implements OnInit, OnDestroy {
   }
 
   updateVenta(): void {
-    if (!this.editedVenta || !this.editedVenta.ventaId) {
+    if (!this.editedVenta || !this.editedVenta.codigoVenta) {
       return;
     }
 
@@ -340,18 +418,19 @@ export class Ventas implements OnInit, OnDestroy {
     // ✅ Crea un objeto para el payload con los campos que el backend necesita.
     // Esto es crucial para evitar el error 400.
     const payload = {
-    ventaId: this.editedVenta.ventaId,
-    codigoVenta: this.editedVenta.codigoVenta,
-    fechaVenta: this.editedVenta.fecha, // Asegúrate de que el formato de fecha sea correcto
-    total: this.editedVenta.total,
-    efectivoRecibido: this.editedVenta.efectivoRecibido,
-    cambio: this.editedVenta.cambio,
-    estadoVenta: this.editedVenta.estado, // Esto es lo que estás cambiando
-    detalleVentas: this.editedVenta.detalles // La API podría necesitar los detalles para validación
-};
+      ventaId: this.editedVenta.ventaId,
+      codigoVenta: this.editedVenta.codigoVenta,
+      fechaVenta: this.editedVenta.fecha, // Asegúrate de que el formato de fecha sea correcto
+      total: this.editedVenta.total,
+      efectivoRecibido: this.editedVenta.efectivoRecibido,
+      cambio: this.editedVenta.cambio,
+      estadoVenta: this.editedVenta.estado, // Esto es lo que estás cambiando
+      detalleVentas: this.editedVenta.detalles, // La API podría necesitar los detalles para validación
+    };
 
     this.ventasService
-      .updateVenta(this.editedVenta.ventaId, payload)
+      // .updateVenta(this.editedVenta.ventaId, payload)
+      .updateVentaEstado(this.editedVenta.codigoVenta, this.editedVenta.estado)
       .pipe(take(1))
       .subscribe({
         next: (response) => {
@@ -378,13 +457,38 @@ export class Ventas implements OnInit, OnDestroy {
     this.isDeleteModalOpen = true;
   }
 
+  // deleteVenta(): void {
+  //   if (!this.ventaToDelete || !this.ventaToDelete.ventaId) {
+  //     return;
+  //   }
+
+  //   this.ventasService
+  //     .deleteVenta(this.ventaToDelete.ventaId)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: () => {
+  //         this.showToast('Venta eliminada con éxito.', 'success');
+  //         this.closeDeleteModal();
+  //         this.fetchVentas(); // Recarga la lista para reflejar el cambio
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al eliminar la venta:', error);
+  //         this.showToast('Error al eliminar la venta.', 'error');
+  //       },
+  //     });
+  // }
   deleteVenta(): void {
-    if (!this.ventaToDelete || !this.ventaToDelete.ventaId) {
+    // 1. Nos aseguramos de tener el objeto y el codigoVenta
+    if (!this.ventaToDelete || !this.ventaToDelete.codigoVenta) {
       return;
     }
 
+    // 2. Extraemos el código de la venta almacenada
+    const codigoVenta = this.ventaToDelete.codigoVenta;
+
+    // 3. Llamamos al servicio con el codigoVenta
     this.ventasService
-      .deleteVenta(this.ventaToDelete.ventaId)
+      .deleteVenta(codigoVenta) // Llama al servicio con el codigoVenta (string)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -397,6 +501,35 @@ export class Ventas implements OnInit, OnDestroy {
           this.showToast('Error al eliminar la venta.', 'error');
         },
       });
+  }
+
+  eliminarVenta(venta: any): void {
+    if (
+      confirm(
+        '¿Estás seguro de que deseas eliminar esta VENTA COMPLETA? Esta acción no se puede deshacer.'
+      )
+    ) {
+      // ⚠️ CLAVE: Usamos el codigoVenta del objeto agrupado
+      const codigoVenta = venta.codigoVenta;
+
+      this.ventasService
+        // ✅ Llamamos al servicio con el string codigoVenta
+        .deleteVenta(codigoVenta)
+        .pipe(take(1))
+        .subscribe({
+          next: () => {
+            this.showToast('Venta completa eliminada con éxito.', 'success');
+            this.fetchVentas();
+          },
+          error: (error) => {
+            console.error('Error al eliminar la venta:', error);
+            this.showToast(
+              'Error al eliminar la venta. Inténtalo de nuevo.',
+              'error'
+            );
+          },
+        });
+    }
   }
 
   closeDeleteModal(): void {

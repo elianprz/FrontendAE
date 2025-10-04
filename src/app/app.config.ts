@@ -11,6 +11,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './auth-interceptor';
 // ✅ Importa el módulo completo
 import { JwtModule } from '@auth0/angular-jwt'; 
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 // 1. Importa el módulo de Lucide y los íconos
 import {
@@ -73,7 +74,14 @@ import {
   List,
   Pencil,
   Receipt,
-  Check     
+  Check,
+  ScrollText,
+  FileChartColumn,   
+  TableProperties,
+  ChartPie,
+  CircleUser,
+  Building2,
+  CircleCheckBig       
 } from 'lucide-angular';
 
 // 2. Desestructura los providers del módulo de Lucide y asigna un array vacío como valor por defecto
@@ -136,7 +144,14 @@ const { providers = [] } = LucideAngularModule.pick({
   List,
   Pencil,
   Receipt,
-  Check  
+  Check,
+  ScrollText,
+  FileChartColumn,
+  TableProperties,
+  ChartPie,
+  CircleUser,
+  Building2,
+  CircleCheckBig     
 });
 
 export const appConfig: ApplicationConfig = {
@@ -146,6 +161,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideCharts(withDefaultRegisterables()),
     // 3. Usa el spread operator con el array desestructurado
     ...providers,
     // ✅ Configura el JwtModule para proporcionar el JwtHelperService

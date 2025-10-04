@@ -71,7 +71,6 @@ export class Usuarios implements OnInit {
     private roleService: RoleService
   ) {}
 
-  
   ngOnInit(): void {
     // Suscríbete al *completo* flujo de usuario.
     this.authService.currentUser$.subscribe((user) => {
@@ -97,6 +96,16 @@ export class Usuarios implements OnInit {
     return `${day}-${month}-${year}`;
   }
   // Helper para convertir fecha de YYYY-MM-DD a YYYY-MM-DD para inputs tipo date
+  // private formatDateForInput(dateString: string): string {
+  //   if (!dateString) {
+  //     return '';
+  //   }
+  //   const date = new Date(dateString);
+  //   const year = date.getFullYear();
+  //   const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  //   const day = date.getDate().toString().padStart(2, '0');
+  //   return `${year}-${month}-${day}`;
+  // }
   private formatDateForInput(dateString: string): string {
     if (!dateString) {
       return '';
@@ -107,6 +116,7 @@ export class Usuarios implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
   // Helper para convertir fecha de DD-MM-YYYY a YYYY-MM-DD
   formatDateForBackend(dateString: string): string {
     if (!dateString) return '';
@@ -117,7 +127,6 @@ export class Usuarios implements OnInit {
     return dateString;
   }
 
-  
   getUsersWithRoles(): void {
     forkJoin({
       users: this.userService.getUsers(),
@@ -390,8 +399,10 @@ export class Usuarios implements OnInit {
     this.editedUser = {
       ...user,
       // Formatea la fecha de ingreso para el input de tipo 'date'
+      //fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
       fechaIngreso: this.formatDateForBackend(user.fechaIngreso),
       // Formatea la fecha de nacimiento de la misma manera
+      //fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
       fechaNacimiento: this.formatDateForBackend(user.fechaNacimiento),
     };
     this.isEditModalOpen = true;

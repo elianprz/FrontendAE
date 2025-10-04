@@ -112,19 +112,6 @@ export class Catalogo implements OnInit, OnDestroy {
       });
   }
 
-  // fetchProductos(): void {
-  //   this.catalogoService.getProductos().subscribe({
-  //     next: (data) => {
-  //       this.productos = data;
-  //       this.applySearchFilter();
-  //     },
-  //     error: (error) => {
-  //       console.error('Error al cargar los productos:', error);
-  //       // ✅ Añade la llamada a showToast aquí
-  //       this.showToast('Error al cargar los productos.', 'error');
-  //     },
-  //   });
-  // }
   fetchProductos(): void {
     this.catalogoService.getProductos().subscribe({
       next: (data) => {
@@ -148,37 +135,20 @@ export class Catalogo implements OnInit, OnDestroy {
     return !!p.estado;
   }
 
-  // Busqueda
-
-  // applySearchFilter(): void {
-  //   if (this.searchText) {
-  //     const lowerCaseSearchText = this.searchText.toLowerCase();
-
-  //     this.filteredproductos = this.productos.filter((caja) => {
-  //       return (caja.nombre || '').toLowerCase().includes(lowerCaseSearchText);
-  //     });
-  //   } else {
-  //     this.filteredproductos = [...this.productos];
-  //   }
-
-  //   this.totalproductos = this.filteredproductos.length;
-
-  //   this.currentPage = 1; // Reinicia a la primera página con cada nueva búsqueda
-  // }
   applySearchFilter(): void {
-  const term = this.searchText.trim().toLowerCase();
+    const term = this.searchText.trim().toLowerCase();
 
-  if (term) {
-    this.filteredproductos = this.activeProductos.filter((p) =>
-      (p.nombre ?? '').toLowerCase().includes(term)
-    );
-  } else {
-    this.filteredproductos = [...this.activeProductos];
+    if (term) {
+      this.filteredproductos = this.activeProductos.filter((p) =>
+        (p.nombre ?? '').toLowerCase().includes(term)
+      );
+    } else {
+      this.filteredproductos = [...this.activeProductos];
+    }
+
+    this.totalproductos = this.filteredproductos.length;
+    this.currentPage = 1;
   }
-
-  this.totalproductos = this.filteredproductos.length;
-  this.currentPage = 1;
-}
 
   // Nuevo: Método para actualizar la cantidad
   onCantidadChange(productoId: number, cantidad: number): void {
@@ -215,6 +185,7 @@ export class Catalogo implements OnInit, OnDestroy {
       this.showToast('El carrito está vacío.', 'error');
       return;
     }
+    // Usamos el totalVenta calculado previamente
     if (this.efectivoRecibido < this.totalVenta) {
       this.showToast('El efectivo recibido es insuficiente.', 'error');
       return;
@@ -224,42 +195,50 @@ export class Catalogo implements OnInit, OnDestroy {
       return;
     }
 
-    // Genera un único código de venta para toda la transacción
-    const codigoVenta = this.generarCodigoVenta();
+    // 2. Mapear los ítems del carrito al formato VentaDetalleCreacionDTO
+    // NOTA: SOLO incluimos los campos necesarios para el detalle, no los campos repetidos (total, cambio, etc.)
+    const detalleItems = this.carrito.map((item) => ({
+      // ✅ Usamos los nombres de propiedades que el Backend espera en VentaDetalleCreacionDTO (o VentaCreacionDTO)
+      productoId: item.productoId,
+      cantidadVendida: item.cantidad,
+      precioUnitario: item.precioVenta, // Asumiendo que 'precioVenta' del item es el precio unitario
 
-    // 2. Prepara los datos para el DTO
-    const ventaData = {
+      // El subTotal no es estrictamente necesario en el DTO de creación, pero lo dejamos si lo mapeaste en AutoMapper
+      // subTotal: item.cantidad * item.precioVenta,
+    }));
+
+    // 3. CONSTRUIR el OBJETO VentaLoteCreacionDTO (el contenedor)
+    const ventaLoteDTO = {
+      // ✅ Datos de encabezado/transacción (los campos del DTO LOTE)
       total: this.totalVenta,
       efectivoRecibido: this.efectivoRecibido,
       cambio: this.cambio,
       estadoVenta: this.estadoVenta,
-      usuarioId: this.usuarioId,
       cajaSesionId: this.cajaSesionId,
-      detalleVentas: this.carrito.map((item) => ({
-        productoId: item.productoId,
-        cantidad: item.cantidad,
-        precioUnitario: item.precioVenta,
-        codigoVenta: codigoVenta,
-      })),
+
+      // ✅ La clave: la lista de detalles anidada
+      // El nombre de la propiedad debe coincidir con tu Backend DTO (asumo 'Items')
+      items: detalleItems,
     };
 
-    // 3. Llama al servicio para crear la venta
+    // 4. ✅ LLAMA AL SERVICIO ENVIANDO EL OBJETO DE LOTE COMPLETO
     this.ventasService
-      .createVenta(ventaData)
+      .createVenta(ventaLoteDTO) // Enviamos el OBJETO singular
       .pipe(take(1))
       .subscribe({
         next: (response) => {
           console.log('Venta generada con éxito:', response);
           this.showToast('Venta realizada con éxito.', 'success');
-          // ✅ MEJORA: Llama a limpiarCarrito() después de una venta exitosa
           this.limpiarCarrito();
         },
-        error: (error) => {
-          console.error('Error al generar la venta:', error);
-          this.showToast(
-            'Error al generar la venta. Por favor, intente de nuevo.',
-            'error'
-          );
+        error: (err) => {
+          console.error('Error al generar la venta:', err);
+          // Intenta extraer y mostrar un mensaje de error más útil
+          const errorMsg =
+            err.error?.message ||
+            err.error?.title ||
+            'Error al procesar la venta. Verifique el stock y la sesión de caja.';
+          this.showToast(errorMsg, 'error');
         },
       });
   }
@@ -275,9 +254,9 @@ export class Catalogo implements OnInit, OnDestroy {
   }
 
   // Métodos de utilidad
-  generarCodigoVenta(): string {
-    return 'VNT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  }
+  // generarCodigoVenta(): string {
+  //   return 'VNT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  // }
 
   calcularCambio(): void {
     if (this.efectivoRecibido >= this.totalVenta) {

@@ -11,7 +11,7 @@
     <div class="flex-shrink-0">
       <lucide-angular
         *ngIf="toastType === 'success'"
-        name="check-circle"
+        name="circle-check-big"
         class="size-5 text-green-500"
       ></lucide-angular>
       <lucide-angular
@@ -26,7 +26,7 @@
   </div>
 </div>
 
-<div class="bg-white">
+<div class="bg-white min-h-screen">
   <div class="py-16 sm:py-24">
     <div class="mx-auto max-w-7xl sm:px-2 lg:px-8">
       <div class="mx-auto max-w-2xl px-4 lg:max-w-4xl lg:px-0">
@@ -64,7 +64,7 @@
                 class="grid flex-1 grid-cols-2 gap-x-6 text-sm sm:col-span-3 sm:grid-cols-3 lg:col-span-2"
               >
                 <div>
-                  <dt class="hidden md:block font-medium text-gray-900 ">
+                  <dt class="hidden md:block font-medium text-gray-900">
                     Código de venta
                   </dt>
                   <dd class="hidden md:block mt-1 text-gray-500">
@@ -101,9 +101,9 @@
                   >
                     <lucide-angular
                       name="pencil"
-                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                      class="size-4 lg:mr-4 sm:mr-0"
                     ></lucide-angular>
-                    <span class="inline sm:hidden lg:inline">Editar</span>
+                    <span class="hidden lg:inline">Editar</span>
                   </button>
 
                   <button
@@ -114,9 +114,9 @@
                   >
                     <lucide-angular
                       name="list"
-                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                      class="size-4 lg:mr-4 sm:mr-0"
                     ></lucide-angular>
-                    <span class="inline sm:hidden lg:inline">Ver detalles</span>
+                    <span class="hidden lg:inline">Ver detalles</span>
                   </button>
 
                   <button
@@ -127,10 +127,27 @@
                   >
                     <lucide-angular
                       name="trash"
-                      class="size-4 mr-2 lg:mr-4 sm:mr-0"
+                      class="size-4 lg:mr-4 sm:mr-0"
                     ></lucide-angular>
-                    <span class="inline sm:hidden lg:inline">Eliminar</span>
+                    <span class="hidden lg:inline">Eliminar</span>
                   </button>
+
+                  <a
+                    href="/tu-destino.html"
+                    title="SAT"
+                    class="inline-flex items-center justify-center rounded-md border border-blue-300 bg-blue-50 px-2.5 py-2 text-sm font-medium text-blue-700 shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                  >
+                    <!-- Icono central -->
+                    <img
+                      src="/SAT.png"
+                      alt="SAT"
+                      class="w-8 h-8 md:w-6 md:h-6 mr-3 ml-3 md:mr-3 md:ml-3 lg:mr-5 lg:ml-5 object-contain"
+                      loading="lazy"
+                    />
+
+                    <!-- Texto accesible pero invisible a la vista -->
+                    <span class="sr-only">SAT</span>
+                  </a>
                 </div>
               </div>
             </div>
@@ -157,7 +174,7 @@
                     >
                       <h5>{{ detalle.producto.nombre }}</h5>
                       <p class="mt-2 sm:mt-0">
-                        Q{{ detalle.precioVenta | number : "1.2-2" }} x
+                        Q{{ detalle.producto.precioVenta }} x
                         {{ detalle.cantidad }}
                       </p>
                     </div>
@@ -170,7 +187,10 @@
             </ul>
           </div>
 
-          <div *ngIf="filteredVentas.length === 0" class="text-center py-8">
+          <div
+            *ngIf="filteredVentas.length === 0"
+            class="text-center py-8 min-h-screen"
+          >
             <p class="text-gray-500">
               No hay ventas registradas que coincidan con la búsqueda.
             </p>
@@ -275,7 +295,7 @@
   </div>
 </div>
 
-<dialog
+<!-- <dialog
   id="view-modal"
   class="relative z-10"
   [open]="isViewModalOpen"
@@ -376,6 +396,139 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</dialog> -->
+<dialog
+  id="view-modal"
+  class="relative z-10"
+  [open]="isViewModalOpen"
+  (close)="closeViewModal()"
+>
+  <!-- fondo oscuro -->
+  <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div
+      class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+    >
+      <div
+        class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+      >
+        <!-- Botón cerrar -->
+        <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+          <button
+            (click)="closeViewModal()"
+            type="button"
+            class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          >
+            <span class="sr-only">Cerrar</span>
+            <lucide-angular name="x" class="h-6 w-6"></lucide-angular>
+          </button>
+        </div>
+
+        <!-- ----------------- PDF‑target ----------------- -->
+        <div #pdfContent class="p-6">
+          <!-- 1️⃣ Logo + Slogan -->
+          <div class="text-center mb-6">
+            <img
+              src="/logo.png"
+              alt="Logo de la empresa"
+              class="h-16 mx-auto"
+            />
+            <h2 class="mt-2 text-lg font-semibold text-gray-800">
+              • Librería A&E •
+            </h2>
+          </div>
+
+          <!-- 2️⃣ Mensaje -->
+          <p class="text-sm text-center text-gray-700 mb-8">
+            Tus productos adquiridos el día de hoy
+          </p>
+
+          <!-- 3️⃣ Información de la venta -->
+          <h3
+            class="text-base font-semibold leading-6 text-gray-900 text-center mb-6"
+          >
+            Detalles de la venta
+          </h3>
+
+          <div
+            *ngIf="viewedVenta"
+            class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2"
+          >
+            <!-- Código de venta -->
+            <div>
+              <h4 class="font-medium text-gray-700">Código de Venta</h4>
+              <p class="text-sm text-gray-900">{{ viewedVenta.codigoVenta }}</p>
+            </div>
+            <!-- Fecha -->
+            <div>
+              <h4 class="font-medium text-gray-700">Fecha de Venta</h4>
+              <p class="text-sm text-gray-900">
+                {{ viewedVenta.fecha | date : "mediumDate" }}
+              </p>
+            </div>
+            <!-- Total -->
+            <div>
+              <h4 class="font-medium text-gray-700">Total</h4>
+              <p class="text-sm text-gray-900">
+                Q{{ viewedVenta.total | number : "1.2-2" }}
+              </p>
+            </div>
+            <!-- Efectivo -->
+            <div>
+              <h4 class="font-medium text-gray-700">Efectivo Recibido</h4>
+              <p class="text-sm text-gray-900">
+                Q{{ viewedVenta.efectivoRecibido | number : "1.2-2" }}
+              </p>
+            </div>
+            <!-- Cambio -->
+            <div>
+              <h4 class="font-medium text-gray-700">Cambio</h4>
+              <p class="text-sm text-gray-900">
+                Q{{ viewedVenta.cambio | number : "1.2-2" }}
+              </p>
+            </div>
+            <!-- Estado -->
+            <div>
+              <h4 class="font-medium text-gray-700">Estado</h4>
+              <p class="text-sm text-gray-900">{{ viewedVenta.estado }}</p>
+            </div>
+
+            <!-- 4️⃣ Lista de productos -->
+            <div class="sm:col-span-2 mt-4">
+              <h4 class="font-medium text-gray-700">Productos vendidos</h4>
+              <ul class="mt-2 list-disc list-inside text-sm text-gray-900">
+                <li *ngFor="let detalle of viewedVenta.detalles">
+                  {{ detalle.producto?.nombre }} (x{{ detalle.cantidad }}) - Q{{
+                    detalle.precioUnitario | number : "1.2-2"
+                  }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Botón Descargar PDF (opcional) -->
+          <div class="mt-6 flex justify-end space-x-3 no-print">
+            <button
+              type="button"
+              class="rounded-md border border-indigo-500 bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700"
+              (click)="downloadPdf()"
+            >
+              Descargar PDF
+            </button>
+            <button
+              type="button"
+              (click)="closeViewModal()"
+              class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+        <!-- -------------- fin PDF‑target --------------- -->
       </div>
     </div>
   </div>

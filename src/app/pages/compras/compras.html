@@ -1,114 +1,1260 @@
-<main class="bg-white px-4 pt-16 pb-24 sm:px-6 sm:pt-24 lg:px-8 lg:py-32">
-  <div class="">
-    <div class="">
-      <h1 class="text-base font-medium text-indigo-600">Thank you!</h1>
-      <p class="mt-2 text-4xl font-bold tracking-tight">It's on the way!</p>
-      <p class="mt-2 text-base text-gray-500">Your order #14034056 has shipped and will be with you soon.</p>
-
-      <dl class="mt-12 text-sm font-medium">
-        <dt class="text-gray-900">Tracking number</dt>
-        <dd class="mt-2 text-indigo-600">51547878755545848512</dd>
-      </dl>
-    </div>
-
-    <section aria-labelledby="order-heading" class="mt-10 border-t border-gray-200">
-      <h2 id="order-heading" class="sr-only">Your order</h2>
-
-      <h3 class="sr-only">Items</h3>
-      <div class="flex space-x-6 border-b border-gray-200 py-10">
-        <img src="https://tailwindcss.com/plus-assets/img/ecommerce-images/confirmation-page-05-product-01.jpg" alt="Glass bottle with black plastic pour top and mesh insert." class="size-20 flex-none rounded-lg bg-gray-100 object-cover sm:size-40" />
-        <div class="flex flex-auto flex-col">
-          <div>
-            <h4 class="font-medium text-gray-900">
-              <a href="#">Cold Brew Bottle</a>
-            </h4>
-            <p class="mt-2 text-sm text-gray-600">This glass bottle comes with a mesh insert for steeping tea or cold-brewing coffee. Pour from any angle and remove the top for easy cleaning.</p>
-          </div>
-          <div class="mt-6 flex flex-1 items-end">
-            <dl class="flex divide-x divide-gray-200 text-sm">
-              <div class="flex pr-4 sm:pr-6">
-                <dt class="font-medium text-gray-900">Quantity</dt>
-                <dd class="ml-2 text-gray-700">1</dd>
+<main class="bg-white min-w-0 flex-1 border-t border-gray-200 xl:flex">
+  <section
+    aria-labelledby="message-heading"
+    class="flex min-h-screen min-w-0 flex-1 flex-col overflow-hidden xl:order-last"
+  >
+    <div class="shrink-0 border-b border-gray-200 bg-white">
+      <div class="flex h-16 flex-col justify-center">
+        <div class="px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between py-3">
+            <div class="flex items-center gap-x-3">
+              <div
+                class="isolate inline-flex rounded-md shadow-xs sm:shadow-none"
+              >
+                <button
+                  type="button"
+                  (click)="openCreateModal()"
+                  class="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-green-50 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-green-400 focus:z-10"
+                >
+                  <lucide-icon
+                    name="database-zap"
+                    class="text-green-50"
+                  ></lucide-icon>
+                  Crear compra
+                </button>
               </div>
-              <div class="flex pl-4 sm:pl-6">
-                <dt class="font-medium text-gray-900">Price</dt>
-                <dd class="ml-2 text-gray-700">$32.00</dd>
+            </div>
+            <div class="flex-grow flex justify-center hidden md:flex">
+              <div
+                class="relative flex items-center rounded-full border border-gray-300 overflow-hidden w-full max-w-xs md:max-w-sm lg:max-w-md"
+              >
+                <lucide-icon
+                  name="search"
+                  class="absolute left-2 size-5 text-gray-400"
+                ></lucide-icon>
+                <input
+                  name="search"
+                  placeholder="Buscar"
+                  aria-label="Search"
+                  class="block size-full bg-transparent pl-11 pr-3 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 border-none"
+                  [(ngModel)]="searchText"
+                  (input)="applySearchFilter()"
+                />
               </div>
-            </dl>
+            </div>
+            <div class="flex items-center gap-x-3">
+              <span class="space-x-3 lg:flex">
+                <el-dropdown
+                  trigger="click"
+                  placement="bottom-start"
+                  [hide-on-click]="false"
+                  class="inline-block"
+                >
+                  <button
+                    type="button"
+                    class="relative -ml-px items-center gap-x-1.5 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:z-10 hover:bg-blue-400 focus:z-10 sm:inline-flex"
+                  >
+                    <lucide-icon
+                      name="list-filter"
+                      class="size-5 text-blue-50"
+                    ></lucide-icon>
+                  </button>
+
+                  <el-menu
+                    anchor="bottom end"
+                    popover
+                    class="m-0 w-56 origin-top-right rounded-md bg-white p-0 shadow-lg outline outline-1 outline-black/5 transition [--anchor-gap:theme(spacing.2)] [transition-behavior:allow-discrete] data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  >
+                    <div class="py-1 px-4">
+                      <div
+                        class="flex items-center gap-3"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <div class="flex h-6 shrink-0 items-center">
+                          <div class="group grid size-4 grid-cols-1">
+                            <input
+                              id="estado-activo"
+                              type="checkbox"
+                              (change)="
+                                applyFilter(
+                                  'estado',
+                                  true,
+                                  $event.target.checked
+                                )
+                              "
+                              [checked]="isFilterActive('estado', true)"
+                              class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                            />
+                          </div>
+                        </div>
+                        <label
+                          for="estado-activo"
+                          class="font-medium text-sm text-gray-900"
+                          >Estado: Activo</label
+                        >
+                      </div>
+
+                      <div
+                        class="flex items-center gap-3 mt-1"
+                        (click)="$event.stopPropagation()"
+                      >
+                        <div class="flex h-6 shrink-0 items-center">
+                          <div class="group grid size-4 grid-cols-1">
+                            <input
+                              id="estado-inactivo"
+                              type="checkbox"
+                              (change)="
+                                applyFilter(
+                                  'estado',
+                                  false,
+                                  $event.target.checked
+                                )
+                              "
+                              [checked]="isFilterActive('estado', false)"
+                              class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                            />
+                          </div>
+                        </div>
+                        <label
+                          for="estado-inactivo"
+                          class="font-medium text-sm text-gray-900"
+                          >Estado: Inactivo</label
+                        >
+                      </div>
+                      <div class="border-t border-gray-100 my-1"></div>
+
+                      <ng-container *ngFor="let proveedor of proveedores">
+                        <div
+                          class="flex items-center gap-3 mt-1"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <div class="flex h-6 shrink-0 items-center">
+                            <div class="group grid size-4 grid-cols-1">
+                              <input
+                                id="proveedor-{{ proveedor.proveedorId }}"
+                                type="checkbox"
+                                (change)="
+                                  applyFilter(
+                                    'proveedorId',
+                                    proveedor.proveedorId,
+                                    $event.target.checked
+                                  )
+                                "
+                                [checked]="
+                                  isFilterActive(
+                                    'proveedorId',
+                                    proveedor.proveedorId
+                                  )
+                                "
+                                class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
+                              />
+                            </div>
+                          </div>
+                          <label
+                            for="proveedor-{{ proveedor.proveedorId }}"
+                            class="font-medium text-sm text-gray-900"
+                            >proveedor: {{ proveedor.nombre }}</label
+                          >
+                        </div>
+                      </ng-container>
+                      <div class="border-t border-gray-100 my-1"></div>
+
+                      <button
+                        (click)="clearFilters(); $event.stopPropagation()"
+                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Borrar filtros
+                      </button>
+                    </div>
+                  </el-menu>
+                </el-dropdown>
+              </span>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="sm:ml-40 sm:pl-6">
-        <h3 class="sr-only">Your information</h3>
+    <div class="min-h-0 flex-1 overflow-y-auto">
+      <div class="bg-white pt-5 pb-6 shadow-sm">
+        <div
+          class="px-4 sm:flex sm:items-baseline sm:justify-between sm:px-6 lg:px-8"
+        >
+          <div class="sm:w-0 sm:flex-1">
+            <h1 id="message-heading" class="text-lg font-medium text-gray-900">
+              Compras
+            </h1>
+            <p class="mt-1 truncate text-sm text-gray-500">
+              En este apartado podrás crear, editar, ver y eliminar los compras
+            </p>
+          </div>
 
-        <h4 class="sr-only">Addresses</h4>
-        <dl class="grid grid-cols-2 gap-x-6 py-10 text-sm">
-          <div>
-            <dt class="font-medium text-gray-900">Shipping address</dt>
-            <dd class="mt-2 text-gray-700">
-              <address class="not-italic">
-                <span class="block">Kristin Watson</span>
-                <span class="block">7363 Cynthia Pass</span>
-                <span class="block">Toronto, ON N3Y 4H8</span>
-              </address>
-            </dd>
-          </div>
-          <div>
-            <dt class="font-medium text-gray-900">Billing address</dt>
-            <dd class="mt-2 text-gray-700">
-              <address class="not-italic">
-                <span class="block">Kristin Watson</span>
-                <span class="block">7363 Cynthia Pass</span>
-                <span class="block">Toronto, ON N3Y 4H8</span>
-              </address>
-            </dd>
-          </div>
-        </dl>
-
-        <h4 class="sr-only">Payment</h4>
-        <dl class="grid grid-cols-2 gap-x-6 border-t border-gray-200 py-10 text-sm">
-          <div>
-            <dt class="font-medium text-gray-900">Payment method</dt>
-            <dd class="mt-2 text-gray-700">
-              <p>Apple Pay</p>
-              <p>Mastercard</p>
-              <p><span aria-hidden="true">••••</span><span class="sr-only">Ending in </span>1545</p>
-            </dd>
-          </div>
-          <div>
-            <dt class="font-medium text-gray-900">Shipping method</dt>
-            <dd class="mt-2 text-gray-700">
-              <p>DHL</p>
-              <p>Takes up to 3 working days</p>
-            </dd>
-          </div>
-        </dl>
-
-        <h3 class="sr-only">Summary</h3>
-
-        <dl class="space-y-6 border-t border-gray-200 pt-10 text-sm">
-          <div class="flex justify-between">
-            <dt class="font-medium text-gray-900">Subtotal</dt>
-            <dd class="text-gray-700">$36.00</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="flex font-medium text-gray-900">
-              Discount
-              <span class="ml-2 rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">STUDENT50</span>
-            </dt>
-            <dd class="text-gray-700">-$18.00 (50%)</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="font-medium text-gray-900">Shipping</dt>
-            <dd class="text-gray-700">$5.00</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="font-medium text-gray-900">Total</dt>
-            <dd class="text-gray-900">$23.00</dd>
-          </div>
-        </dl>
+          <div
+            class="mt-4 flex items-center justify-between sm:mt-0 sm:ml-6 sm:shrink-0 sm:justify-start"
+          ></div>
+        </div>
       </div>
-    </section>
-  </div>
+      <!-- Tabla -->
+      <div class="px-4 sm:px-6 lg:px-8 mt-8">
+        <div
+          class="shadow-sm ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto"
+        >
+          <table class="min-w-full divide-y divide-gray-300">
+            <!-- ====================  ENCABEZADO  ==================== -->
+            <thead>
+              <tr>
+                <!-- Fecha de compra (opcional) -->
+                <th
+                  scope="col"
+                  class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 hidden sm:table-cell"
+                >
+                  Fecha de compra
+                </th>
+
+                <!-- Nombre del producto -->
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Nombre del producto
+                </th>
+
+                <!-- Observaciones / Descripción -->
+                <!-- Estado -->
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Estado
+                </th>
+
+                <!-- Stock comprado -->
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Stock comprado
+                </th>
+
+                <!-- Proveedor -->
+                <th
+                  scope="col"
+                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 hidden md:table-cell"
+                >
+                  Proveedor
+                </th>
+
+                <!-- Total (opcional) -->
+                <!--
+      <th
+        scope="col"
+        class="px-3 py-3.5 text-right text-sm font-semibold text-gray-900"
+      >
+        Total
+      </th>
+      -->
+
+                <!-- Acciones -->
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+
+            <!-- ====================  CUERPO  ==================== -->
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <!-- Cada fila -->
+              <tr *ngFor="let compra of paginatedCompras">
+                <!-- Fecha de compra -->
+                <td
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 hidden sm:table-cell"
+                >
+                  {{ compra.fechaCompra | date : "dd/MM/yyyy" }}
+                </td>
+
+                <!-- Nombre del producto -->
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <div class="flex gap-x-3">
+                    <div class="font-mono text-sm/6 text-gray-500">
+                      {{ compra.nombre }}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Estado -->
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <span
+                    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-500/10 text-green-600 ring-1 ring-green-500/20':
+                        compra.estado,
+                      'bg-red-500/10 text-red-600 ring-1 ring-red-500/20':
+                        !compra.estado
+                    }"
+                  >
+                    {{ compra.estado ? "Activo" : "Inactivo" }}
+                  </span>
+                </td>
+
+                <!-- Stock -->
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  {{ compra.stock }}
+                </td>
+
+                <!-- Proveedor -->
+                <td
+                  class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 hidden md:table-cell"
+                >
+                  {{ compra.proveedorNombre }}
+                </td>
+
+                <!-- Total (opcional) -->
+                <!--
+      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 text-right">
+        {{ compra.Total | currency:'GTQ':'symbol' }}
+      </td>
+      -->
+
+                <!-- Acciones -->
+                <td
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                >
+                  <div class="flex gap-2 justify-end">
+                    <button
+                      (click)="openEditModal(compra)"
+                      class="inline-flex items-center rounded-md bg-yellow-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500"
+                    >
+                      <lucide-icon name="database-backup"></lucide-icon>
+                    </button>
+
+                    <button
+                      (click)="openViewModal(compra)"
+                      class="inline-flex items-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600"
+                    >
+                      <lucide-icon name="file-spreadsheet"></lucide-icon>
+                    </button>
+
+                    <button
+                      (click)="openDeleteModal(compra)"
+                      class="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                    >
+                      <lucide-icon name="trash"></lucide-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Mensaje cuando no hay datos -->
+              <tr *ngIf="paginatedCompras && paginatedCompras.length === 0">
+                <td colspan="7" class="text-center py-4 text-sm text-gray-500">
+                  Aún no hay datos existentes
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 md:rounded-b-lg shadow-sm ring-1 ring-black ring-opacity-5"
+        >
+          <div class="flex flex-1 justify-between sm:hidden">
+            <button
+              (click)="prevPage()"
+              [disabled]="currentPage === 1"
+              class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Anterior
+            </button>
+            <button
+              (click)="nextPage()"
+              [disabled]="currentPage === totalPages"
+              class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Siguiente
+            </button>
+          </div>
+          <div
+            class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+          >
+            <div>
+              <p class="text-sm text-gray-700">
+                Mostrando
+                <span class="font-medium">{{
+                  (currentPage - 1) * itemsPerPage + 1
+                }}</span>
+                a
+                <span class="font-medium">{{
+                  Math.min(currentPage * itemsPerPage, totalCompras)
+                }}</span>
+                de
+                <span class="font-medium">{{ totalCompras }}</span>
+                compras
+              </p>
+            </div>
+            <div>
+              <nav
+                aria-label="Pagination"
+                class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+              >
+                <button
+                  (click)="prevPage()"
+                  [disabled]="currentPage === 1"
+                  class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Anterior</span>
+                  <lucide-icon
+                    name="chevron-left"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+                <ng-container *ngFor="let page of pages">
+                  <span
+                    *ngIf="page === '...'"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
+                    >...</span
+                  >
+                  <button
+                    *ngIf="page !== '...'"
+                    (click)="handlePageClick(page)"
+                    [ngClass]="{
+                      'bg-indigo-600 text-white': currentPage === page,
+                      'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                        currentPage !== page
+                    }"
+                    class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus:outline-offset-0"
+                  >
+                    {{ page }}
+                  </button>
+                </ng-container>
+
+                <button
+                  (click)="nextPage()"
+                  [disabled]="currentPage === totalPages"
+                  class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                  <span class="sr-only">Siguiente</span>
+                  <lucide-icon
+                    name="chevron-right"
+                    class="h-5 w-5"
+                  ></lucide-icon>
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Tabla -->
+  </section>
+  <!-- Dialogs -->
+  <!-- ====================  DIÁLOGO – CREAR COMPRA  ==================== -->
+  <dialog
+    id="create-modal"
+    class="relative z-10"
+    [open]="isCreateModalOpen"
+    (close)="closeCreateModal()"
+  >
+    <!-- Overlay gris (capa que oscurece el fondo) -->
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+      (click)="closeCreateModal()"
+    ></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <!-- X de cerrar -->
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeCreateModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+
+          <div class="sm:flex sm:items-start">
+            <!-- Icono -->
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="database-zap"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Crear compra
+              </h3>
+
+              <form (ngSubmit)="createCompra()" class="mt-4">
+                <!-- ----------  ERRORES DE VALIDACIÓN  ---------- -->
+                <div *ngIf="validationErrors.length > 0" class="mt-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94l-1.72-1.72z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of validationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ----------  CAMPOS DEL FORMULARIO  ---------- -->
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- 1️⃣  Nombre -->
+                  <div>
+                    <label
+                      for="nombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nombre del producto
+                    </label>
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      [(ngModel)]="newCompra.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 2️⃣  **Observación** (campo nuevo) -->
+                  <div>
+                    <label
+                      for="observacion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Observación
+                    </label>
+                    <textarea
+                      id="observacion"
+                      name="observacion"
+                      rows="3"
+                      [(ngModel)]="newCompra.observacion"
+                      placeholder="Opcional"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    ></textarea>
+                  </div>
+
+                  <!-- 3️⃣  Descripción -->
+                  <div class="sm:col-span-2">
+                    <label
+                      for="descripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Descripción
+                    </label>
+                    <textarea
+                      id="descripcion"
+                      name="descripcion"
+                      rows="4"
+                      [(ngModel)]="newCompra.descripcion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    ></textarea>
+                  </div>
+
+                  <!-- 4️⃣  Stock -->
+                  <div>
+                    <label
+                      for="stock"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Stock
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      id="stock"
+                      name="stock"
+                      [(ngModel)]="newCompra.stock"
+                      placeholder="10"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 5️⃣  Precio de adquisición -->
+                  <div>
+                    <label
+                      for="precioAdquisicion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Precio de adquisición
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="precioAdquisicion"
+                      name="precioAdquisicion"
+                      [(ngModel)]="newCompra.precioAdquisicion"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 6️⃣  Precio de venta -->
+                  <div>
+                    <label
+                      for="precioVenta"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Precio de venta
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="precioVenta"
+                      name="precioVenta"
+                      [(ngModel)]="newCompra.precioVenta"
+                      placeholder="10.00"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 7️⃣  Estado -->
+                  <div>
+                    <label
+                      for="estado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Estado
+                    </label>
+                    <select
+                      id="estado"
+                      name="estado"
+                      [(ngModel)]="newCompra.estado"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+
+                  <!-- 8️⃣  Proveedor -->
+                  <div>
+                    <label
+                      for="proveedorId"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Proveedor
+                    </label>
+                    <select
+                      id="proveedorId"
+                      name="proveedorId"
+                      [(ngModel)]="newCompra.proveedorId"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="null" disabled>
+                        Seleccione un proveedor
+                      </option>
+
+                      <ng-container
+                        *ngIf="
+                          activeProveedores && activeProveedores.length > 0;
+                          else sinProveedores
+                        "
+                      >
+                        <option
+                          *ngFor="let prov of activeProveedores"
+                          [ngValue]="prov.proveedorId"
+                        >
+                          {{ prov.empresa }}
+                        </option>
+                      </ng-container>
+
+                      <ng-template #sinProveedores>
+                        <option value="" disabled>
+                          No hay proveedores disponibles
+                        </option>
+                      </ng-template>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- ----------  BOTONES ---------- -->
+                <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                  <button
+                    type="button"
+                    (click)="closeCreateModal()"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Cerrar
+                  </button>
+
+                  <button
+                    type="submit"
+                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Crear compra
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    id="edit-modal"
+    class="relative z-10"
+    [open]="isEditModalOpen"
+    (close)="closeEditModal()"
+  >
+    <!-- Overlay gris -->
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <!-- Botón cerrar (X) -->
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeEditModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+
+          <div class="sm:flex sm:items-start">
+            <!-- Icono del modal -->
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="database-backup"
+                class="h-6 w-6 text-yellow-600"
+              ></lucide-icon>
+            </div>
+
+            <!-- ====================  FORMULARIO  ==================== -->
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Editar compra
+              </h3>
+
+              <form
+                (ngSubmit)="updateCompra(); $event.preventDefault()"
+                class="mt-4"
+              >
+                <!-- ----------  ERRORES DE VALIDACIÓN  ---------- -->
+                <div *ngIf="validationErrors.length > 0" class="mt-4">
+                  <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <svg
+                          class="h-5 w-5 text-red-400"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94l-1.72-1.72z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                          Se encontraron los siguientes errores:
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                          <ul role="list" class="list-disc space-y-1 pl-5">
+                            <li *ngFor="let error of validationErrors">
+                              {{ error }}
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ----------  CAMPOS DEL FORMULARIO  ---------- -->
+                <div class="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <!-- 1️⃣  Nombre -->
+                  <div>
+                    <label
+                      for="editNombre"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Nombre del producto
+                    </label>
+                    <input
+                      type="text"
+                      id="editNombre"
+                      name="nombre"
+                      [(ngModel)]="editedCompra.nombre"
+                      autocomplete="given-name"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 2️⃣  Observación (nuevo campo) -->
+                  <div>
+                    <label
+                      for="editObservacion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Observación
+                    </label>
+                    <textarea
+                      id="editObservacion"
+                      name="observacion"
+                      rows="3"
+                      [(ngModel)]="editedCompra.observacion"
+                      placeholder="Opcional"
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    ></textarea>
+                  </div>
+
+                  <!-- 3️⃣  Descripción (cubre 2 columnas) -->
+                  <div class="sm:col-span-2">
+                    <label
+                      for="editDescripcion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Descripción
+                    </label>
+                    <textarea
+                      id="editDescripcion"
+                      name="descripcion"
+                      rows="4"
+                      [(ngModel)]="editedCompra.descripcion"
+                      autocomplete="off"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    ></textarea>
+                  </div>
+
+                  <!-- 4️⃣  Fecha de compra -->
+                  <div class="sm:col-span-2">
+                    <label
+                      for="editFechaCompra"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Fecha de compra
+                    </label>
+                    <input
+                      type="date"
+                      id="editFechaCompra"
+                      name="fechaCompra"
+                      [(ngModel)]="editedCompra.fechaCompra"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                    />
+                  </div>
+
+                  <!-- 5️⃣  Stock -->
+                  <div>
+                    <label
+                      for="editStock"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Stock
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      id="editStock"
+                      name="stock"
+                      [(ngModel)]="editedCompra.stock"
+                      placeholder="10"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 6️⃣  Precio de adquisición -->
+                  <div>
+                    <label
+                      for="editPrecioAdquisicion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Precio de adquisición
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="editPrecioAdquisicion"
+                      name="precioAdquisicion"
+                      [(ngModel)]="editedCompra.precioAdquisicion"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 7️⃣  Precio de venta -->
+                  <div>
+                    <label
+                      for="editPrecioVenta"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Precio de venta
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      id="editPrecioVenta"
+                      name="precioVenta"
+                      [(ngModel)]="editedCompra.precioVenta"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+
+                  <!-- 8️⃣  Proveedor -->
+                  <div>
+                    <label
+                      for="editProveedorId"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Proveedor
+                    </label>
+                    <select
+                      id="editProveedorId"
+                      name="proveedorId"
+                      [(ngModel)]="editedCompra.proveedorId"
+                      required
+                      class="..."
+                    >
+                      <option [ngValue]="null" disabled>
+                        {{
+                          activeProveedores && activeProveedores.length > 0
+                            ? "Seleccione un proveedor"
+                            : "No hay proveedores disponibles"
+                        }}
+                      </option>
+
+                      <ng-container
+                        *ngIf="
+                          activeProveedores && activeProveedores.length > 0
+                        "
+                      >
+                        <option
+                          *ngFor="let prov of activeProveedores"
+                          [ngValue]="prov.proveedorId"
+                        >
+                          {{ prov.empresa }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </div>
+
+                  <!-- 9️⃣  Estado -->
+                  <div>
+                    <label
+                      for="editEstado"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Estado
+                    </label>
+                    <select
+                      id="editEstado"
+                      name="estado"
+                      [(ngModel)]="editedCompra.estado"
+                      required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option [ngValue]="true">Activo</option>
+                      <option [ngValue]="false">Inactivo</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- ----------  BOTONES DE ACCIÓN  ---------- -->
+                <div class="sm:col-span-2 flex justify-end gap-x-3 mt-6">
+                  <button
+                    type="button"
+                    (click)="closeEditModal()"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Cerrar
+                  </button>
+
+                  <button
+                    type="submit"
+                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Actualizar compra
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog
+    id="view-modal"
+    class="relative z-10"
+    [open]="isViewModalOpen"
+    (close)="closeViewModal()"
+  >
+    <!-- Overlay gris -->
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl sm:p-6"
+        >
+          <!-- X cerrar -->
+          <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+            <button
+              (click)="closeViewModal()"
+              type="button"
+              class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              <span class="sr-only">Close</span>
+              <lucide-icon name="x" class="h-6 w-6"></lucide-icon>
+            </button>
+          </div>
+
+          <div class="sm:flex sm:items-start">
+            <!-- Icono -->
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="file-spreadsheet"
+                class="h-6 w-6 text-blue-600"
+              ></lucide-icon>
+            </div>
+
+            <!-- CONTENIDO -->
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Detalles de la compra
+              </h3>
+
+              <div class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                <!-- Fecha de compra -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Fecha de compra</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.fechaCompra | date : "dd/MM/yyyy" }}
+                  </p>
+                </div>
+
+                <!-- Nombre -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Nombre</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.nombre }}
+                  </p>
+                </div>
+
+                <!-- Observación -->
+                <div class="sm:col-span-2">
+                  <h3 class="font-medium text-gray-700">Observación</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.observacion }}
+                  </p>
+                </div>
+
+                <!-- Descripción -->
+                <div class="sm:col-span-2">
+                  <h3 class="font-medium text-gray-700">Descripción</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.descripcion }}
+                  </p>
+                </div>
+
+                <!-- Precio de compra -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Precio de compra</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    Q.{{ viewedCompra.precioAdquisicion | number : "1.2-2" }}
+                  </p>
+                </div>
+
+                <!-- Precio de venta -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Precio de venta</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    Q.{{ viewedCompra.precioVenta | number : "1.2-2" }}
+                  </p>
+                </div>
+
+                <!-- Stock -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Stock</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.stock }}
+                  </p>
+                </div>
+
+                <!-- Estado -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Estado</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.estado ? "Activo" : "Inactivo" }}
+                  </p>
+                </div>
+
+                <!-- Proveedor -->
+                <div>
+                  <h3 class="font-medium text-gray-700">Proveedor</h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    {{ viewedCompra.proveedorNombre }}
+                  </p>
+                </div>
+
+                <!-- Total (opcional) -->
+                <div class="sm:col-span-2">
+                  <h3 class="font-medium text-gray-700">
+                    Total (stock × precio de compra)
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-900">
+                    Q.{{ viewedCompra.total | number : "1.2-2" }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Botón cerrar -->
+              <div class="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  (click)="closeViewModal()"
+                  class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="delete-modal" class="relative z-10" [open]="isDeleteModalOpen">
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+        >
+          <div class="sm:flex sm:items-start">
+            <div
+              class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+            >
+              <lucide-icon
+                name="trash"
+                class="h-6 w-6 text-red-600"
+              ></lucide-icon>
+            </div>
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+              <h3
+                class="text-base font-semibold leading-6 text-gray-900"
+                id="modal-title"
+              >
+                Eliminar compra
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  ¿Estás seguro de que deseas eliminar la compra llamada
+                  <strong>{{ compraToDelete.nombre }}</strong
+                  >? Esta acción no se puede deshacer.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <button
+              type="button"
+              (click)="deleteCompra()"
+              class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            >
+              Eliminar
+            </button>
+            <button
+              type="button"
+              (click)="closeDeleteModal()"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 </main>

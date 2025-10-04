@@ -29,8 +29,21 @@ export class UserService {
   }
 
   // Método para el PATCH de la contraseña
-  changePassword(id: number, newPassword: any): Observable<any> {
-    const payload = { contraseña: newPassword }; // Asegúrate de que la propiedad coincida con tu backend
+  // changePassword(id: number, newPassword: any): Observable<any> {
+  //   const payload = { contraseña: newPassword }; // Asegúrate de que la propiedad coincida con tu backend
+  //   return this.http.patch<any>(`${this.apiUrl}/${id}/cambiar-contrasena`, payload);
+  // }
+  changePassword(
+    id: number,
+    actualPassword: string,
+    newPassword: string
+  ): Observable<any> {
+    const payload = {
+      contrasenaActual: actualPassword,
+      nuevaContrasena: newPassword
+    };
+
+    // Ejemplo: PATCH /usuarios/{id}/cambiar-contrasena
     return this.http.patch<any>(`${this.apiUrl}/${id}/cambiar-contrasena`, payload);
   }
 

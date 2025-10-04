@@ -38,20 +38,18 @@ export const routes: Routes = [
         children: [
           { path: '', redirectTo: 'caja', pathMatch: 'full'}, // Redirección a la primera sub-página
           { path: 'caja', component: Caja }, // Se renderiza el componente Caja dentro del Dashboard
-          { path: 'catalogo', component: Catalogo }, // Se renderiza el componente Catálogo (productos get, get id y hacer compra) dentro del Dashboard
+          { path: 'ventas', component: Catalogo }, // Se renderiza el componente Catálogo (productos get, get id y hacer compra) dentro del Dashboard
           { path: 'compras', component: Compras }, // Se renderiza el componente Compras dentro del Dashboard
-          { path: 'inventario', component: Inventario }, // Se renderiza el componente Inventario (productos create, update and delete) dentro del Dashboard
           { path: 'proveedores', component: Proveedores }, // Se renderiza el componente Proveedores dentro del Dashboard
-          { path: 'ventas', component: Ventas }, // Se renderiza el componente Ventas dentro del Dashboard
+          { path: 'historial-ventas', component: Ventas }, // Se renderiza el componente Ventas dentro del Dashboard
           // Ajustes del sistema
           { path: 'caja-sesion', component: Cajasesion }, // Se renderiza el componente Caja sesiones dentro del Dashboard
           { path: 'categoria-producto', component: Cateproducto }, // Se renderiza el componente Categoria Productos dentro del Dashboard
           { path: 'categoria-proveedor', component: Cateproveedor }, // Se renderiza el componente Categoria Proveedor dentro del Dashboard
-          { path: 'detalle-compras', component: Detallecompras }, // Se renderiza el componente Detalle Compras dentro del Dashboard
-          { path: 'detalle-ventas', component: Detalleventas }, // Se renderiza el componente Detalle Ventas dentro del Dashboard
           { path: 'movimiento-caja', component: Movimientocaja }, // Se renderiza el componente Movimiento Caja dentro del Dashboard
           { path: 'reportes', component: Reportes }, // Se renderiza el componente Reportes dentro del Dashboard
           { path: 'roles', component: Roles }, // Se renderiza el componente Reportes dentro del Dashboard
+          { path: 'productos', component: Inventario }, // Se renderiza el componente Inventario (productos create, update and delete) dentro del Dashboard
           { path: 'usuarios', component: Usuarios }, // Se renderiza el componente Roleandusers dentro del Dashboard
           // { path: 'roles', component: RoleListComponent } // Para la lista de roles
         ]

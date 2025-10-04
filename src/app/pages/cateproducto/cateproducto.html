@@ -150,6 +150,11 @@
                   </div>
                 </td>
               </tr>
+              <tr *ngIf="paginatedproductos && paginatedproductos.length === 0">
+                <td colspan="4" class="text-center py-4 text-sm text-gray-500">
+                  Aún no hay datos existentes
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
