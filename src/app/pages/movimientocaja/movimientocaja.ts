@@ -125,7 +125,7 @@ export class Movimientocaja implements OnInit {
         this.applySearchFilter();
       },
       error: (error) => {
-        console.log('Error al cargar los datos:', error);
+        //console.log('Error al cargar los datos:', error);
       },
     });
   }
@@ -391,21 +391,21 @@ export class Movimientocaja implements OnInit {
             .pipe(take(1))
             .subscribe({
               next: (response) => {
-                console.log(
-                  'Movimiento de caja creado exitosamente:',
-                  response
-                );
+                //console.log(
+                 // 'Movimiento de caja creado exitosamente:',
+                  //response
+                //);
                 this.closeCreateModal();
                 this.fetchData();
               },
               error: (error) => {
-                console.error('Error al crear el movimiento de caja:', error);
+                //console.error('Error al crear el movimiento de caja:', error);
                 // Lógica de manejo de errores
               },
             });
         },
         error: (error) => {
-          console.error('Error al actualizar la sesión de caja:', error);
+          //console.error('Error al actualizar la sesión de caja:', error);
           // Lógica de manejo de errores
         },
       });
@@ -470,12 +470,12 @@ export class Movimientocaja implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Movimiento de caja actualizado exitosamente:', response);
+          //console.log('Movimiento de caja actualizado exitosamente:', response);
           this.closeEditModal();
           this.fetchData();
         },
         error: (error) => {
-          console.error('Error al actualizar el movimiento de caja:', error);
+          //console.error('Error al actualizar el movimiento de caja:', error);
           // Lógica de manejo de errores
         },
       });
@@ -552,9 +552,9 @@ export class Movimientocaja implements OnInit {
       !this.movimientoCajaToDelete ||
       !this.movimientoCajaToDelete.movimientoCajaId
     ) {
-      console.error(
-        'No se ha seleccionado un movimiento de caja para eliminar.'
-      );
+      //console.error(
+      //  'No se ha seleccionado un movimiento de caja para eliminar.'
+      //);
       return;
     }
     this.movimientoCajaService
@@ -562,12 +562,12 @@ export class Movimientocaja implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: () => {
-          console.log('Movimiento de caja eliminado exitosamente.');
+          //console.log('Movimiento de caja eliminado exitosamente.');
           this.closeDeleteModal();
           this.fetchData();
         },
         error: (error) => {
-          console.error('Error al eliminar el movimiento de caja:', error);
+          //console.error('Error al eliminar el movimiento de caja:', error);
           alert(
             'Error al eliminar el movimiento de caja. Intente de nuevo más tarde.'
           );

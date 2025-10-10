@@ -7,6 +7,7 @@ import { take } from 'rxjs/operators';
 import { RoleService } from '../../services/role.service';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-usuarios',
@@ -23,6 +24,9 @@ export class Usuarios implements OnInit {
 
   isAdmin = false;
 
+  isErrorDialogVisible: boolean = false;
+  errorDialogTitle: string = '';
+  errorDialogMessage: string = '';
   // Validaciones
   public validationErrors: string[] = [];
 
@@ -156,7 +160,7 @@ export class Usuarios implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
         },
       });
   }
@@ -169,7 +173,7 @@ export class Usuarios implements OnInit {
         // opcional: refrescar la paginación si quieres
         this.applyFiltersAndSearch();
       },
-      error: (err) => console.error('Error al cambiar estado', err),
+      //error: (err) => console.error('Error al cambiar estado', err),
     });
   }
 
@@ -368,12 +372,12 @@ export class Usuarios implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Usuario creado exitosamente:', response);
+          //console.log('Usuario creado exitosamente:', response);
           this.closeCreateModal();
           this.getUsersWithRoles();
         },
         error: (error) => {
-          console.error('Error al crear usuario:', error);
+          //console.error('Error al crear usuario:', error);
 
           // ✅ Accede al mensaje de error específico que viene del backend
           if (error.status === 400 && error.error) {
@@ -416,7 +420,7 @@ export class Usuarios implements OnInit {
 
   async updateUser(): Promise<void> {
     if (!this.editedUser.usuarioId) {
-      console.error('No se ha seleccionado ningún usuario para editar.');
+      //console.error('No se ha seleccionado ningún usuario para editar.');
       return;
     }
 
@@ -424,7 +428,7 @@ export class Usuarios implements OnInit {
     this.validationErrors = await this.validateUser(this.editedUser, false);
 
     if (this.validationErrors.length > 0) {
-      console.warn('Errores de validación local:', this.validationErrors);
+      //console.warn('Errores de validación local:', this.validationErrors);
       return; // Detiene la ejecución si hay errores locales
     }
 
@@ -454,7 +458,7 @@ export class Usuarios implements OnInit {
           this.getUsersWithRoles(); // Recargar la lista de usuarios
         },
         error: (error) => {
-          console.error('Error al actualizar usuario:', error);
+          //console.error('Error al actualizar usuario:', error);
 
           // ✅ Lógica para manejar el error del backend
           if (error.status === 400 && error.error) {
@@ -552,7 +556,7 @@ export class Usuarios implements OnInit {
       const data = await response.json();
       return data.exists; // Asume que la API devuelve { exists: true/false }
     } catch (error) {
-      console.error('Error al verificar el correo:', error);
+      //console.error('Error al verificar el correo:', error);
       // En caso de error, puedes decidir cómo manejarlo.
       // Por seguridad, podrías devolver `true` para prevenir que se cree un usuario si hay un problema.
       return true;
@@ -583,9 +587,29 @@ export class Usuarios implements OnInit {
     this.userToDelete = {};
   }
 
+  // deleteUser(): void {
+  //   if (!this.userToDelete.usuarioId) {
+  //     console.error('No se ha seleccionado ningún usuario para eliminar.');
+  //     return;
+  //   }
+
+  //   this.userService
+  //     .deleteUser(this.userToDelete.usuarioId)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: () => {
+  //         console.log('Usuario eliminado exitosamente.');
+  //         this.closeDeleteModal();
+  //         this.getUsersWithRoles();
+  //       },
+  //       error: (error) => {
+  //         console.error('Error al eliminar usuario:', error);
+  //       },
+  //     });
+  // }
   deleteUser(): void {
     if (!this.userToDelete.usuarioId) {
-      console.error('No se ha seleccionado ningún usuario para eliminar.');
+      //console.error('No se ha seleccionado ningún usuario para eliminar.');
       return;
     }
 
@@ -594,13 +618,49 @@ export class Usuarios implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: () => {
-          console.log('Usuario eliminado exitosamente.');
+          //console.log('Usuario eliminado exitosamente.');
           this.closeDeleteModal();
           this.getUsersWithRoles();
         },
-        error: (error) => {
-          console.error('Error al eliminar usuario:', error);
+        error: (error: HttpErrorResponse) => {
+          //console.error('Error al eliminar usuario:', error);
+
+          // Lógica para manejar el error 409 (Conflicto de Referencia)
+          if (error.status === 409) {
+            // El backend envía el mensaje en 'error.error.mensaje'
+            const mensajeBackend =
+              error.error?.mensaje ||
+              'El usuario no puede ser eliminado debido a restricciones de integridad de datos.';
+
+            this.showReferenceErrorDialog(mensajeBackend);
+          } else {
+            // Manejo de otros errores (500, etc.)
+            this.showReferenceErrorDialog(
+              'Error inesperado del servidor (Status: ' +
+                error.status +
+                '). Inténtalo de nuevo más tarde.'
+            );
+          }
+
+          // Es importante cerrar el modal de confirmación ORIGINAL aquí
+          this.closeDeleteModal();
         },
       });
+  }
+
+  showReferenceErrorDialog(message: string): void {
+    this.errorDialogTitle = 'Error de integridad de datos';
+    this.errorDialogMessage = message;
+    this.isErrorDialogVisible = true; // Mostrar el diálogo
+
+    // El console.log que ya tenías
+    //console.log(`Mostrando diálogo de restricción: ${message}`);
+  }
+
+  // Método para cerrar el diálogo de error
+  closeErrorDialog(): void {
+    this.isErrorDialogVisible = false;
+    this.errorDialogTitle = '';
+    this.errorDialogMessage = '';
   }
 }

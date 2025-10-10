@@ -57,7 +57,7 @@ export class Roles implements OnInit {
         this.applySearchFilter();
       },
       error: (error) => {
-        console.error('Error al cargar roles:', error);
+        //console.error('Error al cargar roles:', error);
       },
     });
   }
@@ -189,12 +189,12 @@ export class Roles implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Rol creado exitosamente:', response);
+          //console.log('Rol creado exitosamente:', response);
           this.closeCreateModal();
           this.fetchRoles();
         },
         error: (error) => {
-          console.error('Error al crear rol:', error);
+          //console.error('Error al crear rol:', error);
           if (error.status === 400 && error.error.errors) {
             // Solución: Usar 'as string[]' para forzar el tipo a string[].
             // Esto le dice a TypeScript que confíe en que el resultado es un arreglo de strings.
@@ -222,12 +222,12 @@ export class Roles implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Rol actualizado exitosamente:', response);
+          //console.log('Rol actualizado exitosamente:', response);
           this.closeEditModal();
           this.fetchRoles();
         },
         error: (error) => {
-          console.error('Error al actualizar rol:', error);
+          //console.error('Error al actualizar rol:', error);
           if (error.status === 400 && error.error.errors) {
             this.editValidationErrors = Object.values(
               error.error.errors
@@ -243,7 +243,7 @@ export class Roles implements OnInit {
 
   deleteRol(): void {
     if (!this.rolToDelete || !this.rolToDelete.rolId) {
-      console.error('No se ha seleccionado un rol para eliminar.');
+      //console.error('No se ha seleccionado un rol para eliminar.');
       return;
     }
 
@@ -252,12 +252,12 @@ export class Roles implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Rol eliminado exitosamente:', response);
+          //console.log('Rol eliminado exitosamente:', response);
           this.closeDeleteModal();
           this.fetchRoles(); // Vuelve a cargar los datos
         },
         error: (error) => {
-          console.error('Error al eliminar rol:', error);
+          //console.error('Error al eliminar rol:', error);
           // Puedes manejar un mensaje de error para el usuario si la eliminación falla
           this.closeDeleteModal();
           alert('Error al eliminar el rol. Intente de nuevo más tarde.');

@@ -5,7 +5,7 @@ import { CatalogoService } from '../../services/catalogo.service';
 import { VentasService } from '../../services/ventas.service';
 import { CajasesionService } from '../../services/cajasesion.service';
 import { LucideAngularModule } from 'lucide-angular';
-import { Subscription } from 'rxjs';
+
 import { AuthService } from '../../services/auth.service';
 import { take } from 'rxjs/operators';
 @Component({
@@ -38,7 +38,7 @@ export class Catalogo implements OnInit, OnDestroy {
   sidebarVisible: boolean = false;
 
   // Suscripciones
-  private carritoSubscription!: Subscription;
+  // private carritoSubscription!: Subscription;
 
   //More
   cajaSesiones: any[] = []; // ✅ Propiedad para almacenar las sesiones de caja
@@ -61,20 +61,21 @@ export class Catalogo implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchProductos();
-    this.carritoSubscription = this.ventasService.carrito$.subscribe(
-      (items) => {
-        this.carrito = items;
-        this.totalVenta = this.ventasService.getCarritoTotal();
-        this.calcularCambio();
-      }
-    );
+
+    // this.carritoSubscription = this.ventasService.carrito$.subscribe(
+    //   (items) => {
+    //     this.carrito = items;
+    //     this.totalVenta = this.ventasService.getCarritoTotal();
+    //     this.calcularCambio();
+    //   }
+    // );
     this.getCajaSesionesAbiertas();
   }
 
   ngOnDestroy(): void {
-    if (this.carritoSubscription) {
-      this.carritoSubscription.unsubscribe();
-    }
+    // if (this.carritoSubscription) {
+    //   this.carritoSubscription.unsubscribe();
+    // }
   }
 
   private esActivo(p: any): boolean {
@@ -102,7 +103,7 @@ export class Catalogo implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('Error al obtener sesiones de caja:', error);
+          //console.error('Error al obtener sesiones de caja:', error);
           // ✅ Añade la llamada a showToast aquí
           this.showToast(
             'Error al obtener sesiones de caja. Intente de nuevo más tarde.',
@@ -119,7 +120,7 @@ export class Catalogo implements OnInit, OnDestroy {
         this.applySearchFilter(); // El filtro activo hace la parte “activa”
       },
       error: (e) => {
-        console.error('Error al cargar los productos:', e);
+        //console.error('Error al cargar los productos:', e);
         this.showToast('Error al cargar los productos.', 'error');
       },
     });
@@ -227,12 +228,12 @@ export class Catalogo implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Venta generada con éxito:', response);
+          //console.log('Venta generada con éxito:', response);
           this.showToast('Venta realizada con éxito.', 'success');
           this.limpiarCarrito();
         },
         error: (err) => {
-          console.error('Error al generar la venta:', err);
+          //console.error('Error al generar la venta:', err);
           // Intenta extraer y mostrar un mensaje de error más útil
           const errorMsg =
             err.error?.message ||

@@ -89,7 +89,7 @@ export class Caja implements OnInit {
         this.applySearchFilter();
       },
       error: (error) => {
-        console.error('Error al cargar las cajas:', error);
+        //console.error('Error al cargar las cajas:', error);
       },
     });
   }
@@ -123,7 +123,7 @@ export class Caja implements OnInit {
         // ‑‑ si usas ChangeDetectionStrategy.OnPush:
         // this.cdr.detectChanges();
       },
-      error: err => console.error('Error al cambiar estado', err)
+      //error: err => console.error('Error al cambiar estado', err)
     });
   }
 
@@ -258,12 +258,12 @@ export class Caja implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Categoría creada exitosamente:', response);
+          //console.log('Categoría creada exitosamente:', response);
           this.closeCreateModal();
           this.fetchcajas();
         },
         error: (error) => {
-          console.error('Error al crear la categoría:', error);
+          //console.error('Error al crear la categoría:', error);
           if (error.status === 400 && error.error.errors) {
             this.validationErrors = Object.values(
               error.error.errors
@@ -301,12 +301,12 @@ export class Caja implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Caja actualizada exitosamente:', response);
+          //console.log('Caja actualizada exitosamente:', response);
           this.closeEditModal();
           this.fetchcajas();
         },
         error: (error) => {
-          console.error('Error al actualizar la caja:', error);
+          //console.error('Error al actualizar la caja:', error);
           if (error.status === 400 && error.error.errors) {
             this.editValidationErrors = Object.values(
               error.error.errors
@@ -344,7 +344,7 @@ export class Caja implements OnInit {
 
   deleteCajas(): void {
     if (!this.CajasToDelete || !this.CajasToDelete.cajaId) {
-      console.error('No se ha seleccionado una categoría para eliminar.');
+      //console.error('No se ha seleccionado una categoría para eliminar.');
       return;
     }
     this.cajaService
@@ -353,12 +353,12 @@ export class Caja implements OnInit {
       .subscribe({
         next: () => {
           // La API no siempre devuelve un 'response' en DELETE, así que no lo usamos.
-          console.log('Categoría eliminada exitosamente.');
+          //console.log('Categoría eliminada exitosamente.');
           this.closeDeleteModal();
           this.fetchcajas();
         },
         error: (error) => {
-          console.error('Error al eliminar la categoría:', error);
+          //console.error('Error al eliminar la categoría:', error);
           alert('Error al eliminar la categoría. Intente de nuevo más tarde.');
           // No se cierra el modal aquí, para que el usuario pueda ver la alerta antes de que se cierre.
         },

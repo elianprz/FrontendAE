@@ -25,10 +25,10 @@ export class Roleandusers implements OnInit {
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
-        console.log('Usuarios cargados:', this.users);
+        //console.log('Usuarios cargados:', this.users);
       },
       error: (error) => {
-        console.error('Error al cargar usuarios:', error);
+        //console.error('Error al cargar usuarios:', error);
       }
     });
   }

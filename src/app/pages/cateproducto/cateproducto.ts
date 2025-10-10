@@ -61,7 +61,7 @@ export class Cateproducto implements OnInit {
         this.applySearchFilter();
       },
       error: (error) => {
-        console.error('Error al cargar las categorías de proveedores:', error);
+        //console.error('Error al cargar las categorías de proveedores:', error);
       },
     });
   }
@@ -197,12 +197,12 @@ export class Cateproducto implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Categoría creada exitosamente:', response);
+          //console.log('Categoría creada exitosamente:', response);
           this.closeCreateModal();
           this.fetchproductos();
         },
         error: (error) => {
-          console.error('Error al crear la categoría:', error);
+          //console.error('Error al crear la categoría:', error);
           if (error.status === 400 && error.error.errors) {
             this.validationErrors = Object.values(
               error.error.errors
@@ -245,12 +245,12 @@ export class Cateproducto implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Producto actualizada exitosamente:', response);
+          //console.log('Producto actualizada exitosamente:', response);
           this.closeEditModal();
           this.fetchproductos();
         },
         error: (error) => {
-          console.error('Error al actualizar el producto:', error);
+          //console.error('Error al actualizar el producto:', error);
           if (error.status === 400 && error.error.errors) {
             this.editValidationErrors = Object.values(
               error.error.errors
@@ -288,7 +288,7 @@ export class Cateproducto implements OnInit {
 
   deleteCatproducto(): void {
     if (!this.cateproductoToDelete || !this.cateproductoToDelete.categoriaId) {
-      console.error('No se ha seleccionado una categoría para eliminar.');
+      //console.error('No se ha seleccionado una categoría para eliminar.');
       return;
     }
     this.CateproductoService.deleteProducto(
@@ -298,12 +298,12 @@ export class Cateproducto implements OnInit {
       .subscribe({
         next: () => {
           // La API no siempre devuelve un 'response' en DELETE, así que no lo usamos.
-          console.log('Categoría eliminada exitosamente.');
+          //console.log('Categoría eliminada exitosamente.');
           this.closeDeleteModal();
           this.fetchproductos();
         },
         error: (error) => {
-          console.error('Error al eliminar la categoría:', error);
+          //console.error('Error al eliminar la categoría:', error);
           alert('Error al eliminar la categoría. Intente de nuevo más tarde.');
           // No se cierra el modal aquí, para que el usuario pueda ver la alerta antes de que se cierre.
         },

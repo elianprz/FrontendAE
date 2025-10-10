@@ -57,7 +57,7 @@
       >
         <div
           class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
-          (click)="showReport('detalleVentas')"
+          (click)="showReport('ventas')"
         >
           <lucide-icon
             name="handshake"
@@ -69,7 +69,7 @@
         </div>
         <div
           class="flex flex-col items-center justify-center p-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 ease-in-out hover:scale-105"
-          (click)="showReport('detalleCompras')"
+          (click)="showReport('compras')"
         >
           <lucide-icon
             name="store"
@@ -722,7 +722,7 @@
       </div>
     </div>
 
-    <div *ngIf="currentReport === 'detalleVentas'">
+    <div *ngIf="currentReport === 'ventas'">
       <h2
         class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
       >
@@ -769,19 +769,19 @@
                 <th class="pr-6 py-3 text-right" colspan="1">
                   <div class="flex gap-2 justify-end">
                     <button
-                      (click)="onExportDetalleVentas('excel')"
+                      (click)="onExportVentas('excel')"
                       class="inline-flex items-center rounded-md bg-teal-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500"
                     >
                       <lucide-icon name="TableProperties"></lucide-icon>
                     </button>
                     <button
-                      (click)="onExportDetalleVentas('csv')"
+                      (click)="onExportVentas('csv')"
                       class="inline-flex items-center rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-600"
                     >
                       <lucide-icon name="file-spreadsheet"></lucide-icon>
                     </button>
                     <button
-                      (click)="downloadDetalleVentasCharts()"
+                      (click)="downloadventasCharts()"
                       class="inline-flex items-center rounded-md bg-emerald-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600"
                     >
                       <lucide-icon name="chart-pie"></lucide-icon>
@@ -791,7 +791,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr *ngFor="let detalleV of paginatedDetalleVentas">
+              <tr *ngFor="let detalleV of paginatedVentas">
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
                     <div class="font-mono text-sm/6 text-gray-900">
@@ -809,7 +809,7 @@
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
                     <div class="font-mono text-sm/6 text-gray-900">
-                      {{ detalleV.cantidad }}
+                      {{ detalleV.cantidadVendida }}
                     </div>
                   </div>
                 </td>
@@ -822,7 +822,7 @@
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="font-mono text-sm/6 text-gray-900">
-                    {{ detalleV.subtotal }}
+                    Q.{{ detalleV.total }}
                   </div>
                 </td>
               </tr>
@@ -860,10 +860,10 @@
                 }}</span>
                 a
                 <span class="font-medium">{{
-                  Math4.min(currentPage4 * itemsPerPage4, totalDetalleVentas)
+                  Math4.min(currentPage4 * itemsPerPage4, totalVentas)
                 }}</span>
                 de
-                <span class="font-medium">{{ totalDetalleVentas }}</span>
+                <span class="font-medium">{{ totalVentas }}</span>
                 detalles de venta
               </p>
             </div>
@@ -921,7 +921,7 @@
       </div>
     </div>
 
-    <div *ngIf="currentReport === 'detalleCompras'">
+    <div *ngIf="currentReport === 'compras'">
       <h2
         class="text-4xl text-center py-10 font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl"
       >
@@ -968,13 +968,13 @@
                 <th class="pr-6 py-3 text-right" colspan="1">
                   <div class="flex gap-2 justify-end">
                     <button
-                      (click)="onExportDetalleCompras('excel')"
+                      (click)="onExportCompras('excel')"
                       class="inline-flex items-center rounded-md bg-teal-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500"
                     >
                       <lucide-icon name="TableProperties"></lucide-icon>
                     </button>
                     <button
-                      (click)="onExportDetalleCompras('csv')"
+                      (click)="onExportCompras('csv')"
                       class="inline-flex items-center rounded-md bg-cyan-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-600"
                     >
                       <lucide-icon name="file-spreadsheet"></lucide-icon>
@@ -990,11 +990,11 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-              <tr *ngFor="let detalleC of paginatedDetalleCompras">
+              <tr *ngFor="let compras of paginatedDetalleCompras">
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
                     <div class="font-mono text-sm/6 text-gray-900">
-                      {{ detalleC.fechaCompra }}
+                      {{ compras.fechaCompra }}
                     </div>
                   </div>
                 </td>
@@ -1002,13 +1002,13 @@
                   class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
                 >
                   <div class="truncate w-32">
-                    {{ detalleC.productoNombre }}
+                    {{ compras.productoNombre }}
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="flex gap-x-3">
                     <div class="font-mono text-sm/6 text-gray-900">
-                      {{ detalleC.cantidad }}
+                      {{ compras.stock }}
                     </div>
                   </div>
                 </td>
@@ -1016,12 +1016,12 @@
                   class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 hidden sm:table-cell"
                 >
                   <div class="truncate w-32">
-                    {{ detalleC.precioUnitario }}
+                    {{ compras.precioAdquisicion }}
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   <div class="font-mono text-sm/6 text-gray-900">
-                    {{ detalleC.subtotal }}
+                    {{ compras.total }}
                   </div>
                 </td>
               </tr>
@@ -1059,10 +1059,10 @@
                 }}</span>
                 a
                 <span class="font-medium">{{
-                  Math5.min(currentPage5 * itemsPerPage5, totalDetalleCompras)
+                  Math5.min(currentPage5 * itemsPerPage5, totalCompras)
                 }}</span>
                 de
-                <span class="font-medium">{{ totalDetalleCompras }}</span>
+                <span class="font-medium">{{ totalCompras }}</span>
                 detalles de venta
               </p>
             </div>

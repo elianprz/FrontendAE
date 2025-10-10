@@ -8,10 +8,8 @@ import { MovimientoCajaService } from '../../services/movimientocaja.service';
 import { take } from 'rxjs/operators';
 import { RoleService } from '../../services/role.service';
 import { forkJoin } from 'rxjs';
-import { DetalleVentasService } from '../../services/detalleventa.service';
 import { VentasService } from '../../services/ventas.service';
 import { CatalogoService } from '../../services/catalogo.service';
-import { DetalleComprasService } from '../../services/detallecompra.service';
 import { ComprasService } from '../../services/compras.service';
 // Exportar a xlms
 import * as XLSX from 'xlsx';
@@ -228,21 +226,33 @@ export class Reportes implements OnInit {
   };
 
   // Detalle ventas
-  detalleVentas: any[] = [];
+  ventas: any[] = [];
+  compras: any[] = [];
+
   // Paginación y Filtro con sufijo 4
   searchText4: string = '';
-  filteredDetalleVentas: any[] = [];
-  paginatedDetalleVentas: any[] = [];
+  filteredVentas: any[] = [];
+  paginatedVentas: any[] = [];
 
-  detalleCompras: any[] = [];
+  //Detalle compras
   paginatedDetalleCompras: any[] = [];
   filteredDetalleCompras: any[] = [];
 
   currentPage4: number = 1;
   itemsPerPage4: number = 7;
-  totalDetalleVentas: number = 0;
+  totalVentas: number = 0;
   private pagesToShow4: number = 5;
   public Math4 = Math;
+
+  searchText5: string = '';
+  filteredCompras: any[] = [];
+  paginatedCompras: any[] = [];
+  currentPage5: number = 1;
+  itemsPerPage5: number = 7;
+  totalCompras: number = 0;
+  private pagesToShow5: number = 5;
+  public Math5 = Math;
+
   // Gráficas
   // 2️⃣  Gráfica 1 – Cantidad por producto
   public productosCantidadChartData: ChartConfiguration<'bar'>['data'] = {
@@ -257,66 +267,55 @@ export class Reportes implements OnInit {
   };
 
   // 4️⃣  Gráfica 3 – Detalle ventas (cantidad, precio‑unitario, subtotal)
-  public detalleVentasChartData: ChartConfiguration<'bar'>['data'] = {
+  public ventasChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [], // ← nombres de producto
     datasets: [], // ← tres datasets
   };
 
   /* ----------------------------------------------------------------- */
   // 5️⃣  Opciones comunes (las usamos para las tres gráficas)
-  public barraChartOptions3: ChartConfiguration<'bar'>['options'] = {
-    responsive: false,
-    animation: false,
-    scales: {
-      x: {
-        ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0, // <-- correcto para Chart.js 4
-        },
-      },
-    },
-    plugins: { legend: { display: true } },
-  };
-
-  // Paginación y Filtro con sufijo 5
-  searchText5: string = '';
-  currentPage5: number = 1;
-  itemsPerPage5: number = 7;
-  totalDetalleCompras: number = 0;
-  private pagesToShow5: number = 5;
-  public Math5 = Math;
-
-  // Gráficas compras
-  /* 2️⃣  Gráfica 1 – Bar (productos más caros) */
   public productosMasCarosBarData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
     datasets: [],
   };
 
-  /* 3️⃣  Gráfica 2 – Line (subtotal por fecha de compra) */
-  public subtotalPorFechaLineData: ChartConfiguration<'line'>['data'] = {
+  public totalPorFechaLineData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [],
+  };
+  public comprasChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
     datasets: [],
   };
 
-  /* ----------------------------------------------------------------- */
-  /* 4️⃣  Opciones comunes */
+  /* ---------- OPCIONES COMUNES (para los gráficos) ---------- */
   public barraChartOptions5: ChartConfiguration<'bar'>['options'] = {
     responsive: false,
     animation: false,
     scales: {
-      x: {
-        ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0, // <-- correcto para Chart.js 4
+        // Eje Y primario (para Cantidad y Total)
+        y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+                display: true,
+                text: 'Cantidad / Total'
+            }
         },
-      },
+        // Eje Y secundario (para Precio Promedio)
+        y1: { 
+            type: 'linear',
+            display: true,
+            position: 'right', // Coloca el eje a la derecha
+            grid: {
+                drawOnChartArea: false, // Solo dibuja el eje, no las líneas de rejilla
+            },
+            title: {
+                display: true,
+                text: 'Precio de adquisición'
+            }
+        },
     },
     plugins: { legend: { display: true } },
   };
@@ -325,15 +324,8 @@ export class Reportes implements OnInit {
     responsive: false,
     animation: false,
     scales: {
-      x: {
-        ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0, // <-- correcto para Chart.js 4
-        },
-      },
+      x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
+      y: { beginAtZero: true, ticks: { precision: 0 } },
     },
     plugins: { legend: { position: 'top' } },
   };
@@ -344,8 +336,8 @@ export class Reportes implements OnInit {
     'usuarios',
     'sesionesCaja',
     'movimientosCaja',
-    'detalleVentas',
-    'detalleCompras',
+    'ventas',
+    'compras',
   ];
 
   currentReport: string | null = 'menu';
@@ -355,10 +347,8 @@ export class Reportes implements OnInit {
     private roleService: RoleService,
     private cajaSesionService: CajasesionService,
     private movimientoCajaService: MovimientoCajaService,
-    private detalleVentasService: DetalleVentasService,
     private ventasService: VentasService,
     private catalogoService: CatalogoService,
-    private detalleComprasService: DetalleComprasService,
     private comprasService: ComprasService
   ) {}
 
@@ -366,8 +356,9 @@ export class Reportes implements OnInit {
     this.getUsersWithRoles();
     this.fetchData();
     this.fetchDataSimple();
-    this.fetchDetalleVentas();
-    this.fetchDetalleCompras();
+    this.loadVentasConProductos();
+    //this.loadComprasConProductos();
+    this.loadCompras();
   }
 
   // Menu
@@ -377,7 +368,7 @@ export class Reportes implements OnInit {
     if (this.validReports.includes(reportName)) {
       this.currentReport = reportName;
     } else {
-      console.error(`Reporte no válido: ${reportName}`);
+      //console.error(`Reporte no válido: ${reportName}`);
       // Puedes manejar el error, por ejemplo, volviendo al menú
       this.currentReport = 'menu';
     }
@@ -448,7 +439,7 @@ export class Reportes implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
         },
       });
   }
@@ -785,7 +776,7 @@ export class Reportes implements OnInit {
           this.applySearchFilter2();
         },
         error: (error) => {
-          console.error('Error al cargar las sesiones de caja:', error);
+          //console.error('Error al cargar las sesiones de caja:', error);
         },
       });
   }
@@ -986,7 +977,7 @@ export class Reportes implements OnInit {
           this.applySearchFilter3();
         },
         error: (error) => {
-          console.error('Error al cargar los movimientos de caja:', error);
+          //console.error('Error al cargar los movimientos de caja:', error);
         },
       });
   }
@@ -1232,92 +1223,139 @@ export class Reportes implements OnInit {
   }
 
   // Detalle ventas
-  fetchDetalleVentas(): void {
+  loadVentasConProductos(): void {
     forkJoin({
-      ventas: this.ventasService.getVentas().pipe(take(1)),
+      ventas: this.ventasService.getVentas().pipe(take(1)), // <-- tabla única
       productos: this.catalogoService.getProductos().pipe(take(1)),
-      detalleVentas: this.detalleVentasService.getDetalleVentas().pipe(take(1)),
     }).subscribe({
-      next: (results) => {
-        // Mapeamos las ventas para un acceso rápido por VentaId
-        const ventasMap = new Map(
-          results.ventas.map((v: any) => [v.ventaId, v])
-        );
-
+      next: ({ ventas, productos }) => {
+        // Mapa rápido de productoId → nombre
         const productosMap = new Map(
-          results.productos.map((p: any) => [p.productoId, p])
+          productos.map((p: any) => [p.productoId, p])
         );
 
-        this.detalleVentas = results.detalleVentas.map((dv: any) => {
-          const venta = ventasMap.get(dv.ventaId);
-          const producto = productosMap.get(dv.productoId);
-
-          const fechaVenta = venta
-            ? this.formatDateForDisplay(venta.fechaVenta)
-            : 'N/A';
-
+        // Enriquecemos cada venta con su nombre de producto y formatamos la fecha.
+        this.ventas = ventas.map((v: any) => {
+          const producto = productosMap.get(v.productoId);
           return {
-            ...dv,
-            fechaVenta: fechaVenta,
+            ...v,
             productoNombre: producto
               ? producto.nombre
               : 'Producto no encontrado',
+            fechaVenta: this.formatDateForDisplay(v.fechaVenta),
           };
         });
 
+        // -------------------- GRÁFICAS --------------------
         this.prepareProductosCharts(); // Cantidad + Subtotal
-        this.prepareDetalleVentasChart(); // 3 datasets
+        this.prepareDetalleVentasChart(); // 3 datasets (cant., unit., subtotal)
 
-        this.applySearchFilter4();
+        // -------------------- FILTRO / PAGINADO --------------------
+        this.applySearchFilter4(); // <-- usa this.ventas → filteredVentas
       },
-      error: (error) => {
-        console.error('Error al cargar los datos:', error);
-      },
+      //error: (err) => console.error('Error al cargar ventas y productos:', err),
     });
   }
 
+  private prepareDetalleVentasChart(): void {
+    const agrupa: {
+      [nombre: string]: {
+        cantidad: number;
+        subtotal: number;
+        precioSum: number;
+        precioCnt: number;
+      };
+    } = {};
+
+    this.ventas.forEach((v) => {
+      const nombre = v.productoNombre;
+      if (!agrupa[nombre]) {
+        agrupa[nombre] = {
+          cantidad: 0,
+          subtotal: 0,
+          precioSum: 0,
+          precioCnt: 0,
+        };
+      }
+      agrupa[nombre].cantidad += Number(v.cantidadVendida);
+      agrupa[nombre].subtotal += Number(v.subTotal);
+      agrupa[nombre].precioSum += Number(v.precioUnitario);
+      agrupa[nombre].precioCnt += 1;
+    });
+
+    const labels = Object.keys(agrupa);
+    const cantidades = labels.map((l) => agrupa[l].cantidad);
+    const subtotales = labels.map((l) => agrupa[l].subtotal);
+    const precioProm = labels.map((l) =>
+      agrupa[l].precioCnt ? agrupa[l].precioSum / agrupa[l].precioCnt : 0
+    );
+
+    this.ventasChartData = {
+      labels,
+      datasets: [
+        {
+          label: 'Cantidad',
+          data: cantidades,
+          backgroundColor: '#3B82F6',
+          borderColor: '#3B82F6',
+          borderWidth: 1,
+        },
+        {
+          label: 'Precio unitario (prom.)',
+          data: precioProm,
+          backgroundColor: '#F59E0B',
+          borderColor: '#F59E0B',
+          borderWidth: 1,
+        },
+        {
+          label: 'Total',
+          data: subtotales,
+          backgroundColor: '#EF4444',
+          borderColor: '#EF4444',
+          borderWidth: 1,
+        },
+      ],
+    };
+  }
+
   // Export data excel
-  private getExportDataDetalleVentas(detalles: any[]): any[] {
-    return detalles.map((d) => ({
-      Cantidad: Number(d.cantidad), // aseguramos número
-      PrecioUnitario: Number(d.precioUnitario),
-      Subtotal: Number(d.subtotal),
+  private getExportDataVentas(ventas: any[]): any[] {
+    return ventas.map((v) => ({
+      Fecha: v.fechaVenta,
+      Producto: v.productoNombre,
+      Cantidad: Number(v.cantidadVendida),
+      PrecioUnitario: Number(v.precioUnitario),
+      Subtotal: Number(v.subTotal),
     }));
   }
 
-  onExportDetalleVentas(format: 'excel' | 'csv'): void {
-    const dataToExport = this.getExportDataDetalleVentas(this.detalleVentas);
-    const fileName = 'ReporteDetalleVentas';
+  onExportVentas(format: 'excel' | 'csv'): void {
+    const data = this.getExportDataVentas(this.ventas);
+    const fileName = 'ReporteVentas';
 
-    if (format === 'excel') {
-      this.exportToExcelDetalleVenta(dataToExport, fileName);
-    } else {
-      this.exportToCSVDetalleVenta(dataToExport, fileName);
-    }
+    if (format === 'excel') this.exportToExcelVentas(data, fileName);
+    else this.exportToCSVVentas(data, fileName);
   }
 
-  exportToExcelDetalleVenta(data: any[], fileName: string): void {
+  exportToExcelVentas(data: any[], fileName: string): void {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Datos');
     XLSX.writeFile(wb, `${fileName}.xlsx`);
   }
 
-  exportToCSVDetalleVenta(data: any[], fileName: string): void {
+  exportToCSVVentas(data: any[], fileName: string): void {
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
     const csv = XLSX.utils.sheet_to_csv(ws);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${fileName}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${fileName}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   // Helper para convertir fecha
@@ -1339,48 +1377,42 @@ export class Reportes implements OnInit {
   // }
 
   private prepareProductosCharts(): void {
-    /* -------------------------------------------------
-     * Agrupamos por nombre de producto
-     * ------------------------------------------------- */
-    const agrupa: {
-      [nombre: string]: { cantidad: number; subtotal: number };
-    } = {};
+    const agrupa: { [nombre: string]: { cantidad: number; subtotal: number } } =
+      {};
 
-    this.detalleVentas.forEach((dv) => {
-      const nombre = dv.productoNombre;
-      if (!agrupa[nombre]) {
-        agrupa[nombre] = { cantidad: 0, subtotal: 0 };
-      }
-      agrupa[nombre].cantidad += Number(dv.cantidad);
-      agrupa[nombre].subtotal += Number(dv.subtotal);
+    this.ventas.forEach((v) => {
+      const nombre = v.productoNombre;
+      if (!agrupa[nombre]) agrupa[nombre] = { cantidad: 0, subtotal: 0 };
+      agrupa[nombre].cantidad += Number(v.cantidadVendida); // <-- campo de la tabla
+      agrupa[nombre].subtotal += Number(v.subTotal);
     });
 
     const labels = Object.keys(agrupa);
     const cantidades = labels.map((l) => agrupa[l].cantidad);
     const subtotales = labels.map((l) => agrupa[l].subtotal);
 
-    /* ---------- GRÁFICA 1 – CANTIDAD ---------- */
+    // --- Gráfica 1 – Cantidad ---
     this.productosCantidadChartData = {
       labels,
       datasets: [
         {
           label: 'Cantidad vendida',
           data: cantidades,
-          backgroundColor: '#3B82F6', // azul
+          backgroundColor: '#3B82F6',
           borderColor: '#3B82F6',
           borderWidth: 1,
         },
       ],
     };
 
-    /* ---------- GRÁFICA 2 – SUBTOTAL ---------- */
+    // --- Gráfica 2 – Subtotal ---
     this.productosSubtotalChartData = {
       labels,
       datasets: [
         {
           label: 'Total vendido',
           data: subtotales,
-          backgroundColor: '#10B981', // verde
+          backgroundColor: '#10B981',
           borderColor: '#10B981',
           borderWidth: 1,
         },
@@ -1388,7 +1420,7 @@ export class Reportes implements OnInit {
     };
   }
 
-  private prepareDetalleVentasChart(): void {
+  private prepareventasChart(): void {
     /* -------------------------------------------------
      * Agrupamos por producto para obtener:
      *   – totalCantidad
@@ -1404,7 +1436,7 @@ export class Reportes implements OnInit {
       };
     } = {};
 
-    this.detalleVentas.forEach((dv) => {
+    this.ventas.forEach((dv) => {
       const nombre = dv.productoNombre;
       if (!agrupa[nombre]) {
         agrupa[nombre] = {
@@ -1428,7 +1460,7 @@ export class Reportes implements OnInit {
       return info.precioCnt ? info.precioSum / info.precioCnt : 0;
     });
 
-    this.detalleVentasChartData = {
+    this.ventasChartData = {
       labels,
       datasets: [
         {
@@ -1456,7 +1488,7 @@ export class Reportes implements OnInit {
     };
   }
 
-  downloadDetalleVentasCharts(): void {
+  downloadventasCharts(): void {
     // 1️⃣  Cantidad por producto
     this.downloadChartAsPng(
       'bar',
@@ -1473,10 +1505,10 @@ export class Reportes implements OnInit {
       'productos-total'
     );
 
-    // 3️⃣  DetalleVentas (cantidad, precio‑unitario, subtotal)
+    // 3️⃣  ventas (cantidad, precio‑unitario, subtotal)
     this.downloadChartAsPng(
       'bar',
-      this.detalleVentasChartData,
+      this.ventasChartData,
       this.barraChartOptions,
       'detalle-ventas'
     );
@@ -1484,56 +1516,53 @@ export class Reportes implements OnInit {
 
   // Lógica de Paginación y Filtro con sufijo 4
   applySearchFilter4(): void {
-    if (this.searchText4) {
-      const lowerCaseSearchText = this.searchText4.toLowerCase();
-      this.filteredDetalleVentas = this.detalleVentas.filter((detalle) => {
-        return (
-          (detalle.productoNombre || '')
-            .toLowerCase()
-            .includes(lowerCaseSearchText) ||
-          (detalle.fechaVenta || '').toLowerCase().includes(lowerCaseSearchText)
-        );
-      });
-    } else {
-      this.filteredDetalleVentas = [...this.detalleVentas];
-    }
-    this.totalDetalleVentas = this.filteredDetalleVentas.length;
-    this.currentPage4 = 1;
-    this.paginateDetalleVentas4();
+    // 1️⃣ Filtrar
+    const term = this.searchText4.trim().toLowerCase();
+    this.filteredVentas = this.ventas.filter((v) => {
+      return (
+        v.productoNombre?.toLowerCase().includes(term) ||
+        v.fechaVenta?.toLowerCase().includes(term) ||
+        String(v.cantidadVendida).includes(term) ||
+        String(v.subTotal).includes(term)
+      );
+    });
+
+    // 2️⃣ Paginación
+    this.totalVentas = this.filteredVentas.length;
+    const start = (this.currentPage4 - 1) * this.itemsPerPage4;
+    const end = start + this.itemsPerPage4;
+    this.paginatedVentas = this.filteredVentas.slice(start, end);
   }
 
-  paginateDetalleVentas4(): void {
+  paginateventas4(): void {
     const startIndex = (this.currentPage4 - 1) * this.itemsPerPage4;
     const endIndex = startIndex + this.itemsPerPage4;
-    this.paginatedDetalleVentas = this.filteredDetalleVentas.slice(
-      startIndex,
-      endIndex
-    );
+    this.paginatedVentas = this.filteredVentas.slice(startIndex, endIndex);
   }
 
   goToPage4(page: number): void {
     if (page >= 1 && page <= this.totalPages4) {
       this.currentPage4 = page;
-      this.paginateDetalleVentas4();
+      this.paginateventas4();
     }
   }
 
   nextPage4(): void {
     if (this.currentPage4 < this.totalPages4) {
       this.currentPage4++;
-      this.paginateDetalleVentas4();
+      this.paginateventas4();
     }
   }
 
   prevPage4(): void {
     if (this.currentPage4 > 1) {
       this.currentPage4--;
-      this.paginateDetalleVentas4();
+      this.paginateventas4();
     }
   }
 
   get totalPages4(): number {
-    return Math.ceil(this.totalDetalleVentas / this.itemsPerPage4);
+    return Math.ceil(this.totalVentas / this.itemsPerPage4);
   }
 
   get pages4(): (number | string)[] {
@@ -1582,62 +1611,184 @@ export class Reportes implements OnInit {
   }
 
   // Detalle compras
-  fetchDetalleCompras(): void {
-    forkJoin({
-      compras: this.comprasService.getCompras().pipe(take(1)),
-      productos: this.catalogoService.getProductos().pipe(take(1)),
-      detalleCompras: this.detalleComprasService
-        .getDetalleCompras()
-        .pipe(take(1)),
-    }).subscribe({
-      next: (results) => {
-        // Mapeamos las compras para un acceso rápido por CompraId
-        const comprasMap = new Map(
-          results.compras.map((c: any) => [c.compraId, c])
-        );
+  loadCompras(): void {
+    this.comprasService
+      .getCompras() // ← SOLO LA tabla Compras
+      .pipe(take(1))
+      .subscribe({
+        next: (compras: any[]) => {
+          /* -----------------------------------------------------------------
+           * Enriquecemos cada registro:
+           *   – `fechaCompra`  → formato legible (DD‑MM‑YYYY)
+           *   – `productoNombre` → usamos el campo `Nombre` (si no, `Descripcion`)
+           * ----------------------------------------------------------------- */
+          this.compras = compras.map((c: any) => ({
+            ...c,
+            fechaCompra: this.formatDateForDisplay(c.fechaCompra),
+            // Si tu tabla tiene “Nombre” del producto, úsalo. Si no, usa “Descripcion”.
+            productoNombre: c.nombre ?? c.descripcion ?? 'Producto sin nombre',
+          }));
 
-        const productosMap = new Map(
-          results.productos.map((p: any) => [p.productoId, p])
-        );
+          // ---- GRÁFICAS ----
+          this.generateAllComprasCharts();
 
-        this.detalleCompras = results.detalleCompras.map((dc: any) => {
-          const compra = comprasMap.get(dc.compraId);
-          const producto = productosMap.get(dc.productoId);
-
-          const fechaCompra = compra
-            ? this.formatDateForDisplay5(compra.fechaCompra)
-            : 'N/A';
-
-          return {
-            ...dc,
-            fechaCompra: fechaCompra,
-            productoNombre: producto
-              ? producto.nombre
-              : 'Producto no encontrado',
-          };
-        });
-
-        this.prepareDetalleComprasCharts();
-
-        this.applySearchFilter5();
-      },
-      error: (error) => {
-        console.error('Error al cargar los datos:', error);
-      },
-    });
+          // ---- FILTRO / PAGINACIÓN ----
+          this.applySearchFilter5();
+        },
+        error: (err) =>
+          console.error('Error al cargar la lista de compras:', err),
+      });
+  }
+  private getExportDataCompras(compras: any[]): any[] {
+    return compras.map((c) => ({
+      fechaCompra: c.fechaCompra,
+      productoNombre: c.productoNombre,
+      Cantidad: Number(c.stock),
+      precioAdquisicion: Number(c.precioAdquisicion),
+      total: Number(c.total),
+      // Si quieres exportar más columnas:
+      // Observacion: c.Observacion,
+      // Estado: c.Estado,
+      // ProveedorId: c.ProveedorId,
+    }));
   }
 
+  onExportCompras(format: 'excel' | 'csv'): void {
+    const data = this.getExportDataCompras(this.compras);
+    const fileName = 'ReporteCompras';
+
+    if (format === 'excel') this.exportToExcel(data, fileName);
+    else this.exportToCSV(data, fileName);
+  }
+
+
+  private prepareProductosMasCarosChart(): void {
+    const preciosMaximos: { 
+        [nombre: string]: number; // Guardará el precio de adquisición máximo para cada producto
+    } = {};
+
+    // 1. Encontrar el precio máximo de adquisición por producto
+    this.compras.forEach((c) => {
+        // Usamos 'nombre' y 'precioAdquisicion' con la convención de minúsculas
+        const nombre = c.nombre; 
+        const precio = Number(c.precioAdquisicion);
+
+        if (!nombre || isNaN(precio)) return; // Ignorar registros inválidos
+
+        if (!preciosMaximos[nombre] || precio > preciosMaximos[nombre]) {
+            preciosMaximos[nombre] = precio;
+        }
+    });
+
+    // 2. Convertir a un array para ordenar
+    const ordered = Object.entries(preciosMaximos)
+        .map(([nombre, precio]) => ({ nombre, precio }))
+        // Ordenamos DESCENDENTEMENTE por precio
+        .sort((a, b) => b.precio - a.precio); 
+
+    // 3. Seleccionar el Top N (ej. los 10 productos más caros)
+    const topN = 10;
+    const dataForChart = ordered.slice(0, topN);
+
+    //console.log(`✅ Data Productos Más Caros (Top ${topN})`, dataForChart);
+
+    // 4. Mapear los datos al formato de Chart.js
+    this.productosMasCarosBarData = {
+        labels: dataForChart.map((d) => d.nombre),
+        datasets: [
+            {
+                label: 'Precio de Adquisición Unitario Máximo',
+                data: dataForChart.map((d) => d.precio),
+                backgroundColor: [
+                    '#EF4444', // Rojo para el más caro
+                    '#F59E0B', // Naranja
+                    '#3B82F6', // Azul
+                    '#10B981', // Verde
+                    '#6366F1', // Indigo
+                    '#EC4899', // Rosa
+                    '#9CA3AF', // Gris
+                    // Puedes añadir más colores si necesitas un Top N mayor
+                ],
+                borderColor: '#fff',
+                borderWidth: 1,
+            },
+        ],
+    };
+}
+
+  downloadDetalleComprasCharts(): void {
+    // 1️⃣  Productos más caros (barra)
+    this.downloadChartAsPng(
+      'bar',
+      this.productosMasCarosBarData,
+      this.barraChartOptions,
+      'productos-mas-caros'
+    );
+
+    // 2️⃣  Subtotal por fecha (línea)
+    this.downloadChartAsPng(
+      'line',
+      this.totalPorFechaLineData,
+      this.lineChartOptions,
+      'total-por-fecha'
+    );
+
+    // 3️⃣  Detalle compras (cantidad, precio‑unitario, total) – barra
+    this.downloadChartAsPng(
+      'bar',
+      this.comprasChartData,
+      this.barraChartOptions5,
+      'detalle-compras'
+    );
+  }
+
+  private prepareSubtotalPorFechaLineChart(): void {
+    const totalPorFecha: { [fecha: string]: number } = {};
+
+    this.compras.forEach((c) => {
+      const fecha = c.fechaCompra; // <-- DD‑MM‑YYYY (ya formateada)
+      if (!totalPorFecha[fecha]) totalPorFecha[fecha] = 0;
+      totalPorFecha[fecha] += Number(c.total);
+    });
+
+    // Ordenamos cronológicamente
+    const ordered = Object.entries(totalPorFecha)
+      .map(([fecha, total]) => ({
+        fecha,
+        total,
+        // Convertimos la fecha “DD‑MM‑YYYY” a milisegundos para ordenar
+        sortKey: new Date(fecha.split('-').reverse().join('-')).getTime(),
+      }))
+      .sort((a, b) => a.sortKey - b.sortKey);
+
+    //console.log('✅ Data total‑por‑fecha (ordered)', ordered);
+    /* ----------------------------------------------------------
+     *  GUARDAMOS EL RESULTADO EN LA PROPIEDAD QUE USARÁ EL CHART
+     * ---------------------------------------------------------- */
+    this.totalPorFechaLineData = {
+      labels: ordered.map((o) => o.fecha),
+      datasets: [
+        {
+          label: 'Total por día',
+          data: ordered.map((o) => o.total),
+          fill: false,
+          borderColor: '#3B82F6', // azul
+          tension: 0.1,
+        },
+      ],
+    };
+  }
   //Export to excel
   private getExportDataDetalleCompras(compras: any[]): any[] {
     return compras.map((c) => ({
-      Cantidad: Number(c.cantidad),
-      PrecioUnitario: Number(c.precioUnitario),
-      Subtotal: Number(c.subtotal),
+      stock: Number(c.stock),
+      precioAdqusicion: Number(c.precioAdqusicion),
+      total: Number(c.total),
     }));
   }
 
   onExportDetalleCompras(format: 'excel' | 'csv'): void {
-    const dataToExport = this.getExportDataDetalleCompras(this.detalleCompras);
+    const dataToExport = this.getExportDataDetalleCompras(this.compras);
     const fileName = 'ReporteDetalleCompras';
 
     if (format === 'excel') {
@@ -1672,102 +1823,81 @@ export class Reportes implements OnInit {
   }
 
   /* 6️⃣  CÁLCULO DE LOS GRÁFICOS */
-  private prepareDetalleComprasCharts(): void {
-    /* ---------- 1️⃣  PRODUCTOS MÁS CAROS (por subtotal) ---------- */
-    const porProducto: {
-      [nombre: string]: {
-        subtotal: number;
-        cantidad: number;
-        precioSum: number;
-        cnt: number;
-      };
+  private prepareDetalleComprasChart(): void {
+    const agrupa: {
+        [nombre: string]: {
+            cantidad: number; // Stock acumulado
+            subtotal: number; // Total acumulado
+            precioSum: number; // PrecioAdquisicion acumulado
+            precioCnt: number; // Contador de registros
+        };
     } = {};
 
-    this.detalleCompras.forEach((dc) => {
-      const nombre = dc.productoNombre;
-      if (!porProducto[nombre]) {
-        porProducto[nombre] = {
-          subtotal: 0,
-          cantidad: 0,
-          precioSum: 0,
-          cnt: 0,
-        };
-      }
-      porProducto[nombre].subtotal += Number(dc.subtotal);
-      porProducto[nombre].cantidad += Number(dc.cantidad);
-      porProducto[nombre].precioSum += Number(dc.precioUnitario);
-      porProducto[nombre].cnt += 1;
+    this.compras.forEach((c) => {
+        // 🚨 CORRECCIÓN 1: Usar 'nombre' (asumido) o 'Nombre' (si mantiene mayúscula)
+        const nombre = c.nombre; 
+        
+        // Verifica si la propiedad 'nombre' existe y tiene un valor válido
+        if (!nombre) return; 
+
+        if (!agrupa[nombre]) {
+            agrupa[nombre] = {
+                cantidad: 0,
+                subtotal: 0,
+                precioSum: 0,
+                precioCnt: 0,
+            };
+        }
+        
+        // 🚨 CORRECCIÓN 2: Usar c.stock, c.total, c.precioAdquisicion (minúscula)
+        agrupa[nombre].cantidad += Number(c.stock);
+        agrupa[nombre].subtotal += Number(c.total);
+        agrupa[nombre].precioSum += Number(c.precioAdquisicion);
+        agrupa[nombre].precioCnt += 1;
     });
 
-    // Convertimos a array y ordenamos por subtotal descendente
-    const ordenado = Object.entries(porProducto)
-      .map(([nombre, v]) => ({
-        nombre,
-        totalSubtotal: v.subtotal,
-        totalCantidad: v.cantidad,
-        avgPrecio: v.cnt ? v.precioSum / v.cnt : 0,
-      }))
-      .sort((a, b) => b.totalSubtotal - a.totalSubtotal);
+    const labels = Object.keys(agrupa);
+    const cantidades = labels.map((l) => agrupa[l].cantidad);
+    const subtotales = labels.map((l) => agrupa[l].subtotal);
+    const precioProm = labels.map((l) =>
+        agrupa[l].precioCnt ? agrupa[l].precioSum / agrupa[l].precioCnt : 0
+    );
 
-    // Opcional: mostrar solo los 5 primeros (puedes cambiar el número)
-    const top = ordenado.slice(0, 5);
-    this.productosMasCarosBarData = {
-      labels: top.map((p) => p.nombre),
-      datasets: [
-        {
-          label: 'Subtotal (más caro)',
-          data: top.map((p) => p.totalSubtotal),
-          backgroundColor: '#EF4444', // rojo
-          borderColor: '#EF4444',
-          borderWidth: 1,
-        },
-      ],
+    // Asignación de datos al gráfico (Mantenemos esta estructura, ya que es la que quieres)
+    this.comprasChartData = {
+        labels,
+        datasets: [
+            {
+                label: 'Cantidad (stock)',
+                data: cantidades,
+                backgroundColor: '#3B82F6',
+                borderColor: '#3B82F6',
+                borderWidth: 1,
+            },
+            {
+                label: 'Precio unitario (prom.)',
+                data: precioProm,
+                backgroundColor: '#F59E0B',
+                borderColor: '#F59E0B',
+                borderWidth: 1,
+            },
+            {
+                label: 'Total',
+                data: subtotales,
+                backgroundColor: '#EF4444',
+                borderColor: '#EF4444',
+                borderWidth: 1,
+            },
+        ],
     };
 
-    /* ---------- 2️⃣  SUBTOTAL POR FECHA DE COMPRA (línea) ---------- */
-    const porFecha: { [fecha: string]: number } = {};
+    //console.log('✅ Data Detalle Compras', agrupa);
+}
 
-    this.detalleCompras.forEach((dc) => {
-      const fecha = dc.fechaCompra; // ya está formateada como string
-      porFecha[fecha] = (porFecha[fecha] ?? 0) + Number(dc.subtotal);
-    });
-
-    // Ordenamos cronológicamente (asumiendo formato ISO)
-    const fechasOrdenadas = Object.keys(porFecha).sort(
-      (a, b) => new Date(a).valueOf() - new Date(b).valueOf()
-    );
-
-    this.subtotalPorFechaLineData = {
-      labels: fechasOrdenadas,
-      datasets: [
-        {
-          label: 'Subtotal por fecha',
-          data: fechasOrdenadas.map((f) => porFecha[f]),
-          borderColor: '#3B82F6', // azul
-          backgroundColor: '#3B82F6',
-          fill: false,
-          tension: 0.2,
-        },
-      ],
-    };
-  }
-
-  downloadDetalleComprasCharts(): void {
-    // 1️⃣  Bar – productos más caros
-    this.downloadChartAsPng(
-      'bar',
-      this.productosMasCarosBarData,
-      this.barraChartOptions,
-      'productos-mas-caros'
-    );
-
-    // 2️⃣  Line – subtotal acumulado por fecha
-    this.downloadChartAsPng(
-      'line',
-      this.subtotalPorFechaLineData,
-      this.lineChartOptions,
-      'subtotal-por-fecha'
-    );
+  private generateAllComprasCharts(): void {
+    this.prepareDetalleComprasChart(); // barra detalle compras
+    this.prepareSubtotalPorFechaLineChart(); // línea subtotal por fecha
+    this.prepareProductosMasCarosChart(); // barra productos más caros
   }
 
   // Helper para convertir fecha de YYYY-MM-DD a DD-MM-YYYY
@@ -1783,7 +1913,7 @@ export class Reportes implements OnInit {
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
     } catch (e) {
-      console.error('Error al formatear la fecha:', e);
+      //console.error('Error al formatear la fecha:', e);
       return 'N/A';
     }
   }
@@ -1792,7 +1922,7 @@ export class Reportes implements OnInit {
   applySearchFilter5(): void {
     if (this.searchText5) {
       const lowerCaseSearchText = this.searchText5.toLowerCase();
-      this.filteredDetalleCompras = this.detalleCompras.filter((detalle) => {
+      this.filteredDetalleCompras = this.compras.filter((detalle) => {
         return (
           (detalle.productoNombre || '')
             .toLowerCase()
@@ -1803,9 +1933,9 @@ export class Reportes implements OnInit {
         );
       });
     } else {
-      this.filteredDetalleCompras = [...this.detalleCompras];
+      this.filteredDetalleCompras = [...this.compras];
     }
-    this.totalDetalleCompras = this.filteredDetalleCompras.length;
+    this.totalCompras = this.filteredDetalleCompras.length;
     this.currentPage5 = 1;
     this.paginateDetalleCompras5();
   }
@@ -1841,7 +1971,7 @@ export class Reportes implements OnInit {
   }
 
   get totalPages5(): number {
-    return Math.ceil(this.totalDetalleCompras / this.itemsPerPage5);
+    return Math.ceil(this.totalCompras / this.itemsPerPage5);
   }
 
   get pages5(): (number | string)[] {

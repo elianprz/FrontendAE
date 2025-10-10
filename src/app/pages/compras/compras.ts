@@ -126,7 +126,7 @@ export class Compras implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
           // Manejo de errores aquí
         },
       });
@@ -174,12 +174,12 @@ export class Compras implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (resp) => {
-          console.log('Compra creada', resp);
+          //console.log('Compra creada', resp);
           this.closeCreateModal();
           this.getComprasWithProveedores();
         },
         error: (err) => {
-          console.error(err);
+          //console.error(err);
           this.validationErrors = ['Ocurrió un error al crear la compra.'];
         },
       });
@@ -321,7 +321,7 @@ export class Compras implements OnInit {
   //   this.validationErrors = [];
   // }
   openEditModal(compra: any): void {
-    console.log('>>> compra que llega a modal', compra);
+    //console.log('>>> compra que llega a modal', compra);
 
     // Aseguramos que el proveedorId sea un número (o null si es null/undefined)
     const proveedorIdNumerico = compra.proveedorId ? Number(compra.proveedorId) : null; 

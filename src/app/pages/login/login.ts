@@ -98,7 +98,7 @@ export class Login {
         });
       },
       error: (err) => {
-        console.error('Error de login', err);
+        //console.error('Error de login', err);
 
         Swal.fire({
           icon: 'error',

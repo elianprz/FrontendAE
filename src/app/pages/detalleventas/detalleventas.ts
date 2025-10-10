@@ -50,9 +50,9 @@ export class Detalleventas implements OnInit {
     }).subscribe({
       next: (results) => {
         // En este punto, los datos de los 3 servicios ya han llegado.
-        console.log('Ventas del backend:', results.ventas);
-        console.log('Productos del backend:', results.productos);
-        console.log('Detalles de ventas del backend:', results.detalleVentas);
+        //console.log('Ventas del backend:', results.ventas);
+        //console.log('Productos del backend:', results.productos);
+        //console.log('Detalles de ventas del backend:', results.detalleVentas);
 
         // Mapeamos las ventas para un acceso rápido por VentaId
         const ventasMap = new Map(
@@ -75,9 +75,9 @@ export class Detalleventas implements OnInit {
             : 'N/A';
 
           if (!venta) {
-            console.warn(
-              `Venta con ID ${dv.ventaId} no encontrada. Esto indica que la API de detalles de venta no está retornando el VentaId.`
-            );
+            //console.warn(
+            //  `Venta con ID ${dv.ventaId} no encontrada. Esto indica que la API de detalles de venta no está retornando el VentaId.`
+            //);
           }
 
           return {
@@ -89,15 +89,15 @@ export class Detalleventas implements OnInit {
           };
         });
 
-        console.log(
-          'Detalles de venta listos para mostrar:',
-          this.detalleVentas
-        );
+        //console.log(
+        //  'Detalles de venta listos para mostrar:',
+        //  this.detalleVentas
+        //);
 
         this.applySearchFilter();
       },
       error: (error) => {
-        console.error('Error al cargar los datos:', error);
+        //console.error('Error al cargar los datos:', error);
       },
     });
   }
@@ -126,7 +126,7 @@ export class Detalleventas implements OnInit {
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
     } catch (e) {
-      console.error('Error al formatear la fecha:', e);
+      //console.error('Error al formatear la fecha:', e);
       return 'N/A';
     }
   }

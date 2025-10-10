@@ -130,7 +130,7 @@ export class Cajasesion implements OnInit {
         this.cajaSesiones = this.mapCajaSesiones(this.originalCajaSesiones);
         this.applySearchFilter();
       },
-      error: (err) => console.error('Error al cargar los datos:', err),
+      //error: (err) => console.error('Error al cargar los datos:', err),
     });
   }
 
@@ -398,12 +398,12 @@ export class Cajasesion implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Sesión de caja creada exitosamente:', response);
+          //console.log('Sesión de caja creada exitosamente:', response);
           this.closeCreateModal();
           this.fetchData(); // Llama a fetchData para actualizar todos los datos
         },
         error: (error) => {
-          console.error('Error al crear la sesión de caja:', error);
+          //console.error('Error al crear la sesión de caja:', error);
           if (error.status === 400 && error.error.errors) {
             this.validationErrors = Object.values(
               error.error.errors
@@ -498,12 +498,12 @@ export class Cajasesion implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Sesión de caja actualizada exitosamente:', response);
+          //console.log('Sesión de caja actualizada exitosamente:', response);
           this.closeEditModal();
           this.fetchData(); // Llama a fetchData para actualizar todos los datos
         },
         error: (error) => {
-          console.error('Error al actualizar la sesión de caja:', error);
+          //console.error('Error al actualizar la sesión de caja:', error);
           if (error.status === 400 && error.error.errors) {
             this.editValidationErrors = Object.values(
               error.error.errors
@@ -572,7 +572,7 @@ export class Cajasesion implements OnInit {
 
   deleteCajaSesion(): void {
     if (!this.cajasesionToDelete || !this.cajasesionToDelete.cajaSesionId) {
-      console.error('No se ha seleccionado una sesión de caja para eliminar.');
+      //console.error('No se ha seleccionado una sesión de caja para eliminar.');
       return;
     }
     this.cajaSesionService
@@ -580,12 +580,12 @@ export class Cajasesion implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: () => {
-          console.log('Sesión de caja eliminada exitosamente.');
+          //console.log('Sesión de caja eliminada exitosamente.');
           this.closeDeleteModal();
           this.fetchData();
         },
         error: (error) => {
-          console.error('Error al eliminar la sesión de caja:', error);
+          //console.error('Error al eliminar la sesión de caja:', error);
           alert(
             'Error al eliminar la sesión de caja. Intente de nuevo más tarde.'
           );

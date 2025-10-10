@@ -71,16 +71,16 @@ export class AuthService {
   private logDecodedToken(): void {
     const token = this.getToken();
     if (!token) {
-      console.warn('🔴 No hay token en localStorage');
+      //console.warn('🔴 No hay token en localStorage');
       return;
     }
     try {
       const decoded: any = jwtDecode(token);
-      console.groupCollapsed('🔎 Payload del JWT');
-      console.log(decoded);
-      console.groupEnd();
+      //console.groupCollapsed('🔎 Payload del JWT');
+      //console.log(decoded);
+      //console.groupEnd();
     } catch (e) {
-      console.error('❌ Error decoding JWT', e);
+      //console.error('❌ Error decoding JWT', e);
     }
   }
 
@@ -91,6 +91,11 @@ export class AuthService {
     return null;
   }
 
+  // ✅ Método simple para obtener el valor del rol actual
+  public getUserRole(): string | null {
+    return this.userRoleSubject.value;
+  }
+
   getCurrentUserName(): string | null {
     const token = this.getToken();
     if (token) {
@@ -98,7 +103,7 @@ export class AuthService {
         const decodedToken: any = jwtDecode(token);
         return decodedToken.unique_name;
       } catch (error) {
-        console.error('Error decodificando el token:', error);
+        //console.error('Error decodificando el token:', error);
         return null;
       }
     }
@@ -132,7 +137,7 @@ export class AuthService {
       const role = decoded.role || null;
       this.userRoleSubject.next(role);
     } catch (error) {
-      console.error('Invalid token', error);
+      //console.error('Invalid token', error);
       this.userRoleSubject.next(null);
     }
   }
@@ -148,7 +153,7 @@ export class AuthService {
     try {
       decoded = jwtDecode(token);
     } catch (e) {
-      console.error('Error decoding JWT (getCurrentUserId)', e);
+      //console.error('Error decoding JWT (getCurrentUserId)', e);
       throw new Error('El token no pudo ser decodificado.');
     }
 

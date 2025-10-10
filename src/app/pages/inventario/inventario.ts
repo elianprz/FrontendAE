@@ -107,7 +107,7 @@ export class Inventario implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
         },
       });
   }
@@ -312,6 +312,10 @@ export class Inventario implements OnInit {
     this.selectedFile = event.target.files[0];
     this.validationErrors = []; // Limpia errores previos
 
+    // Definimos las constantes para las dimensiones
+    const MIN_DIMENSION = 40;
+    const MAX_DIMENSION = 5000;
+
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -319,20 +323,35 @@ export class Inventario implements OnInit {
 
         const img = new Image();
         img.onload = () => {
-          // ✅ Verifica las dimensiones de la imagen
-          if (img.width !== 1000 || img.height !== 1000) {
+          const width = img.width;
+          const height = img.height;
+
+          // ✅ Validación: El ancho y alto deben estar entre MIN_DIMENSION y MAX_DIMENSION
+          if (
+            width < MIN_DIMENSION ||
+            height < MIN_DIMENSION ||
+            width > MAX_DIMENSION ||
+            height > MAX_DIMENSION
+          ) {
             this.validationErrors.push(
-              'La imagen debe ser de 1000x1000 píxeles.'
+              `La imagen debe tener dimensiones entre ${MIN_DIMENSION}x${MIN_DIMENSION} y ${MAX_DIMENSION}x${MAX_DIMENSION} píxeles. Dimensiones actuales: ${width}x${height}`
             );
             this.selectedFile = null; // Anula la selección
             this.selectedFilePreview = null; // Borra la previsualización
           }
+          // Opcional: Puedes añadir una validación extra si la imagen final debe ser 1000x1000 (aunque el backend la redimensiona)
+          // else if (width !== height) {
+          //   this.validationErrors.push('La imagen debe ser cuadrada (ancho igual a alto).');
+          //   this.selectedFile = null;
+          //   this.selectedFilePreview = null;
+          // }
         };
         img.src = reader.result as string;
       };
       reader.readAsDataURL(this.selectedFile);
     }
   }
+
   async uploadImageAndGetUrl(): Promise<string | null> {
     if (!this.selectedFile) {
       return null;
@@ -346,7 +365,7 @@ export class Inventario implements OnInit {
       // Asume que la respuesta del backend tiene una propiedad 'url'
       return response.url;
     } catch (error) {
-      console.error('Error al subir la imagen:', error);
+      //console.error('Error al subir la imagen:', error);
       this.validationErrors.push(
         'Error al subir la imagen. Inténtelo de nuevo.'
       );
@@ -464,12 +483,12 @@ export class Inventario implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Producto creado exitosamente:', response);
+          //console.log('Producto creado exitosamente:', response);
           this.closeCreateModal();
           this.getInventarioWithcategoriass();
         },
         error: (error) => {
-          console.error('Error al crear producto:', error);
+          //console.error('Error al crear producto:', error);
         },
       });
   }
@@ -522,9 +541,9 @@ export class Inventario implements OnInit {
         )
       );
 
-      console.log('Imagen actualizada exitosamente.');
+      //console.log('Imagen actualizada exitosamente.');
     } catch (error) {
-      console.error('Error al actualizar la imagen:', error);
+      //console.error('Error al actualizar la imagen:', error);
       this.validationErrors.push(
         'Error al actualizar la imagen. Inténtelo de nuevo.'
       );
@@ -560,9 +579,9 @@ export class Inventario implements OnInit {
         // ✅ CLAVE: Actualiza el campo imagenUrl en tu objeto de edición
         this.editedProduct.imagenUrl = response.url;
 
-        console.log('Imagen actualizada exitosamente:', response.url);
+        //console.log('Imagen actualizada exitosamente:', response.url);
       } catch (error) {
-        console.error('Error al actualizar la imagen:', error);
+        //console.error('Error al actualizar la imagen:', error);
         this.validationErrors.push(
           'Error al actualizar la imagen. Inténtelo de nuevo.'
         );
@@ -585,12 +604,12 @@ export class Inventario implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Producto actualizado exitosamente:', response);
+          //console.log('Producto actualizado exitosamente:', response);
           this.closeEditModal();
           this.getInventarioWithcategoriass();
         },
         error: (error) => {
-          console.error('Error al actualizar el producto:', error);
+          //console.error('Error al actualizar el producto:', error);
           this.validationErrors = [
             'Ocurrió un error inesperado al actualizar el producto.',
           ];
@@ -601,7 +620,7 @@ export class Inventario implements OnInit {
   // Nuevo método para eliminar un producto
   deleteProduct(): void {
     if (!this.productToDelete || !this.productToDelete.productoId) {
-      console.error('No se ha seleccionado ningún producto para eliminar.');
+      //console.error('No se ha seleccionado ningún producto para eliminar.');
       return;
     }
 
@@ -610,12 +629,12 @@ export class Inventario implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Producto eliminado exitosamente:', response);
+          //console.log('Producto eliminado exitosamente:', response);
           this.closeDeleteModal();
           this.getInventarioWithcategoriass();
         },
         error: (error) => {
-          console.error('Error al eliminar producto:', error);
+          //console.error('Error al eliminar producto:', error);
           this.validationErrors = ['Ocurrió un error al eliminar el producto.'];
         },
       });

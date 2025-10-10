@@ -89,7 +89,7 @@ export class Detallecompras implements OnInit {
         this.applySearchFilter5();
       },
       error: (error) => {
-        console.error('Error al cargar los datos:', error);
+        //console.error('Error al cargar los datos:', error);
       },
     });
   }
@@ -118,7 +118,7 @@ export class Detallecompras implements OnInit {
       const year = date.getFullYear();
       return `${day}-${month}-${year}`;
     } catch (e) {
-      console.error('Error al formatear la fecha:', e);
+      //console.error('Error al formatear la fecha:', e);
       return 'N/A';
     }
   }

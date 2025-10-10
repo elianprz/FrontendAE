@@ -94,6 +94,7 @@
               >
                 <div class="flex space-x-2 whitespace-nowrap sm:justify-end">
                   <button
+                    *ngIf="isAdmin" 
                     (click)="openEditModal(venta)"
                     type="button"
                     title="Editar"
@@ -120,6 +121,7 @@
                   </button>
 
                   <button
+                  *ngIf="isAdmin" 
                     (click)="openDeleteModal(venta)"
                     type="button"
                     title="Eliminar"
@@ -133,7 +135,8 @@
                   </button>
 
                   <a
-                    href="/tu-destino.html"
+                    *ngIf="isAdmin" 
+                    href="https://farm3.sat.gob.gt/menu/portada.jsf"
                     title="SAT"
                     class="inline-flex items-center justify-center rounded-md border border-blue-300 bg-blue-50 px-2.5 py-2 text-sm font-medium text-blue-700 shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
                   >

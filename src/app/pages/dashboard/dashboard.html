@@ -2,7 +2,6 @@
 <div
   class="hidden lg:fixed xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col dark:bg-gray-950"
 >
-  <!-- Sidebar component, swap this element with another sidebar if you like -->
   <div
     class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 ring-1 ring-gray-200 dark:bg-black/10 dark:ring-white/5"
   >
@@ -23,12 +22,6 @@
         <li>
           <ul role="list" class="-mx-2 space-y-1">
             <li>
-              <!-- <a
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                style="user-select: none"
-              >
-                Bienvenido {{ currentUserName }}
-              </a> -->
               <div class="relative">
                 <button
                   id="user-menu-button"
@@ -86,147 +79,31 @@
                 </div>
               </div>
             </li>
-            <li>
-              <!-- Current: "bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white", Default: "text-gray-700 dark:text-gray-50 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5" -->
-              <a
-                routerLink="/admin/dashboard/caja"
-                class="group flex gap-x-3 rounded-md bg-gray-100 p-2 text-sm/6 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"
-              >
-                <lucide-icon name="landmark"></lucide-icon>
-                Caja
-              </a>
-            </li>
 
-            <li>
-              <a
-                routerLink="/admin/dashboard/compras"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <lucide-icon name="shopping-basket"></lucide-icon>
-                Compras
-              </a>
-            </li>
-            <li>
-              <a
-                routerLink="/admin/dashboard/historial-ventas"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <lucide-icon name="percent"></lucide-icon>
-                Historial de ventas
-              </a>
-            </li>
-            <li>
-              <a
-                routerLink="/admin/dashboard/proveedores"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <lucide-icon name="warehouse"></lucide-icon>
-                Proveedores
-              </a>
-            </li>
+            <ng-container *ngFor="let item of navigation">
+              <li *ngIf="item.separator">
+                <div
+                  class="text-xs/6 font-semibold text-gray-500 mt-4 dark:text-gray-200 px-2"
+                >
+                  {{ item.separator }}
+                </div>
+              </li>
 
-            <li>
-              <a
-                routerLink="/admin/dashboard/ventas"
-                class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <lucide-icon name="pencil-ruler"></lucide-icon>
-                Ventas
-              </a>
-            </li>
-            <!-- Otras opciones -->
-            <li>
-              <div class="text-xs/6 font-semibold text-gray-200">
-                Ajustes del sistema
-              </div>
-              <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/categoria-producto"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="package-search"></lucide-icon>
-                    Categoría Productos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/categoria-proveedor"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="package"></lucide-icon>
-                    Categoría Proveedores
-                  </a>
-                </li>
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/movimiento-caja"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="hand-coins"></lucide-icon>
-                    Movimiento caja
-                  </a>
-                </li>
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/productos"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="database"></lucide-icon>
-                    Productos
-                  </a>
-                </li>
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/reportes"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="chart-area"></lucide-icon>
-                    Reportes
-                  </a>
-                </li>
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/roles"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="user-lock"></lucide-icon>
-                    Roles
-                  </a>
-                </li>
-                <!--  Caja Sesión -->
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/caja-sesion"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="inbox"></lucide-icon>
-                    Sesiones de caja
-                  </a>
-                </li>
-                <!--  End caja sesión -->
-                <li>
-                  <a
-                    routerLink="/admin/dashboard/usuarios"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                  >
-                    <lucide-icon name="users"></lucide-icon>
-                    Usuarios
-                  </a>
-                </li>
-                <!-- <li>
-                  <a
-                    (click)="logout()"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    style="user-select: none"
-                  >
-                    <lucide-icon name="door-open"></lucide-icon>
-                    Cerrar sesión
-                  </a>
-                </li> -->
-              </ul>
-            </li>
-            <!-- End separar -->
+              <li *ngIf="!item.separator">
+                <a
+                  [routerLink]="[routeBase, item.routerLink]"
+                  routerLinkActive="bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                >
+                  <lucide-icon
+                    [name]="item.iconName"
+                    class="h-6 w-6 shrink-0"
+                  ></lucide-icon>
+                  {{ item.name }}
+                </a>
+              </li>
+            </ng-container>
           </ul>
         </li>
       </ul>
@@ -279,7 +156,6 @@
             <lucide-icon name="x" class="size-6 text-white"></lucide-icon>
           </button>
         </div>
-        <!-- Sidebar mobile -->
         <div
           class="relative flex grow flex-col gap-y-5 overflow-y-auto dark:bg-gray-950 px-6 dark:before:pointer-events-none dark:before:absolute dark:before:inset-0"
         >
@@ -300,12 +176,6 @@
               <li>
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
-                    <!-- <a
-                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                      style="user-select: none"
-                    >
-                      Bienvenido {{ currentUserName }}
-                    </a> -->
                     <div class="relative">
                       <button
                         id="user-menu-button"
@@ -365,150 +235,34 @@
                       </div>
                     </div>
                   </li>
-                  <li>
-                    <!-- Current: "bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white", Default: "text-gray-700 dark:text-gray-50 hover:text-indigo-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5" -->
-                    <a
-                      routerLink="/admin/dashboard/caja"
-                      class="group flex gap-x-3 rounded-md bg-gray-100 p-2 text-sm/6 font-semibold text-indigo-600 dark:bg-white/5 dark:text-white"
-                    >
-                      <lucide-icon name="landmark"></lucide-icon>
-                      Caja
-                    </a>
-                  </li>
 
-                  <li>
-                    <a
-                      routerLink="/admin/dashboard/compras"
-                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    >
-                      <lucide-icon name="shopping-basket"></lucide-icon>
-                      Compras
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      routerLink="/admin/dashboard/historial-ventas"
-                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    >
-                      <lucide-icon name="percent"></lucide-icon>
-                      Historial de ventas
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      routerLink="/admin/dashboard/proveedores"
-                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    >
-                      <lucide-icon name="warehouse"></lucide-icon>
-                      Proveedores
-                    </a>
-                  </li>
+                  <ng-container *ngFor="let item of navigation">
+                    <li *ngIf="item.separator">
+                      <div
+                        class="text-xs/6 font-semibold text-gray-500 mt-4 dark:text-gray-200 px-2"
+                      >
+                        {{ item.separator }}
+                      </div>
+                    </li>
 
-                  <li>
-                    <a
-                      routerLink="/admin/dashboard/ventas"
-                      class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                    >
-                      <lucide-icon name="pencil-ruler"></lucide-icon>
-                      Ventas
-                    </a>
-                  </li>
-                  <!-- Otras opciones -->
-                  <li>
-                    <div class="text-xs/6 font-semibold text-gray-200">
-                      Ajustes del sistema
-                    </div>
-                    <ul role="list" class="-mx-2 mt-2 space-y-1">
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/categoria-producto"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="package-search"></lucide-icon>
-                          Categoría Productos
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/categoria-proveedor"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="package"></lucide-icon>
-                          Categoría Proveedores
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/movimiento-caja"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="hand-coins"></lucide-icon>
-                          Movimiento caja
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/productos"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="database"></lucide-icon>
-                          Productos
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/reportes"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="chart-area"></lucide-icon>
-                          Reportes
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/roles"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="user-lock"></lucide-icon>
-                          Roles
-                        </a>
-                      </li>
-                      <!--  Caja Sesión -->
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/caja-sesion"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="inbox"></lucide-icon>
-                          Sesiones de caja
-                        </a>
-                      </li>
-                      <!--  End caja sesión -->
-                      <li>
-                        <a
-                          routerLink="/admin/dashboard/usuarios"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                        >
-                          <lucide-icon name="users"></lucide-icon>
-                          Usuarios
-                        </a>
-                      </li>
-                      <!-- <li>
-                        <a
-                          (click)="logout()"
-                          class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
-                          style="user-select: none"
-                        >
-                          <lucide-icon name="door-open"></lucide-icon>
-                          Cerrar sesión
-                        </a>
-                      </li> -->
-                    </ul>
-                  </li>
-                  <!-- End separar -->
+                    <li *ngIf="!item.separator">
+                      <a
+                        [routerLink]="[routeBase, item.routerLink]"
+                        routerLinkActive="bg-gray-100 dark:bg-white/5 text-indigo-600 dark:text-white"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                        class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-50 dark:hover:bg-white/5 dark:hover:text-white"
+                        (click)="toggleSidebar()"
+                      >
+                        <lucide-icon
+                          [name]="item.iconName"
+                          class="h-6 w-6 shrink-0"
+                        ></lucide-icon>
+                        {{ item.name }}
+                      </a>
+                    </li>
+                  </ng-container>
                 </ul>
               </li>
-              <!-- Separar -->
             </ul>
           </nav>
         </div>

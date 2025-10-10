@@ -18,7 +18,7 @@ import { take, tap, catchError } from 'rxjs/operators'; // ✅ Importa 'tap' y '
 import { LucideAngularModule } from 'lucide-angular';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-ventas',
   standalone: true,
@@ -63,18 +63,26 @@ export class Ventas implements OnInit, OnDestroy {
   toastMessage: string = '';
   toastType: 'success' | 'error' = 'success';
 
+  isAdmin: boolean = false; // Controla la visibilidad de los botones
+
   constructor(
     private ventasService: VentasService,
     // ✅ CLAVE: Asegúrate de que CatalogoService está inyectado en el constructor
     private catalogoService: CatalogoService,
+    private authService: AuthService, 
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
+    // 1. Obtener y establecer el rol del usuario
+    const userRole = this.authService.getUserRole();
+    this.isAdmin = userRole === 'Admin'; // true si el rol es 'Admin'
+
+    // 2. Continuar con la carga de datos
     this.fetchProductos().subscribe(() => {
       this.fetchVentas();
     });
-  }
+}
 
   ngOnDestroy(): void {
     if (this.ventasSubscription) {
@@ -107,7 +115,7 @@ export class Ventas implements OnInit, OnDestroy {
           }, {});
         }),
         catchError((error) => {
-          console.error('Error al cargar los productos:', error);
+          //console.error('Error al cargar los productos:', error);
           this.showToast(
             'Error al cargar los productos. Intente de nuevo.',
             'error'
@@ -127,7 +135,7 @@ export class Ventas implements OnInit, OnDestroy {
           this.agruparVentasPorCodigo();
         },
         error: (error) => {
-          console.error('Error al cargar las ventas:', error);
+          //console.error('Error al cargar las ventas:', error);
           this.showToast('Error al cargar el historial de ventas.', 'error');
         },
       });
@@ -379,9 +387,9 @@ export class Ventas implements OnInit, OnDestroy {
           this.showToast('Error al generar el PDF.', 'error');
         });
     } else {
-      console.warn(
-        'La generación de PDF no se puede realizar en el servidor (SSR).'
-      );
+      //console.warn(
+        //'La generación de PDF no se puede realizar en el servidor (SSR).'
+      //);
     }
   }
   onFacturaClick(venta: Ventas): void {
@@ -497,7 +505,7 @@ export class Ventas implements OnInit, OnDestroy {
           this.fetchVentas(); // Recarga la lista para reflejar el cambio
         },
         error: (error) => {
-          console.error('Error al eliminar la venta:', error);
+          //console.error('Error al eliminar la venta:', error);
           this.showToast('Error al eliminar la venta.', 'error');
         },
       });
@@ -522,7 +530,7 @@ export class Ventas implements OnInit, OnDestroy {
             this.fetchVentas();
           },
           error: (error) => {
-            console.error('Error al eliminar la venta:', error);
+            //console.error('Error al eliminar la venta:', error);
             this.showToast(
               'Error al eliminar la venta. Inténtalo de nuevo.',
               'error'

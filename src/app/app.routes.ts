@@ -36,7 +36,7 @@ export const routes: Routes = [
         path: 'dashboard',
         component: Dashboard, // El Dashboard se convierte en el padre
         children: [
-          { path: '', redirectTo: 'caja', pathMatch: 'full'}, // Redirección a la primera sub-página
+          { path: '', redirectTo: 'caja', pathMatch: 'full' }, // Redirección a la primera sub-página
           { path: 'caja', component: Caja }, // Se renderiza el componente Caja dentro del Dashboard
           { path: 'ventas', component: Catalogo }, // Se renderiza el componente Catálogo (productos get, get id y hacer compra) dentro del Dashboard
           { path: 'compras', component: Compras }, // Se renderiza el componente Compras dentro del Dashboard
@@ -52,10 +52,10 @@ export const routes: Routes = [
           { path: 'productos', component: Inventario }, // Se renderiza el componente Inventario (productos create, update and delete) dentro del Dashboard
           { path: 'usuarios', component: Usuarios }, // Se renderiza el componente Roleandusers dentro del Dashboard
           // { path: 'roles', component: RoleListComponent } // Para la lista de roles
-        ]
+        ],
       },
       // Agrega aquí otras rutas de nivel superior si es necesario (ej. /admin/reports)
-    ]
+    ],
   },
   {
     path: 'employee',
@@ -63,11 +63,25 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role: 'Empleado' },
     children: [
-      { path: 'dashboard', component: Dashboard },
-      // Agrega aquí todas las rutas específicas de Empleado
-    ]
+      {
+        path: 'dashboard',
+        component: Dashboard,
+        children: [
+          // Rutas a las que el Empleado debe tener acceso
+          { path: '', redirectTo: 'ventas', pathMatch: 'full' }, // 👈 Nuevo: Redirigir /employee/dashboard a /employee/dashboard/ventas
+          { path: 'reportes', component: Reportes },
+          { path: 'ventas', component: Catalogo }, // Catálogo para vender
+          { path: 'categoria-producto', component: Cateproducto },
+          { path: 'historial-ventas', component: Ventas }, // Se renderiza el componente Ventas dentro del Dashboard
+          // El Empleado NO DEBE ver:
+          // 'productos' (Inventario: crear/editar/eliminar)
+          // 'usuarios', 'roles'
+          // 'compras', 'proveedores', 'reportes', etc.
+        ],
+      },
+    ],
   },
   { path: 'recuperacion', component: Recuperacion },
   { path: 'soporte', component: Soporte },
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/login' },
 ];

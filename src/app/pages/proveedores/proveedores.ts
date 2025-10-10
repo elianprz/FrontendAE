@@ -114,7 +114,7 @@ export class Proveedores implements OnInit {
           this.applyFiltersAndSearch();
         },
         error: (error) => {
-          console.error('Error al cargar datos:', error);
+          //console.error('Error al cargar datos:', error);
         },
       });
   }
@@ -327,6 +327,10 @@ export class Proveedores implements OnInit {
     this.selectedFile = event.target.files[0];
     this.validationErrors = [];
 
+    // Definimos las constantes para las dimensiones
+    const MIN_DIMENSION = 40;
+    const MAX_DIMENSION = 5000;
+
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -334,14 +338,30 @@ export class Proveedores implements OnInit {
 
         const img = new Image();
         img.onload = () => {
-          // ✅ Mantenemos la verificación de 1000x1000 píxeles
-          if (img.width !== 5000 || img.height !== 5000) {
+          const width = img.width;
+          const height = img.height;
+
+          // ✅ Modificamos la validación para verificar el rango (mínimo 40px, máximo 5000px)
+          if (
+            width < MIN_DIMENSION ||
+            height < MIN_DIMENSION ||
+            width > MAX_DIMENSION ||
+            height > MAX_DIMENSION
+          ) {
             this.validationErrors.push(
-              'La imagen debe ser de 5000x5000 píxeles.'
+              `La imagen debe tener dimensiones entre ${MIN_DIMENSION}x${MIN_DIMENSION} y ${MAX_DIMENSION}x${MAX_DIMENSION} píxeles. Dimensiones actuales: ${width}x${height}`
             );
             this.selectedFile = null;
             this.selectedFilePreview = null;
           }
+          // Opcional: Si quieres que además de estar en el rango, deba ser cuadrada (lo que se sugiere en tu backend)
+          // else if (width !== height) {
+          //   this.validationErrors.push(
+          //     'La imagen debe ser cuadrada (ancho igual a alto).'
+          //   );
+          //   this.selectedFile = null;
+          //   this.selectedFilePreview = null;
+          // }
         };
         img.src = reader.result as string;
       };
@@ -363,7 +383,7 @@ export class Proveedores implements OnInit {
       // Asume que la respuesta del backend tiene una propiedad 'url'
       return response.url;
     } catch (error) {
-      console.error('Error al subir la imagen:', error);
+      //console.error('Error al subir la imagen:', error);
       this.validationErrors.push(
         'Error al subir la imagen. Inténtelo de nuevo.'
       );
@@ -420,12 +440,12 @@ export class Proveedores implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Proveedor creado exitosamente:', response);
+          //console.log('Proveedor creado exitosamente:', response);
           this.closeCreateModal();
           this.getProveedoresWithCategorias();
         },
         error: (error) => {
-          console.error('Error al crear proveedor:', error);
+          //console.error('Error al crear proveedor:', error);
           this.validationErrors.push(
             'Ocurrió un error inesperado al crear el proveedor.'
           );
@@ -466,9 +486,9 @@ export class Proveedores implements OnInit {
         // ⚠️ Asegúrate de implementar updateProveedorImage en ProveedorService
       );
 
-      console.log('Imagen actualizada exitosamente.');
+      //console.log('Imagen actualizada exitosamente.');
     } catch (error) {
-      console.error('Error al actualizar la imagen:', error);
+      //console.error('Error al actualizar la imagen:', error);
       this.validationErrors.push(
         'Error al actualizar la imagen. Inténtelo de nuevo.'
       );
@@ -507,9 +527,9 @@ export class Proveedores implements OnInit {
         // ✅ CLAVE: Actualiza el campo imagenUrl en tu objeto de edición con la nueva URL
         this.editedProveedor.imagenUrl = response.url;
 
-        console.log('Imagen actualizada exitosamente:', response.url);
+        //console.log('Imagen actualizada exitosamente:', response.url);
       } catch (error) {
-        console.error('Error al actualizar la imagen:', error);
+        //console.error('Error al actualizar la imagen:', error);
         this.validationErrors.push(
           'Error al actualizar la imagen. Inténtelo de nuevo.'
         );
@@ -530,12 +550,12 @@ export class Proveedores implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Proveedor actualizado exitosamente:', response);
+          //console.log('Proveedor actualizado exitosamente:', response);
           this.closeEditModal();
           this.getProveedoresWithCategorias();
         },
         error: (error) => {
-          console.error('Error al actualizar el proveedor:', error);
+          //console.error('Error al actualizar el proveedor:', error);
           this.validationErrors = [
             'Ocurrió un error inesperado al actualizar el proveedor.',
           ];
@@ -547,7 +567,7 @@ export class Proveedores implements OnInit {
   deleteProveedor(): void {
     if (!this.proveedorToDelete || !this.proveedorToDelete.proveedorId) {
       // ⚠️ Asume que el ID se llama 'proveedorId'
-      console.error('No se ha seleccionado ningún proveedor para eliminar.');
+      //console.error('No se ha seleccionado ningún proveedor para eliminar.');
       return;
     }
 
@@ -556,12 +576,12 @@ export class Proveedores implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (response) => {
-          console.log('Proveedor eliminado exitosamente:', response);
+          //console.log('Proveedor eliminado exitosamente:', response);
           this.closeDeleteModal();
           this.getProveedoresWithCategorias();
         },
         error: (error) => {
-          console.error('Error al eliminar proveedor:', error);
+          //console.error('Error al eliminar proveedor:', error);
           this.validationErrors = [
             'Ocurrió un error al eliminar el proveedor.',
           ];

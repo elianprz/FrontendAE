@@ -41,7 +41,7 @@ export class Recuperacion {
         });
       },
       error: (err) => {
-        console.error('Error de la solicitud:', err);
+        //console.error('Error de la solicitud:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error de conexión',
