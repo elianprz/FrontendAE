@@ -551,7 +551,7 @@ export class Usuarios implements OnInit {
 
       // Ejemplo de cómo podría ser la lógica, simulando una llamada a una API
       const response = await fetch(
-        `https://localhost:7182/api/Usuarios/check-email?email=${email}`
+        `https://backendae.duckdns.org/api/Usuarios/check-email?email=${email}`
       );
       const data = await response.json();
       return data.exists; // Asume que la API devuelve { exists: true/false }
