@@ -168,7 +168,7 @@ export const appConfig: ApplicationConfig = {
     ...JwtModule.forRoot({
       config: {
         tokenGetter: () => localStorage.getItem('token'),
-        allowedDomains: ["localhost:7182", "backendae.duckdns.org"],
+        allowedDomains: [" backendae.duckdns.org", "localhost:7182"],
         disallowedRoutes: [],
       }
     }).providers!
