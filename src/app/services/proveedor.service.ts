@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 /**
  * Define una interfaz para la estructura de datos de un Proveedor (opcional, pero recomendado).
@@ -20,7 +22,8 @@ export interface Proveedor {
 export class ProveedorService {
   // 🔑 URL del endpoint para la entidad Proveedores.
   // Es muy probable que necesites cambiar 'Productos' por 'Proveedores' o similar.
-  private apiUrl = 'https://localhost:7182/api/Proveedores';
+  //private apiUrl = 'https://localhost:7182/api/Proveedores';
+  private apiUrl = `${environment.apiUrl}/Proveedores`;
  // 🆕 Endpoint específico para la subida de imágenes de Proveedores
   // ASUME que el backend tiene un controlador Proveedores y un método SubirImagen
   private imageUploadUrl = 'https://localhost:7182/api/Proveedores/SubirImagen';

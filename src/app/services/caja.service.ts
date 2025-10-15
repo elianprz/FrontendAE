@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 @Injectable({
   providedIn: 'root',
 })
 export class CajaService {
-  private apiUrl = 'https://localhost:7182/api/Caja'; // Reemplaza con la URL de tu endpoint de Caja
+  //private apiUrl = 'https://localhost:7182/api/Caja'; // Reemplaza con la URL de tu endpoint de Caja
+  private apiUrl = `${environment.apiUrl}/Caja`;
   constructor(private http: HttpClient) {}
 
   /**

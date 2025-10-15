@@ -5,12 +5,14 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import { JwtHelperService } from '@auth0/angular-jwt';
-
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'https://localhost:7182/api/Auth';
+  //private readonly apiUrl = 'https://localhost:7182/api/Auth';
+  private readonly apiUrl = `${environment.apiUrl}/Auth`;
   private userRoleSubject = new BehaviorSubject<string | null>(null);
 
   userRole$ = this.userRoleSubject.asObservable();

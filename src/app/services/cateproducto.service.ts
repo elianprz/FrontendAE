@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CateproductoService {
-  private apiUrl = 'https://localhost:7182/api/CategoriaProducto'; // Reemplaza con la URL de tu endpoint de roles
+  //private apiUrl = 'https://localhost:7182/api/CategoriaProducto'; 
+  private apiUrl = `${environment.apiUrl}/CategoriaProducto`;
 
   constructor(private http: HttpClient) {}
 

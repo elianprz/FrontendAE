@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleService {
-  private apiUrl = 'https://localhost:7182/api/Roles'; // Reemplaza con la URL de tu endpoint de roles
+  //private apiUrl = 'https://localhost:7182/api/Roles'; 
+  private apiUrl =  `${environment.apiUrl}/Roles`; 
 
   constructor(private http: HttpClient) {}
 

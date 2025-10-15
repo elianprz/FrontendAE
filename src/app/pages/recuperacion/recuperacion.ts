@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-
+//import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 @Component({
   selector: 'app-recuperacion',
   templateUrl: './recuperacion.html',
@@ -27,7 +28,8 @@ export class Recuperacion {
       return;
     }
 
-    const apiUrl = 'https://localhost:7182/api/Usuarios/recuperar-contrasena';
+    //const apiUrl = 'https://localhost:7182/api/Usuarios/recuperar-contrasena';
+    const apiUrl = `${environment.apiUrl}/Usuarios/recuperar-contrasena`;
     
     // Agrega { responseType: 'text' } para que HttpClient no espere un JSON
     this.http.post(apiUrl, { email: email }, { responseType: 'text' }).subscribe({

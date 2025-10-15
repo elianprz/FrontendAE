@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+//import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.prod';
 // ❌ Eliminado: import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VentasService {
-  private apiUrl = 'https://localhost:7182/api/Ventas';
+  //private apiUrl = 'https://localhost:7182/api/Ventas';
+  private apiUrl = `${environment.apiUrl}/Ventas`;
 
   // ❌ ELIMINADO: La propiedad de estado global (carrito$)
   // public carrito$ = new BehaviorSubject<any[]>([]);
