@@ -26,7 +26,7 @@ export class ProveedorService {
   private apiUrl = `${environment.apiUrl}/Proveedores`;
  // 🆕 Endpoint específico para la subida de imágenes de Proveedores
   // ASUME que el backend tiene un controlador Proveedores y un método SubirImagen
-  private imageUploadUrl = 'https://localhost:7182/api/Proveedores/SubirImagen';
+  private imageUploadUrl = 'https://backendae.duckdns.org/api/Proveedores/SubirImagen';
 
   constructor(private http: HttpClient) {}
 

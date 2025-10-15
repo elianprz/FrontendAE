@@ -10,7 +10,7 @@ export class InventarioService {
   // Se cambia la URL a 'api/Inventario' para reflejar el nuevo endpoint
   //private apiUrl = 'https://localhost:7182/api/Productos';
   private apiUrl = `${environment.apiUrl}/Productos`;
-  private imageUploadUrl = 'https://localhost:7182/api/Productos/SubirImagen';
+  private imageUploadUrl = 'https://backendae.duckdns.org/api/Productos/SubirImagen';
 
   constructor(private http: HttpClient) {}
 
